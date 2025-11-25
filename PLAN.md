@@ -70,15 +70,16 @@
   - [x] Auto-managed Docker fixtures (GCS, Azure via pytest-databases)
   - [x] Example applications with full test coverage
 
-### Not Started
+### In Progress
 
 - [ ] **Phase 6: Release & Advanced Features**
   - [ ] PyPI release (v0.1.0)
   - [ ] Performance benchmarks
   - [ ] Security audit
-  - [ ] Multipart upload support for large files
-  - [ ] Progress callbacks for uploads/downloads
-  - [ ] Retry logic with exponential backoff
+  - [x] Multipart upload support for large files (S3)
+  - [x] Progress callbacks for uploads/downloads
+  - [x] Retry logic with exponential backoff
+  - [x] zizmor workflow security scanning in CI
 
 ---
 
@@ -91,8 +92,9 @@ litestar-storages/
 │       ├── __init__.py           # Public API exports
 │       ├── __metadata__.py       # Version from importlib.metadata
 │       ├── base.py               # Storage protocol + BaseStorage ABC
-│       ├── types.py              # StoredFile, UploadResult dataclasses
+│       ├── types.py              # StoredFile, UploadResult, ProgressInfo, etc.
 │       ├── exceptions.py         # StorageError hierarchy (prefixed names)
+│       ├── retry.py              # Retry utilities with exponential backoff
 │       ├── backends/
 │       │   ├── __init__.py       # Backend exports
 │       │   ├── filesystem.py     # Local filesystem (aiofiles)
@@ -190,16 +192,17 @@ Exceptions are prefixed with `Storage` to avoid shadowing Python builtins:
 
 | Test Category | Count | Status |
 |---------------|-------|--------|
-| All tests | 210 | ✅ Passing |
+| All tests | 224 | ✅ Passing |
 | Skipped (known limitations) | 6 | ⏭️ Expected |
 | S3 backend | 30 | ✅ via moto server |
 | Azure backend | 22 | ✅ via pytest-databases |
 | GCS backend | 18 | ✅ via fake-gcs-server |
 | Example apps | 23 | ✅ Full coverage |
+| Retry utilities | 14 | ✅ Unit tests |
 
 **Test Performance:**
-- Collection: ~0.14s (216 tests)
-- Full suite: ~6s (210 tests, with Docker emulators)
+- Collection: ~0.14s (230 tests)
+- Full suite: ~7s (224 tests, with Docker emulators)
 - S3 tests: ~4s (session-scoped moto server - 72% faster)
 - Parallel mode: `make ci` uses pytest-xdist
 
@@ -284,6 +287,6 @@ make test-failed      # Re-run only failed tests
 
 ---
 
-*Plan Version: 3.0.0*
+*Plan Version: 3.1.0*
 *Last Updated: 2025-11-25*
-*Status: Phases 1-5 Complete. Ready for v0.1.0 release.*
+*Status: Phases 1-5 Complete. Phase 6 in progress (advanced features done, release pending).*
