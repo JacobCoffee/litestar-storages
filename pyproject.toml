@@ -313,6 +313,11 @@ max-complexity = 12
 "src/litestar_storages/backends/s3.py" = [
     "ANN401",   # any-type (needed for boto3 client typing)
 ]
+"benchmarks/**/*.*" = [
+    "B023",     # function-uses-loop-variable (intentional for benchmarks)
+    "PLR2004",  # magic-value-comparison (constants not needed for thresholds)
+    "T201",     # print-found (benchmarks need console output)
+]
 "tests/**/*.*" = [
     "A",
     "ANN",
