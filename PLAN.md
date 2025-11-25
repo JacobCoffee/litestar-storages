@@ -58,21 +58,27 @@
   - [x] Optimized fixture scoping (session for immutable data)
   - [x] norecursedirs configured for faster collection
 
-### In Progress
-
-- [ ] **Phase 4: Additional Backends**
-  - [ ] GCSStorage backend (Google Cloud Storage)
-  - [ ] AzureStorage backend (Azure Blob Storage)
-  - [ ] Backend-specific documentation
+- [x] **Phase 4: Additional Backends**
+  - [x] GCSStorage backend (Google Cloud Storage)
+  - [x] AzureStorage backend (Azure Blob Storage)
+  - [x] Backend-specific documentation
   - [ ] Migration guide between backends
+
+- [x] **Phase 5: API Documentation & Test Optimization**
+  - [x] API reference generation (autodoc) - comprehensive docs/api/
+  - [x] Test suite optimization (72% faster S3 tests)
+  - [x] Auto-managed Docker fixtures (GCS, Azure via pytest-databases)
+  - [x] Example applications with full test coverage
 
 ### Not Started
 
-- [ ] **Phase 5: Polish & Release**
-  - [ ] API reference generation (autodoc)
+- [ ] **Phase 6: Release & Advanced Features**
+  - [ ] PyPI release (v0.1.0)
   - [ ] Performance benchmarks
   - [ ] Security audit
-  - [ ] PyPI release (v0.1.0)
+  - [ ] Multipart upload support for large files
+  - [ ] Progress callbacks for uploads/downloads
+  - [ ] Retry logic with exponential backoff
 
 ---
 
@@ -184,14 +190,18 @@ Exceptions are prefixed with `Storage` to avoid shadowing Python builtins:
 
 | Test Category | Count | Status |
 |---------------|-------|--------|
-| Unit tests (memory, filesystem) | 97 | ✅ Passing |
-| Skipped (platform-specific) | 3 | ⏭️ Expected |
-| Integration tests (S3, plugin) | 45 | 🔶 Deselected in CI |
+| All tests | 210 | ✅ Passing |
+| Skipped (known limitations) | 6 | ⏭️ Expected |
+| S3 backend | 30 | ✅ via moto server |
+| Azure backend | 22 | ✅ via pytest-databases |
+| GCS backend | 18 | ✅ via fake-gcs-server |
+| Example apps | 23 | ✅ Full coverage |
 
 **Test Performance:**
-- Collection: ~0.12s (145 tests)
-- Unit tests: ~0.33s (97 tests, sequential)
-- Parallel ready when suite grows to 200+ tests
+- Collection: ~0.14s (216 tests)
+- Full suite: ~6s (210 tests, with Docker emulators)
+- S3 tests: ~4s (session-scoped moto server - 72% faster)
+- Parallel mode: `make ci` uses pytest-xdist
 
 **Run tests:**
 ```bash
@@ -274,6 +284,6 @@ make test-failed      # Re-run only failed tests
 
 ---
 
-*Plan Version: 2.1.0*
-*Last Updated: 2025-11*
-*Status: Phase 1-3 Complete (including lifespan management), Phase 4 In Progress*
+*Plan Version: 3.0.0*
+*Last Updated: 2025-11-25*
+*Status: Phases 1-5 Complete. Ready for v0.1.0 release.*
