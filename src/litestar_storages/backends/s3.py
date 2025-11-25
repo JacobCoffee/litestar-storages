@@ -569,3 +569,12 @@ class S3Storage(BaseStorage):
             from litestar_storages.exceptions import StorageError
 
             raise StorageError(f"Failed to get info for {key}: {e}") from e
+
+    async def close(self) -> None:
+        """Close the S3 storage and release resources.
+
+        This method clears the cached session. Note that aioboto3 sessions
+        don't require explicit cleanup, but clearing the reference allows
+        for garbage collection and prevents accidental reuse after close.
+        """
+        self._session = None
