@@ -13,7 +13,7 @@ from litestar_storages.exceptions import (
     StorageConnectionError,
     StorageFileNotFoundError,
 )
-from litestar_storages.types import StoredFile
+from litestar_storages.types import MultipartUpload, ProgressCallback, ProgressInfo, StoredFile
 
 __all__ = ("AzureConfig", "AzureStorage")
 
@@ -574,3 +574,267 @@ class AzureStorage(BaseStorage):
         if self._container_client is not None:
             await self._container_client.close()
             self._container_client = None
+
+    # =========================================================================
+    # Multipart Upload Support
+    # =========================================================================
+
+    async def start_multipart_upload(
+        self,
+        key: str,
+        *,
+        content_type: str | None = None,
+        metadata: dict[str, str] | None = None,
+        part_size: int = 4 * 1024 * 1024,
+    ) -> MultipartUpload:
+        """Start a multipart upload using Azure Block Blobs.
+
+        Azure Block Blobs support uploading blocks (up to 50,000 blocks per blob)
+        and then committing them as a single blob.
+
+        Args:
+            key: Storage path/key for the file
+            content_type: MIME type of the content
+            metadata: Additional metadata to store with the file
+            part_size: Size of each part in bytes (default 4MB, max 4000MB per block)
+
+        Returns:
+            MultipartUpload object to track the upload state
+
+        Raises:
+            StorageError: If initiating the upload fails
+
+        Note:
+            Azure doesn't have an explicit "start multipart upload" API.
+            Instead, we generate a unique upload_id and track it locally.
+            The actual multipart upload happens when blocks are staged and committed.
+        """
+
+        # Generate a unique upload ID for tracking
+        # Azure doesn't have an explicit multipart upload concept like S3
+        # We use the key + timestamp as the upload ID
+        upload_id = f"{key}_{datetime.now(tz=timezone.utc).timestamp()}"
+
+        # Store metadata and content_type for later use during commit
+        # These will be used in complete_multipart_upload
+        upload = MultipartUpload(
+            upload_id=upload_id,
+            key=key,
+            part_size=part_size,
+        )
+
+        # Store content_type and metadata in upload object for later use
+        # We'll need these when committing the block list
+        upload.content_type = content_type  # type: ignore[attr-defined]
+        upload.metadata = metadata  # type: ignore[attr-defined]
+
+        return upload
+
+    async def upload_part(
+        self,
+        upload: MultipartUpload,
+        part_number: int,
+        data: bytes,
+    ) -> str:
+        """Upload a single part (block) of a multipart upload.
+
+        Azure uses block IDs to identify blocks. Block IDs must be:
+        - Base64-encoded strings
+        - Unique within the blob
+        - Same length for all blocks in the blob
+
+        Args:
+            upload: The MultipartUpload object from start_multipart_upload
+            part_number: Part number (1-indexed)
+            data: The part data to upload
+
+        Returns:
+            Block ID (base64-encoded) of the uploaded block
+
+        Raises:
+            StorageError: If the part upload fails
+        """
+        import base64
+
+        container_client = await self._get_container_client()
+        azure_key = self._get_key(upload.key)
+
+        # Generate block ID - must be base64-encoded and same length for all blocks
+        # Using 10-character zero-padded number ensures consistent length
+        block_id = base64.b64encode(f"{part_number:010d}".encode()).decode()
+
+        try:
+            blob_client = container_client.get_blob_client(azure_key)
+
+            # Stage the block (doesn't commit yet)
+            await blob_client.stage_block(
+                block_id=block_id,
+                data=data,
+            )
+
+            # Record the uploaded part
+            upload.add_part(part_number, block_id)
+
+            return block_id
+
+        except Exception as e:
+            from litestar_storages.exceptions import StorageError
+
+            raise StorageError(f"Failed to upload part {part_number} for {upload.key}: {e}") from e
+
+    async def complete_multipart_upload(
+        self,
+        upload: MultipartUpload,
+    ) -> StoredFile:
+        """Complete a multipart upload by committing all blocks.
+
+        Args:
+            upload: The MultipartUpload object with all parts uploaded
+
+        Returns:
+            StoredFile metadata for the completed upload
+
+        Raises:
+            StorageError: If completing the upload fails
+        """
+        container_client = await self._get_container_client()
+        azure_key = self._get_key(upload.key)
+
+        # Sort parts by part number to ensure correct order
+        sorted_parts = sorted(upload.parts, key=lambda p: p[0])
+        block_list = [block_id for _, block_id in sorted_parts]
+
+        try:
+            from azure.storage.blob import ContentSettings
+
+            blob_client = container_client.get_blob_client(azure_key)
+
+            # Get content_type and metadata from upload object
+            content_type = getattr(upload, "content_type", None)
+            metadata = getattr(upload, "metadata", None)
+
+            # Build content settings
+            content_settings = None
+            if content_type:
+                content_settings = ContentSettings(content_type=content_type)
+
+            # Commit the block list to finalize the blob
+            await blob_client.commit_block_list(
+                block_list=block_list,
+                content_settings=content_settings,
+                metadata=metadata,
+            )
+
+            # Get the final file info
+            return await self.info(upload.key)
+
+        except Exception as e:
+            from litestar_storages.exceptions import StorageError
+
+            raise StorageError(f"Failed to complete multipart upload for {upload.key}: {e}") from e
+
+    async def abort_multipart_upload(
+        self,
+        upload: MultipartUpload,
+    ) -> None:
+        """Abort a multipart upload.
+
+        Note:
+            Azure automatically garbage-collects uncommitted blocks after 7 days.
+            There is no explicit "abort" operation needed - simply don't commit
+            the block list. This method is provided for API consistency but is
+            essentially a no-op.
+
+        Args:
+            upload: The MultipartUpload object to abort
+        """
+        # Azure automatically cleans up uncommitted blocks after 7 days
+        # No explicit abort operation is needed
+
+    async def put_large(
+        self,
+        key: str,
+        data: bytes | AsyncIterator[bytes],
+        *,
+        content_type: str | None = None,
+        metadata: dict[str, str] | None = None,
+        part_size: int = 4 * 1024 * 1024,
+        progress_callback: ProgressCallback | None = None,
+    ) -> StoredFile:
+        """Upload a large file using multipart upload.
+
+        This is a convenience method that handles the multipart upload process
+        automatically. It splits the data into blocks, uploads them, and
+        commits the block list.
+
+        Args:
+            key: Storage path/key for the file
+            data: File contents as bytes or async byte stream
+            content_type: MIME type of the content
+            metadata: Additional metadata to store with the file
+            part_size: Size of each part in bytes (default 4MB, max 4000MB per block)
+            progress_callback: Optional callback for progress updates
+
+        Returns:
+            StoredFile with metadata about the stored file
+
+        Raises:
+            StorageError: If the upload fails
+
+        Note:
+            Azure Block Blobs support up to 50,000 blocks per blob.
+            Each block can be up to 4000MB in size.
+        """
+        # Collect data if it's an async iterator
+        if isinstance(data, bytes):
+            file_data = data
+        else:
+            chunks = []
+            async for chunk in data:
+                chunks.append(chunk)
+            file_data = b"".join(chunks)
+
+        total_size = len(file_data)
+
+        # For small files, use regular put
+        if total_size < part_size:
+            return await self.put(key, file_data, content_type=content_type, metadata=metadata)
+
+        # Start multipart upload
+        upload = await self.start_multipart_upload(
+            key,
+            content_type=content_type,
+            metadata=metadata,
+            part_size=part_size,
+        )
+
+        try:
+            bytes_uploaded = 0
+            part_number = 1
+
+            # Upload parts
+            for i in range(0, total_size, part_size):
+                part_data = file_data[i : i + part_size]
+                await self.upload_part(upload, part_number, part_data)
+
+                bytes_uploaded += len(part_data)
+                part_number += 1
+
+                # Report progress
+                if progress_callback:
+                    progress_callback(
+                        ProgressInfo(
+                            bytes_transferred=bytes_uploaded,
+                            total_bytes=total_size,
+                            operation="upload",
+                            key=key,
+                        )
+                    )
+
+            # Complete the upload
+            return await self.complete_multipart_upload(upload)
+
+        except Exception:
+            # Note: Azure doesn't require explicit abort - blocks auto-expire
+            await self.abort_multipart_upload(upload)
+            raise
