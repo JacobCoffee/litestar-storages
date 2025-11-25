@@ -1,0 +1,166 @@
+S3 Storage
+==========
+
+.. module:: litestar_storages.backends.s3
+
+Amazon S3 and S3-compatible storage backend using ``aioboto3`` for async operations.
+Supports AWS S3 and S3-compatible services like Cloudflare R2, DigitalOcean Spaces,
+MinIO, and Backblaze B2.
+
+.. note::
+   Requires the ``aioboto3`` package. Install with:
+   ``pip install litestar-storages[s3]`` or ``pip install aioboto3``
+
+Configuration
+-------------
+
+.. autoclass:: S3Config
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Storage Class
+-------------
+
+.. autoclass:: S3Storage
+   :members:
+   :undoc-members:
+   :show-inheritance:
+   :special-members: __init__
+
+Usage Examples
+--------------
+
+AWS S3
+^^^^^^
+
+.. code-block:: python
+
+   from litestar_storages import S3Storage, S3Config
+
+   # Using explicit credentials
+   storage = S3Storage(
+       config=S3Config(
+           bucket="my-uploads",
+           region="us-east-1",
+           access_key_id="AKIAIOSFODNN7EXAMPLE",
+           secret_access_key="wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY",
+       )
+   )
+
+   # Using environment variables or IAM role (recommended for production)
+   storage = S3Storage(
+       config=S3Config(
+           bucket="my-uploads",
+           region="us-east-1",
+       )
+   )
+
+Cloudflare R2
+^^^^^^^^^^^^^
+
+.. code-block:: python
+
+   storage = S3Storage(
+       config=S3Config(
+           bucket="my-bucket",
+           endpoint_url="https://ACCOUNT_ID.r2.cloudflarestorage.com",
+           access_key_id="R2_ACCESS_KEY",
+           secret_access_key="R2_SECRET_KEY",
+       )
+   )
+
+DigitalOcean Spaces
+^^^^^^^^^^^^^^^^^^^
+
+.. code-block:: python
+
+   storage = S3Storage(
+       config=S3Config(
+           bucket="my-space",
+           endpoint_url="https://nyc3.digitaloceanspaces.com",
+           region="nyc3",
+           access_key_id="DO_SPACES_KEY",
+           secret_access_key="DO_SPACES_SECRET",
+       )
+   )
+
+MinIO (Local Development)
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code-block:: python
+
+   storage = S3Storage(
+       config=S3Config(
+           bucket="test-bucket",
+           endpoint_url="http://localhost:9000",
+           access_key_id="minioadmin",
+           secret_access_key="minioadmin",
+           use_ssl=False,
+       )
+   )
+
+With Key Prefix
+^^^^^^^^^^^^^^^
+
+.. code-block:: python
+
+   storage = S3Storage(
+       config=S3Config(
+           bucket="my-bucket",
+           region="us-east-1",
+           prefix="uploads/2024/",
+       )
+   )
+
+   # Key "photo.jpg" becomes "uploads/2024/photo.jpg" in S3
+   await storage.put("photo.jpg", data)
+
+Presigned URLs
+^^^^^^^^^^^^^^
+
+.. code-block:: python
+
+   from datetime import timedelta
+
+   # Use default expiry (1 hour)
+   url = await storage.url("documents/report.pdf")
+
+   # Custom expiry
+   url = await storage.url(
+       "documents/report.pdf",
+       expires_in=timedelta(hours=24),
+   )
+
+   # Configure default expiry
+   storage = S3Storage(
+       config=S3Config(
+           bucket="my-bucket",
+           presigned_expiry=timedelta(hours=6),
+       )
+   )
+
+Server-Side Operations
+^^^^^^^^^^^^^^^^^^^^^^
+
+Copy and move operations use S3's native APIs for efficiency:
+
+.. code-block:: python
+
+   # Server-side copy (fast, no data transfer through client)
+   await storage.copy("source.txt", "destination.txt")
+
+   # Server-side move (copy + delete)
+   await storage.move("old-path.txt", "new-path.txt")
+
+Credential Resolution Order
+---------------------------
+
+Credentials are resolved in this order:
+
+1. Explicit configuration (``access_key_id``, ``secret_access_key``)
+2. Environment variables (``AWS_ACCESS_KEY_ID``, ``AWS_SECRET_ACCESS_KEY``)
+3. Shared credentials file (``~/.aws/credentials``)
+4. IAM role credentials (EC2, ECS, Lambda)
+
+For production deployments on AWS, IAM roles are recommended over explicit credentials.
