@@ -478,6 +478,176 @@ class TestGCSSignedURLs:
             pytest.skip("Signed URLs not supported by emulator")
 
 
+class TestGCSMultipartUpload:
+    """Test multipart upload functionality."""
+
+    async def test_multipart_upload_basic(
+        self,
+        gcs_storage: GCSStorage,
+    ) -> None:
+        """
+        Test basic multipart upload flow.
+
+        Verifies:
+        - Multipart upload can be started
+        - Parts can be uploaded
+        - Upload can be completed
+        - Final file is accessible
+        """
+        # Create large data (2 parts)
+        part_size = 1024 * 1024  # 1MB
+        part1_data = b"A" * part_size
+        part2_data = b"B" * part_size
+        expected_data = part1_data + part2_data
+
+        # Start upload
+        upload = await gcs_storage.start_multipart_upload(
+            "large.bin",
+            content_type="application/octet-stream",
+            part_size=part_size,
+        )
+        assert upload.upload_id
+        assert upload.key == "large.bin"
+
+        # Upload parts
+        etag1 = await gcs_storage.upload_part(upload, 1, part1_data)
+        assert etag1
+        etag2 = await gcs_storage.upload_part(upload, 2, part2_data)
+        assert etag2
+
+        # Complete upload
+        result = await gcs_storage.complete_multipart_upload(upload)
+        assert result.key == "large.bin"
+        assert result.size == len(expected_data)
+
+        # Verify file contents
+        data = await gcs_storage.get_bytes("large.bin")
+        assert data == expected_data
+
+    async def test_multipart_upload_with_metadata(
+        self,
+        gcs_storage: GCSStorage,
+        sample_metadata: dict[str, str],
+    ) -> None:
+        """
+        Test multipart upload with custom metadata.
+
+        Verifies:
+        - Metadata is preserved through multipart upload
+        """
+        data = b"X" * (2 * 1024 * 1024)  # 2MB
+
+        upload = await gcs_storage.start_multipart_upload(
+            "large.bin",
+            metadata=sample_metadata,
+            part_size=1024 * 1024,
+        )
+
+        await gcs_storage.upload_part(upload, 1, data[: 1024 * 1024])
+        await gcs_storage.upload_part(upload, 2, data[1024 * 1024 :])
+
+        result = await gcs_storage.complete_multipart_upload(upload)
+        assert result.metadata == sample_metadata
+
+    async def test_abort_multipart_upload(
+        self,
+        gcs_storage: GCSStorage,
+    ) -> None:
+        """
+        Test aborting a multipart upload.
+
+        Verifies:
+        - Upload can be aborted
+        - Cleanup happens correctly
+        """
+        upload = await gcs_storage.start_multipart_upload(
+            "aborted.bin",
+            part_size=1024 * 1024,
+        )
+
+        await gcs_storage.upload_part(upload, 1, b"A" * 1024 * 1024)
+
+        # Abort the upload
+        await gcs_storage.abort_multipart_upload(upload)
+
+        # File should not exist
+        assert await gcs_storage.exists("aborted.bin") is False
+
+    async def test_put_large_with_progress(
+        self,
+        gcs_storage: GCSStorage,
+    ) -> None:
+        """
+        Test put_large() with progress callback.
+
+        Verifies:
+        - Large file upload works
+        - Progress callback is invoked
+        - Final file is correct
+        """
+        # Create data that will be split into 3 parts
+        part_size = 1024 * 1024  # 1MB
+        data = b"X" * (3 * part_size)
+
+        progress_calls = []
+
+        def progress_callback(info) -> None:  # type: ignore[no-untyped-def]
+            progress_calls.append(info)
+
+        # Upload with progress tracking
+        result = await gcs_storage.put_large(
+            "large-progress.bin",
+            data,
+            content_type="application/octet-stream",
+            part_size=part_size,
+            progress_callback=progress_callback,
+        )
+
+        assert result.key == "large-progress.bin"
+        assert result.size == len(data)
+
+        # Verify progress was tracked
+        assert len(progress_calls) == 3  # 3 parts
+        assert all(p.operation == "upload" for p in progress_calls)
+        assert all(p.key == "large-progress.bin" for p in progress_calls)
+
+        # Check progress values
+        assert progress_calls[0].bytes_transferred == part_size
+        assert progress_calls[1].bytes_transferred == 2 * part_size
+        assert progress_calls[2].bytes_transferred == 3 * part_size
+
+        # Verify file contents
+        retrieved = await gcs_storage.get_bytes("large-progress.bin")
+        assert retrieved == data
+
+    async def test_put_large_small_file(
+        self,
+        gcs_storage: GCSStorage,
+        sample_text_data: bytes,
+    ) -> None:
+        """
+        Test that put_large() falls back to regular put for small files.
+
+        Verifies:
+        - Small files use regular put instead of multipart
+        """
+        part_size = 10 * 1024 * 1024  # 10MB
+        # sample_text_data is much smaller than part_size
+
+        result = await gcs_storage.put_large(
+            "small.txt",
+            sample_text_data,
+            part_size=part_size,
+        )
+
+        assert result.key == "small.txt"
+        assert result.size == len(sample_text_data)
+
+        # Verify contents
+        data = await gcs_storage.get_bytes("small.txt")
+        assert data == sample_text_data
+
+
 class TestGCSClose:
     """Test storage cleanup."""
 
