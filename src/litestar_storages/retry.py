@@ -120,9 +120,9 @@ def retry(
                     raise
 
             # Should not reach here, but satisfy type checker
-            if last_exception:
+            if last_exception:  # pragma: no cover
                 raise last_exception
-            raise StorageError("Unexpected retry failure")
+            raise StorageError("Unexpected retry failure")  # pragma: no cover
 
         return wrapper
 
@@ -182,6 +182,6 @@ async def with_retry(
             # Non-retryable exception, re-raise immediately
             raise
 
-    if last_exception:
+    if last_exception:  # pragma: no cover
         raise last_exception
-    raise StorageError("Unexpected retry failure")
+    raise StorageError("Unexpected retry failure")  # pragma: no cover
