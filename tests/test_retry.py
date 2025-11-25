@@ -218,3 +218,48 @@ class TestWithRetry:
 
         assert result == "stored"
         storage_mock.put.assert_called_once_with("key", b"data")
+
+    async def test_with_retry_default_config(self) -> None:
+        """Test with_retry uses default config when None passed."""
+        mock_func = AsyncMock(return_value="success")
+
+        # Pass None explicitly to test default config path
+        result = await with_retry(mock_func, None)
+
+        assert result == "success"
+        mock_func.assert_called_once()
+
+    async def test_with_retry_non_retryable_exception(self) -> None:
+        """Test non-retryable exception is raised immediately in with_retry."""
+        call_count = 0
+
+        async def raise_value_error() -> str:
+            nonlocal call_count
+            call_count += 1
+            raise ValueError("Not retryable")
+
+        config = RetryConfig(max_retries=3, base_delay=0.01)
+
+        with pytest.raises(ValueError, match="Not retryable"):
+            await with_retry(raise_value_error, config)
+
+        assert call_count == 1  # No retries for non-retryable exceptions
+
+
+class TestRetryDecoratorDefaultConfig:
+    """Tests for @retry decorator with default config."""
+
+    async def test_retry_decorator_default_config(self) -> None:
+        """Test @retry() decorator without passing config uses defaults."""
+        call_count = 0
+
+        @retry()  # No config passed - uses default
+        async def success_func() -> str:
+            nonlocal call_count
+            call_count += 1
+            return "success"
+
+        result = await success_func()
+
+        assert result == "success"
+        assert call_count == 1
