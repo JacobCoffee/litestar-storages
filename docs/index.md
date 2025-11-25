@@ -119,6 +119,9 @@ backends/memory
 :maxdepth: 2
 :caption: Advanced Topics
 
+advanced/retry
+advanced/multipart-uploads
+advanced/progress-callbacks
 advanced/custom-backends
 ```
 
@@ -138,5 +141,8 @@ changelog
 - [S3 Backend](backends/s3.md) (AWS, R2, Spaces, MinIO)
 - [GCS Backend](backends/gcs.md) (Google Cloud Storage)
 - [Azure Backend](backends/azure.md) (Azure Blob Storage)
+- [Retry Utilities](advanced/retry.md) (Exponential backoff and retry logic)
+- [Multipart Uploads](advanced/multipart-uploads.md) (Large file handling)
+- [Progress Callbacks](advanced/progress-callbacks.md) (Transfer progress tracking)
 - [Creating Custom Backends](advanced/custom-backends.md)
 - [GitHub Repository](https://github.com/JacobCoffee/litestar-storages)

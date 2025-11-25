@@ -537,6 +537,149 @@ async def idempotent_delete(key: str, storage: Storage) -> None:
 
 AzureStorage uses block blobs, which are suitable for most file storage scenarios. For append-only logs or page blobs (VHDs), you would need direct Azure SDK usage.
 
+## Large File Uploads
+
+For files larger than 100MB, use `put_large()` or the manual multipart upload API. Azure implements multipart uploads using Block Blobs, where blocks are staged individually and then committed as a single blob.
+
+### Using put_large()
+
+The simplest way to upload large files with automatic chunking and progress tracking:
+
+```python
+from litestar_storages import AzureStorage, AzureConfig, ProgressInfo
+
+storage = AzureStorage(
+    AzureConfig(
+        container="my-container",
+        connection_string="DefaultEndpointsProtocol=https;...",
+    )
+)
+
+# Upload a large file with automatic chunking
+result = await storage.put_large(
+    key="backups/database-dump.sql.gz",
+    data=large_file_bytes,
+    content_type="application/gzip",
+    metadata={"source": "daily-backup"},
+    part_size=4 * 1024 * 1024,  # 4MB blocks (Azure default)
+)
+
+print(f"Uploaded {result.size} bytes to {result.key}")
+```
+
+### Progress Tracking
+
+Monitor upload progress with a callback function:
+
+```python
+from litestar_storages import ProgressInfo
+
+
+def show_progress(info: ProgressInfo) -> None:
+    """Display upload progress."""
+    if info.percentage is not None:
+        bar_length = 40
+        filled = int(bar_length * info.percentage / 100)
+        bar = "=" * filled + "-" * (bar_length - filled)
+        print(f"\r[{bar}] {info.percentage:.1f}%", end="", flush=True)
+
+
+async def upload_with_progress(storage: AzureStorage, key: str, data: bytes) -> None:
+    """Upload a large file with progress display."""
+    result = await storage.put_large(
+        key=key,
+        data=data,
+        progress_callback=show_progress,
+    )
+    print(f"\nComplete! Uploaded {result.size} bytes")
+
+
+# Usage
+await upload_with_progress(storage, "videos/presentation.mp4", video_data)
+```
+
+### Manual Multipart Upload
+
+For fine-grained control over the upload process:
+
+```python
+from litestar_storages import AzureStorage, AzureConfig
+
+storage = AzureStorage(
+    AzureConfig(
+        container="my-container",
+        connection_string="...",
+    )
+)
+
+# Step 1: Start the upload
+upload = await storage.start_multipart_upload(
+    key="large-archive.tar.gz",
+    content_type="application/gzip",
+    metadata={"created-by": "backup-service"},
+    part_size=8 * 1024 * 1024,  # 8MB blocks
+)
+
+# Step 2: Upload blocks
+block_size = 8 * 1024 * 1024
+data = load_large_file()
+
+try:
+    for part_num in range(1, (len(data) // block_size) + 2):
+        start = (part_num - 1) * block_size
+        block_data = data[start:start + block_size]
+        if not block_data:
+            break
+
+        block_id = await storage.upload_part(upload, part_num, block_data)
+        print(f"Uploaded block {part_num}: {block_id}")
+
+    # Step 3: Commit the block list
+    result = await storage.complete_multipart_upload(upload)
+    print(f"Upload complete: {result.key}")
+
+except Exception as e:
+    # Azure auto-cleans uncommitted blocks after 7 days
+    # Explicit abort is optional but releases tracking resources
+    await storage.abort_multipart_upload(upload)
+    raise
+```
+
+### Azure Block Blob Limits
+
+| Limit | Value |
+|-------|-------|
+| Maximum blocks per blob | 50,000 |
+| Maximum block size | 4000 MB |
+| Maximum blob size | ~190 TB |
+| Block ID length | Must be consistent across all blocks |
+| Uncommitted block lifetime | 7 days (auto-cleanup) |
+
+### Block Size Recommendations
+
+| File Size | Recommended Block Size | Reasoning |
+|-----------|----------------------|-----------|
+| 100MB - 1GB | 4MB (default) | Good parallelism, reasonable overhead |
+| 1GB - 10GB | 8-16MB | Fewer blocks to manage |
+| 10GB+ | 32-64MB | Minimize API calls |
+
+```python
+# Adjust block size based on file size
+def get_optimal_block_size(file_size: int) -> int:
+    """Calculate optimal block size for Azure uploads."""
+    if file_size < 1 * 1024 * 1024 * 1024:  # < 1GB
+        return 4 * 1024 * 1024  # 4MB
+    elif file_size < 10 * 1024 * 1024 * 1024:  # < 10GB
+        return 16 * 1024 * 1024  # 16MB
+    else:
+        return 64 * 1024 * 1024  # 64MB
+
+
+# Usage
+block_size = get_optimal_block_size(len(data))
+result = await storage.put_large(key, data, part_size=block_size)
+```
+
 ## Next Steps
 
 - Learn about [Memory storage](memory.md) for testing Azure code without Azure
