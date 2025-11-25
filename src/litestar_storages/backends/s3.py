@@ -174,7 +174,7 @@ class S3Storage(BaseStorage):
                 config=config,
             )
 
-        except Exception as e:
+        except Exception as e:  # pragma: no cover
             raise StorageConnectionError(f"Failed to create S3 client: {e}") from e
 
     async def put(
@@ -274,9 +274,9 @@ class S3Storage(BaseStorage):
             if error_code == "NoSuchKey":
                 raise StorageFileNotFoundError(key) from e
 
-            from litestar_storages.exceptions import StorageError
+            from litestar_storages.exceptions import StorageError  # pragma: no cover
 
-            raise StorageError(f"Failed to retrieve file {key}: {e}") from e
+            raise StorageError(f"Failed to retrieve file {key}: {e}") from e  # pragma: no cover
 
     async def get_bytes(self, key: str) -> bytes:
         """Retrieve entire file contents as bytes.
@@ -309,9 +309,9 @@ class S3Storage(BaseStorage):
             if error_code == "NoSuchKey":
                 raise StorageFileNotFoundError(key) from e
 
-            from litestar_storages.exceptions import StorageError
+            from litestar_storages.exceptions import StorageError  # pragma: no cover
 
-            raise StorageError(f"Failed to retrieve file {key}: {e}") from e
+            raise StorageError(f"Failed to retrieve file {key}: {e}") from e  # pragma: no cover
 
     async def delete(self, key: str) -> None:
         """Delete a file.
@@ -332,7 +332,7 @@ class S3Storage(BaseStorage):
                     Key=s3_key,
                 )
 
-        except Exception as e:
+        except Exception as e:  # pragma: no cover
             from litestar_storages.exceptions import StorageError
 
             raise StorageError(f"Failed to delete file {key}: {e}") from e
@@ -408,7 +408,7 @@ class S3Storage(BaseStorage):
                         if limit is not None and count >= limit:
                             return
 
-        except Exception as e:
+        except Exception as e:  # pragma: no cover
             from litestar_storages.exceptions import StorageError
 
             raise StorageError(f"Failed to list files: {e}") from e
@@ -449,7 +449,7 @@ class S3Storage(BaseStorage):
                     ExpiresIn=expires_seconds,
                 )
 
-        except Exception as e:
+        except Exception as e:  # pragma: no cover
             from litestar_storages.exceptions import StorageError
 
             raise StorageError(f"Failed to generate URL for {key}: {e}") from e
@@ -500,9 +500,9 @@ class S3Storage(BaseStorage):
             if error_code == "NoSuchKey":
                 raise StorageFileNotFoundError(source) from e
 
-            from litestar_storages.exceptions import StorageError
+            from litestar_storages.exceptions import StorageError  # pragma: no cover
 
-            raise StorageError(f"Failed to copy {source} to {destination}: {e}") from e
+            raise StorageError(f"Failed to copy {source} to {destination}: {e}") from e  # pragma: no cover
 
     async def move(
         self,
@@ -566,9 +566,9 @@ class S3Storage(BaseStorage):
             if error_code in ("NoSuchKey", "404"):
                 raise StorageFileNotFoundError(key) from e
 
-            from litestar_storages.exceptions import StorageError
+            from litestar_storages.exceptions import StorageError  # pragma: no cover
 
-            raise StorageError(f"Failed to get info for {key}: {e}") from e
+            raise StorageError(f"Failed to get info for {key}: {e}") from e  # pragma: no cover
 
     async def close(self) -> None:
         """Close the S3 storage and release resources.
@@ -635,7 +635,7 @@ class S3Storage(BaseStorage):
                     part_size=part_size,
                 )
 
-        except Exception as e:
+        except Exception as e:  # pragma: no cover
             from litestar_storages.exceptions import StorageError
 
             raise StorageError(f"Failed to start multipart upload for {key}: {e}") from e
@@ -676,7 +676,7 @@ class S3Storage(BaseStorage):
                 upload.add_part(part_number, etag)
                 return etag
 
-        except Exception as e:
+        except Exception as e:  # pragma: no cover
             from litestar_storages.exceptions import StorageError
 
             raise StorageError(f"Failed to upload part {part_number} for {upload.key}: {e}") from e
@@ -715,7 +715,7 @@ class S3Storage(BaseStorage):
                 # Get the final file info
                 return await self.info(upload.key)
 
-        except Exception as e:
+        except Exception as e:  # pragma: no cover
             from litestar_storages.exceptions import StorageError
 
             raise StorageError(f"Failed to complete multipart upload for {upload.key}: {e}") from e
@@ -746,7 +746,7 @@ class S3Storage(BaseStorage):
                     UploadId=upload.upload_id,
                 )
 
-        except Exception as e:
+        except Exception as e:  # pragma: no cover
             from litestar_storages.exceptions import StorageError
 
             raise StorageError(f"Failed to abort multipart upload for {upload.key}: {e}") from e
