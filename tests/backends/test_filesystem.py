@@ -906,3 +906,20 @@ class TestFileSystemErrorHandling:
         # Should raise StoragePermissionError
         with pytest.raises(StoragePermissionError, match="Failed to move file"):
             await filesystem_storage.move("source.txt", "destination.txt")
+
+    async def test_get_nonexistent_file_streaming(
+        self,
+        filesystem_storage: FileSystemStorage,
+    ) -> None:
+        """
+        Test get() (streaming) with non-existent file.
+
+        Verifies:
+        - StorageFileNotFoundError is raised when streaming non-existent file
+        - The async generator properly raises the error
+        """
+        from litestar_storages.exceptions import StorageFileNotFoundError
+
+        with pytest.raises(StorageFileNotFoundError, match="nonexistent"):
+            async for _ in filesystem_storage.get("nonexistent.txt"):
+                pass
