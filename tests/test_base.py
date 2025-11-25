@@ -9,14 +9,149 @@ This module tests the default implementations provided by BaseStorage:
 
 from __future__ import annotations
 
+from collections.abc import AsyncGenerator, AsyncIterator
+from datetime import datetime, timedelta, timezone
 from typing import TYPE_CHECKING
 
 import pytest
 
+from litestar_storages.base import BaseStorage
 from litestar_storages.exceptions import StorageFileNotFoundError
+from litestar_storages.types import StoredFile
 
 if TYPE_CHECKING:
     from litestar_storages import Storage
+
+
+class MinimalStorage(BaseStorage):
+    """Minimal storage implementation that uses default base implementations.
+
+    This class only implements the required abstract methods and relies on
+    BaseStorage defaults for get_bytes, copy, move, and close.
+    """
+
+    def __init__(self) -> None:
+        self._files: dict[str, tuple[bytes, StoredFile]] = {}
+
+    async def put(
+        self,
+        key: str,
+        data: bytes | AsyncIterator[bytes],
+        *,
+        content_type: str | None = None,
+        metadata: dict[str, str] | None = None,
+    ) -> StoredFile:
+        if isinstance(data, bytes):
+            file_data = data
+        else:
+            chunks = []
+            async for chunk in data:
+                chunks.append(chunk)
+            file_data = b"".join(chunks)
+
+        stored_file = StoredFile(
+            key=key,
+            size=len(file_data),
+            content_type=content_type,
+            etag=f'"{hash(file_data)}"',
+            last_modified=datetime.now(tz=timezone.utc),
+            metadata=metadata or {},
+        )
+        self._files[key] = (file_data, stored_file)
+        return stored_file
+
+    async def get(self, key: str) -> AsyncIterator[bytes]:
+        if key not in self._files:
+            raise StorageFileNotFoundError(key)
+        data, _ = self._files[key]
+        yield data
+
+    async def delete(self, key: str) -> None:
+        if key not in self._files:
+            raise StorageFileNotFoundError(key)
+        del self._files[key]
+
+    async def exists(self, key: str) -> bool:
+        return key in self._files
+
+    async def list(self, prefix: str = "", *, limit: int | None = None) -> AsyncGenerator[StoredFile, None]:
+        count = 0
+        for key, (_, stored_file) in self._files.items():
+            if key.startswith(prefix):
+                yield stored_file
+                count += 1
+                if limit and count >= limit:
+                    break
+
+    async def url(self, key: str, *, expires_in: timedelta | None = None) -> str:
+        return f"minimal://{key}"
+
+    async def info(self, key: str) -> StoredFile:
+        if key not in self._files:
+            raise StorageFileNotFoundError(key)
+        _, stored_file = self._files[key]
+        return stored_file
+
+
+@pytest.fixture
+def minimal_storage() -> MinimalStorage:
+    """Create a minimal storage that uses base class defaults."""
+    return MinimalStorage()
+
+
+@pytest.mark.unit
+class TestBaseStorageDefaultImplementations:
+    """Test BaseStorage default implementations directly.
+
+    These tests use MinimalStorage which doesn't override the defaults.
+    """
+
+    async def test_default_get_bytes(self, minimal_storage: MinimalStorage) -> None:
+        """Test default get_bytes collects stream into bytes."""
+        data = b"test data for get_bytes"
+        await minimal_storage.put("test.txt", data)
+
+        # Uses BaseStorage.get_bytes default implementation
+        result = await minimal_storage.get_bytes("test.txt")
+        assert result == data
+
+    async def test_default_copy(self, minimal_storage: MinimalStorage) -> None:
+        """Test default copy downloads and re-uploads."""
+        data = b"test data for copy"
+        await minimal_storage.put("source.txt", data, content_type="text/plain")
+
+        # Uses BaseStorage.copy default implementation
+        result = await minimal_storage.copy("source.txt", "destination.txt")
+
+        assert result.key == "destination.txt"
+        assert result.content_type == "text/plain"
+        assert await minimal_storage.exists("source.txt")
+        assert await minimal_storage.exists("destination.txt")
+        assert await minimal_storage.get_bytes("destination.txt") == data
+
+    async def test_default_move(self, minimal_storage: MinimalStorage) -> None:
+        """Test default move copies then deletes."""
+        data = b"test data for move"
+        await minimal_storage.put("source.txt", data, content_type="text/plain")
+
+        # Uses BaseStorage.move default implementation
+        result = await minimal_storage.move("source.txt", "destination.txt")
+
+        assert result.key == "destination.txt"
+        assert result.content_type == "text/plain"
+        assert not await minimal_storage.exists("source.txt")
+        assert await minimal_storage.exists("destination.txt")
+        assert await minimal_storage.get_bytes("destination.txt") == data
+
+    async def test_default_close(self, minimal_storage: MinimalStorage) -> None:
+        """Test default close is a no-op."""
+        await minimal_storage.put("test.txt", b"data")
+
+        # Uses BaseStorage.close default implementation
+        await minimal_storage.close()
+
+        # Storage should still work after close (no-op)
+        assert await minimal_storage.exists("test.txt")
 
 
 @pytest.mark.unit
