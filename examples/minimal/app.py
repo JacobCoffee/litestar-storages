@@ -9,15 +9,25 @@ Or from this directory:
 
 from typing import Annotated
 
-from litestar import Litestar, get, post
+from litestar import Litestar, Response, get, post
 from litestar.datastructures import UploadFile
 from litestar.enums import RequestEncodingType
 from litestar.params import Body
 from litestar.response import Stream
+from litestar.status_codes import HTTP_404_NOT_FOUND
 
 from litestar_storages import Storage, StoredFile
 from litestar_storages.backends.memory import MemoryStorage
 from litestar_storages.contrib.plugin import StoragePlugin
+from litestar_storages.exceptions import StorageFileNotFoundError
+
+
+def not_found_handler(request: object, exc: StorageFileNotFoundError) -> Response:
+    """Convert StorageFileNotFoundError to 404 response."""
+    return Response(
+        content={"detail": f"File not found: {exc.key}"},
+        status_code=HTTP_404_NOT_FOUND,
+    )
 
 
 @post("/upload")
@@ -37,9 +47,11 @@ async def upload(
 @get("/files/{key:path}")
 async def download(key: str, storage: Storage) -> Stream:
     """Download a file."""
+    # Strip leading slash from path parameter
+    key = key.lstrip("/")
     info = await storage.info(key)
     return Stream(
-        iterator=storage.get(key),
+        content=storage.get(key),
         media_type=info.content_type,
     )
 
@@ -53,4 +65,5 @@ async def list_files(storage: Storage) -> list[StoredFile]:
 app = Litestar(
     route_handlers=[upload, download, list_files],
     plugins=[StoragePlugin(default=MemoryStorage())],
+    exception_handlers={StorageFileNotFoundError: not_found_handler},
 )

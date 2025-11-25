@@ -110,16 +110,14 @@ class TestMinimalAppList:
         Test listing files when storage is empty.
 
         Verifies:
-        - Returns empty list
+        - Returns empty list by using a fresh MemoryStorage instance
         """
-        from litestar import Litestar, get
+        # Import the list_files handler from the app module (it has proper annotations)
+        from examples.minimal.app import list_files
+        from litestar import Litestar
 
         from litestar_storages.backends.memory import MemoryStorage
         from litestar_storages.contrib.plugin import StoragePlugin
-
-        @get("/files")
-        async def list_files(storage) -> list:
-            return [f async for f in storage.list()]
 
         # Create fresh app with empty storage
         fresh_app = Litestar(
