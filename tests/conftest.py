@@ -12,7 +12,9 @@ import pytest
 
 if TYPE_CHECKING:
     from litestar_storages import Storage
+    from litestar_storages.backends.azure import AzureStorage
     from litestar_storages.backends.filesystem import FileSystemStorage
+    from litestar_storages.backends.gcs import GCSStorage
     from litestar_storages.backends.memory import MemoryStorage
     from litestar_storages.backends.s3 import S3Storage
 
@@ -261,6 +263,238 @@ def s3_storage_custom_endpoint(mock_s3_bucket: dict) -> S3Storage:
             endpoint_url=mock_s3_bucket["endpoint_url"],
             access_key_id="testing",
             secret_access_key="testing",
+            presigned_expiry=timedelta(hours=1),
+        )
+    )
+
+
+# GCSStorage fixtures
+# NOTE: Uses fake-gcs-server emulator for testing.
+# Start the emulator with: docker run -d -p 4443:4443 fsouza/fake-gcs-server
+
+
+@pytest.fixture
+def gcs_server():
+    """
+    GCS emulator endpoint for testing.
+
+    Uses fake-gcs-server running on localhost:4443.
+    Start the emulator with:
+        docker run -d -p 4443:4443 fsouza/fake-gcs-server -scheme http
+
+    If the emulator is not running, tests using this fixture will be skipped.
+    """
+    import socket
+
+    # Check if fake-gcs-server is running
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    try:
+        result = sock.connect_ex(("localhost", 4443))
+        if result != 0:
+            pytest.skip(
+                "GCS emulator not running. Start with: docker run -d -p 4443:4443 fsouza/fake-gcs-server -scheme http"
+            )
+    finally:
+        sock.close()
+
+    return "http://localhost:4443"
+
+
+@pytest.fixture
+def mock_gcs_bucket(gcs_server: str):
+    """
+    Create mock GCS bucket using fake-gcs-server.
+
+    Creates the bucket before the test and cleans all objects after.
+    """
+    import requests
+
+    # Create bucket via fake-gcs-server API
+    bucket_url = f"{gcs_server}/storage/v1/b"
+    requests.post(
+        bucket_url,
+        params={"project": "test-project"},
+        json={"name": "test-bucket"},
+        timeout=5,
+    )
+
+    yield {"endpoint_url": gcs_server, "bucket": "test-bucket"}
+
+    # Cleanup: delete all objects in the bucket after test
+    try:
+        objects_url = f"{gcs_server}/storage/v1/b/test-bucket/o"
+        response = requests.get(objects_url, timeout=5)
+        if response.ok:
+            data = response.json()
+            for item in data.get("items", []):
+                object_url = f"{gcs_server}/storage/v1/b/test-bucket/o/{item['name']}"
+                requests.delete(object_url, timeout=5)
+    except Exception:
+        pass  # Ignore cleanup errors
+
+
+@pytest.fixture
+async def gcs_storage(mock_gcs_bucket: dict) -> GCSStorage:
+    """
+    GCS storage instance with fake-gcs-server backend.
+
+    Uses fake-gcs-server to mock GCS for testing without real GCP credentials.
+    All operations are local and fast.
+    """
+    from datetime import timedelta
+
+    from litestar_storages.backends.gcs import GCSConfig, GCSStorage
+
+    storage = GCSStorage(
+        config=GCSConfig(
+            bucket=mock_gcs_bucket["bucket"],
+            project="test-project",
+            api_root=mock_gcs_bucket["endpoint_url"],
+            presigned_expiry=timedelta(hours=1),
+        )
+    )
+
+    yield storage
+
+    # Cleanup
+    await storage.close()
+
+
+@pytest.fixture
+def gcs_storage_with_prefix(mock_gcs_bucket: dict) -> GCSStorage:
+    """
+    GCS storage with key prefix for namespace isolation.
+    """
+    from datetime import timedelta
+
+    from litestar_storages.backends.gcs import GCSConfig, GCSStorage
+
+    return GCSStorage(
+        config=GCSConfig(
+            bucket=mock_gcs_bucket["bucket"],
+            project="test-project",
+            api_root=mock_gcs_bucket["endpoint_url"],
+            prefix="test-prefix/",
+            presigned_expiry=timedelta(hours=1),
+        )
+    )
+
+
+# AzureStorage fixtures
+# NOTE: Uses Azurite emulator for testing.
+# Start the emulator with:
+#   docker run -d -p 10000:10000 mcr.microsoft.com/azure-storage/azurite azurite-blob --blobHost 0.0.0.0
+
+# Azurite well-known credentials
+AZURITE_ACCOUNT_NAME = "devstoreaccount1"
+AZURITE_ACCOUNT_KEY = "Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw=="
+
+
+@pytest.fixture
+def azurite_server():
+    """
+    Azurite emulator endpoint for testing.
+
+    Uses Azurite running on localhost:10000.
+    Start the emulator with:
+        docker run -d -p 10000:10000 mcr.microsoft.com/azure-storage/azurite azurite-blob --blobHost 0.0.0.0
+
+    If the emulator is not running, tests using this fixture will be skipped.
+    """
+    import socket
+
+    # Check if Azurite is running
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    try:
+        result = sock.connect_ex(("localhost", 10000))
+        if result != 0:
+            pytest.skip(
+                "Azurite emulator not running. Start with: "
+                "docker run -d -p 10000:10000 mcr.microsoft.com/azure-storage/azurite azurite-blob --blobHost 0.0.0.0"
+            )
+    finally:
+        sock.close()
+
+    return (
+        f"DefaultEndpointsProtocol=http;"
+        f"AccountName={AZURITE_ACCOUNT_NAME};"
+        f"AccountKey={AZURITE_ACCOUNT_KEY};"
+        f"BlobEndpoint=http://127.0.0.1:10000/{AZURITE_ACCOUNT_NAME};"
+    )
+
+
+@pytest.fixture
+def mock_azure_container(azurite_server: str):
+    """
+    Create mock Azure container using Azurite.
+
+    Creates the container before the test and cleans all blobs after.
+    """
+    from azure.storage.blob import ContainerClient
+
+    container_name = "test-container"
+
+    # Create container using sync client
+    container_client = ContainerClient.from_connection_string(
+        conn_str=azurite_server,
+        container_name=container_name,
+    )
+
+    try:
+        container_client.create_container()
+    except Exception:
+        pass  # Container may already exist
+
+    yield {"connection_string": azurite_server, "container": container_name}
+
+    # Cleanup: delete all blobs in the container after test
+    try:
+        for blob in container_client.list_blobs():
+            container_client.delete_blob(blob.name)
+    except Exception:
+        pass  # Ignore cleanup errors
+
+
+@pytest.fixture
+async def azure_storage(mock_azure_container: dict) -> AsyncGenerator[AzureStorage, None]:
+    """
+    Azure storage instance with Azurite backend.
+
+    Uses Azurite to mock Azure Blob Storage for testing without real Azure credentials.
+    All operations are local and fast.
+    """
+    from datetime import timedelta
+
+    from litestar_storages.backends.azure import AzureConfig, AzureStorage
+
+    storage = AzureStorage(
+        config=AzureConfig(
+            container=mock_azure_container["container"],
+            connection_string=mock_azure_container["connection_string"],
+            presigned_expiry=timedelta(hours=1),
+        )
+    )
+
+    yield storage
+
+    # Cleanup
+    await storage.close()
+
+
+@pytest.fixture
+def azure_storage_with_prefix(mock_azure_container: dict) -> AzureStorage:
+    """
+    Azure storage with key prefix for namespace isolation.
+    """
+    from datetime import timedelta
+
+    from litestar_storages.backends.azure import AzureConfig, AzureStorage
+
+    return AzureStorage(
+        config=AzureConfig(
+            container=mock_azure_container["container"],
+            connection_string=mock_azure_container["connection_string"],
+            prefix="test-prefix/",
             presigned_expiry=timedelta(hours=1),
         )
     )

@@ -4,8 +4,12 @@ from __future__ import annotations
 
 from litestar_storages.__metadata__ import __project__, __version__
 from litestar_storages.backends import (
+    AzureConfig,
+    AzureStorage,
     FileSystemConfig,
     FileSystemStorage,
+    GCSConfig,
+    GCSStorage,
     MemoryConfig,
     MemoryStorage,
     S3Config,
@@ -30,8 +34,12 @@ __all__ = (
     "BaseStorage",
     "Storage",
     # Backends
+    "AzureConfig",
+    "AzureStorage",
     "FileSystemConfig",
     "FileSystemStorage",
+    "GCSConfig",
+    "GCSStorage",
     "MemoryConfig",
     "MemoryStorage",
     "S3Config",

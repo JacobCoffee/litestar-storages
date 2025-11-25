@@ -20,6 +20,12 @@ Install optional dependencies for cloud storage support:
 # S3 and S3-compatible services (AWS S3, Cloudflare R2, DigitalOcean Spaces, MinIO)
 pip install litestar-storages[s3]
 
+# Google Cloud Storage
+pip install litestar-storages[gcs]
+
+# Azure Blob Storage
+pip install litestar-storages[azure]
+
 # All backends
 pip install litestar-storages[all]
 ```
@@ -349,6 +355,9 @@ storage = create_storage()
 ## Next Steps
 
 - Learn about [FileSystem storage](backends/filesystem.md) for local file handling
-- Set up [S3 storage](backends/s3.md) for cloud-based file storage
+- Set up [S3 storage](backends/s3.md) for AWS and S3-compatible services
+- Set up [GCS storage](backends/gcs.md) for Google Cloud Storage
+- Set up [Azure storage](backends/azure.md) for Azure Blob Storage
 - Use [Memory storage](backends/memory.md) for testing
+- Explore [example applications](examples.md) for complete working examples
 - Create [custom backends](advanced/custom-backends.md) for specialized needs
