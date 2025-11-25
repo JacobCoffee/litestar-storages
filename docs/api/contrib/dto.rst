@@ -12,7 +12,9 @@ DTO Classes
 .. autoclass:: StoredFileDTO
    :members:
    :undoc-members:
-   :show-inheritance:
+   :no-show-inheritance:
+
+   **Bases:** :class:`~litestar.dto.DataclassDTO`\ [:class:`~litestar_storages.types.StoredFile`]
 
    **Excluded fields:** ``metadata``
 
@@ -22,7 +24,9 @@ DTO Classes
 .. autoclass:: StoredFileReadDTO
    :members:
    :undoc-members:
-   :show-inheritance:
+   :no-show-inheritance:
+
+   **Bases:** :class:`~litestar.dto.DataclassDTO`\ [:class:`~litestar_storages.types.StoredFile`]
 
    **Included fields:** All (including ``metadata``)
 
