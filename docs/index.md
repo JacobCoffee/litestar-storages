@@ -130,6 +130,7 @@ advanced/custom-backends
 :caption: Reference
 
 API Reference <api/index>
+comparison
 changelog
 ```
 
@@ -145,4 +146,5 @@ changelog
 - [Multipart Uploads](advanced/multipart-uploads.md) (Large file handling)
 - [Progress Callbacks](advanced/progress-callbacks.md) (Transfer progress tracking)
 - [Creating Custom Backends](advanced/custom-backends.md)
+- [Library Comparison](comparison.rst) (vs django-storages, fastapi-storages)
 - [GitHub Repository](https://github.com/JacobCoffee/litestar-storages)
