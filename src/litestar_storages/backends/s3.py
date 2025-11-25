@@ -13,7 +13,7 @@ from litestar_storages.exceptions import (
     StorageConnectionError,
     StorageFileNotFoundError,
 )
-from litestar_storages.types import StoredFile
+from litestar_storages.types import MultipartUpload, ProgressCallback, ProgressInfo, StoredFile
 
 __all__ = ("S3Config", "S3Storage")
 
@@ -578,3 +578,259 @@ class S3Storage(BaseStorage):
         for garbage collection and prevents accidental reuse after close.
         """
         self._session = None
+
+    # =========================================================================
+    # Multipart Upload Support
+    # =========================================================================
+
+    async def start_multipart_upload(
+        self,
+        key: str,
+        *,
+        content_type: str | None = None,
+        metadata: dict[str, str] | None = None,
+        part_size: int = 5 * 1024 * 1024,
+    ) -> MultipartUpload:
+        """Start a multipart upload.
+
+        Use this for large files (typically > 100MB) to enable:
+        - Parallel part uploads
+        - Resumable uploads
+        - Better handling of network failures
+
+        Args:
+            key: Storage path/key for the file
+            content_type: MIME type of the content
+            metadata: Additional metadata to store with the file
+            part_size: Size of each part in bytes (minimum 5MB for S3)
+
+        Returns:
+            MultipartUpload object to track the upload state
+
+        Raises:
+            StorageError: If initiating the upload fails
+        """
+        client = await self._get_client()
+        s3_key = self._get_key(key)
+
+        # Ensure minimum part size
+        part_size = max(part_size, 5 * 1024 * 1024)
+
+        params: dict[str, Any] = {
+            "Bucket": self.config.bucket,
+            "Key": s3_key,
+        }
+
+        if content_type:
+            params["ContentType"] = content_type
+        if metadata:
+            params["Metadata"] = metadata
+
+        try:
+            async with client as s3:
+                response = await s3.create_multipart_upload(**params)
+                return MultipartUpload(
+                    upload_id=response["UploadId"],
+                    key=key,
+                    part_size=part_size,
+                )
+
+        except Exception as e:
+            from litestar_storages.exceptions import StorageError
+
+            raise StorageError(f"Failed to start multipart upload for {key}: {e}") from e
+
+    async def upload_part(
+        self,
+        upload: MultipartUpload,
+        part_number: int,
+        data: bytes,
+    ) -> str:
+        """Upload a single part of a multipart upload.
+
+        Args:
+            upload: The MultipartUpload object from start_multipart_upload
+            part_number: Part number (1-indexed, must be sequential)
+            data: The part data to upload
+
+        Returns:
+            ETag of the uploaded part
+
+        Raises:
+            StorageError: If the part upload fails
+        """
+        client = await self._get_client()
+        s3_key = self._get_key(upload.key)
+
+        try:
+            async with client as s3:
+                response = await s3.upload_part(
+                    Bucket=self.config.bucket,
+                    Key=s3_key,
+                    UploadId=upload.upload_id,
+                    PartNumber=part_number,
+                    Body=data,
+                )
+
+                etag = response["ETag"].strip('"')
+                upload.add_part(part_number, etag)
+                return etag
+
+        except Exception as e:
+            from litestar_storages.exceptions import StorageError
+
+            raise StorageError(f"Failed to upload part {part_number} for {upload.key}: {e}") from e
+
+    async def complete_multipart_upload(
+        self,
+        upload: MultipartUpload,
+    ) -> StoredFile:
+        """Complete a multipart upload.
+
+        Args:
+            upload: The MultipartUpload object with all parts uploaded
+
+        Returns:
+            StoredFile metadata for the completed upload
+
+        Raises:
+            StorageError: If completing the upload fails
+        """
+        client = await self._get_client()
+        s3_key = self._get_key(upload.key)
+
+        # Sort parts by part number and format for S3
+        sorted_parts = sorted(upload.parts, key=lambda p: p[0])
+        parts = [{"PartNumber": num, "ETag": etag} for num, etag in sorted_parts]
+
+        try:
+            async with client as s3:
+                await s3.complete_multipart_upload(
+                    Bucket=self.config.bucket,
+                    Key=s3_key,
+                    UploadId=upload.upload_id,
+                    MultipartUpload={"Parts": parts},
+                )
+
+                # Get the final file info
+                return await self.info(upload.key)
+
+        except Exception as e:
+            from litestar_storages.exceptions import StorageError
+
+            raise StorageError(f"Failed to complete multipart upload for {upload.key}: {e}") from e
+
+    async def abort_multipart_upload(
+        self,
+        upload: MultipartUpload,
+    ) -> None:
+        """Abort a multipart upload.
+
+        This cancels an in-progress multipart upload and deletes any
+        uploaded parts. Use this to clean up failed uploads.
+
+        Args:
+            upload: The MultipartUpload object to abort
+
+        Raises:
+            StorageError: If aborting the upload fails
+        """
+        client = await self._get_client()
+        s3_key = self._get_key(upload.key)
+
+        try:
+            async with client as s3:
+                await s3.abort_multipart_upload(
+                    Bucket=self.config.bucket,
+                    Key=s3_key,
+                    UploadId=upload.upload_id,
+                )
+
+        except Exception as e:
+            from litestar_storages.exceptions import StorageError
+
+            raise StorageError(f"Failed to abort multipart upload for {upload.key}: {e}") from e
+
+    async def put_large(
+        self,
+        key: str,
+        data: bytes | AsyncIterator[bytes],
+        *,
+        content_type: str | None = None,
+        metadata: dict[str, str] | None = None,
+        part_size: int = 10 * 1024 * 1024,
+        progress_callback: ProgressCallback | None = None,
+    ) -> StoredFile:
+        """Upload a large file using multipart upload.
+
+        This is a convenience method that handles the multipart upload process
+        automatically. It splits the data into parts, uploads them, and
+        completes the upload.
+
+        Args:
+            key: Storage path/key for the file
+            data: File contents as bytes or async byte stream
+            content_type: MIME type of the content
+            metadata: Additional metadata to store with the file
+            part_size: Size of each part in bytes (default 10MB)
+            progress_callback: Optional callback for progress updates
+
+        Returns:
+            StoredFile with metadata about the stored file
+
+        Raises:
+            StorageError: If the upload fails
+        """
+        # Collect data if it's an async iterator
+        if isinstance(data, bytes):
+            file_data = data
+        else:
+            chunks = []
+            async for chunk in data:
+                chunks.append(chunk)
+            file_data = b"".join(chunks)
+
+        total_size = len(file_data)
+
+        # For small files, use regular put
+        if total_size < part_size:
+            return await self.put(key, file_data, content_type=content_type, metadata=metadata)
+
+        # Start multipart upload
+        upload = await self.start_multipart_upload(
+            key,
+            content_type=content_type,
+            metadata=metadata,
+            part_size=part_size,
+        )
+
+        try:
+            bytes_uploaded = 0
+            part_number = 1
+
+            # Upload parts
+            for i in range(0, total_size, part_size):
+                part_data = file_data[i : i + part_size]
+                await self.upload_part(upload, part_number, part_data)
+
+                bytes_uploaded += len(part_data)
+                part_number += 1
+
+                # Report progress
+                if progress_callback:
+                    progress_callback(
+                        ProgressInfo(
+                            bytes_transferred=bytes_uploaded,
+                            total_bytes=total_size,
+                            operation="upload",
+                            key=key,
+                        )
+                    )
+
+            # Complete the upload
+            return await self.complete_multipart_upload(upload)
+
+        except Exception:
+            # Clean up on failure
+            await self.abort_multipart_upload(upload)
+            raise

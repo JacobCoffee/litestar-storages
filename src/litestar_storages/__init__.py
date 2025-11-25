@@ -24,7 +24,14 @@ from litestar_storages.exceptions import (
     StorageFileNotFoundError,
     StoragePermissionError,
 )
-from litestar_storages.types import StoredFile, UploadResult
+from litestar_storages.retry import RetryConfig, retry, with_retry
+from litestar_storages.types import (
+    MultipartUpload,
+    ProgressCallback,
+    ProgressInfo,
+    StoredFile,
+    UploadResult,
+)
 
 __all__ = (
     # Metadata
@@ -52,6 +59,13 @@ __all__ = (
     "StorageFileNotFoundError",
     "StoragePermissionError",
     # Types
+    "MultipartUpload",
+    "ProgressCallback",
+    "ProgressInfo",
     "StoredFile",
     "UploadResult",
+    # Retry utilities
+    "RetryConfig",
+    "retry",
+    "with_retry",
 )
