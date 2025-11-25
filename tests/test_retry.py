@@ -2,12 +2,11 @@
 
 from __future__ import annotations
 
-import asyncio
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
-from litestar_storages.exceptions import StorageConnectionError, StorageError
+from litestar_storages.exceptions import StorageConnectionError
 from litestar_storages.retry import RetryConfig, retry, with_retry
 
 
