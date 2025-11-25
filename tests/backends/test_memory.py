@@ -273,6 +273,28 @@ class TestMemoryStorageMetadata:
 
 
 @pytest.mark.unit
+class TestMemoryStorageErrors:
+    """Test error handling in MemoryStorage."""
+
+    async def test_get_nonexistent_file_streaming(
+        self,
+        memory_storage: MemoryStorage,
+    ) -> None:
+        """
+        Test get() (streaming) with non-existent file.
+
+        Verifies:
+        - StorageFileNotFoundError is raised when streaming non-existent file
+        - The async generator properly raises the error
+        """
+        from litestar_storages.exceptions import StorageFileNotFoundError
+
+        with pytest.raises(StorageFileNotFoundError, match="nonexistent"):
+            async for _ in memory_storage.get("nonexistent.txt"):
+                pass
+
+
+@pytest.mark.unit
 class TestMemoryStorageEdgeCases:
     """Test edge cases specific to MemoryStorage."""
 
