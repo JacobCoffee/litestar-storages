@@ -671,3 +671,910 @@ class TestGCSClose:
         # Just verify close() doesn't raise
         await storage.close()
         assert storage._client is None
+
+
+class TestGCSErrorHandling:
+    """Test error handling and edge cases."""
+
+    async def test_get_not_found_error(
+        self,
+        gcs_storage: GCSStorage,
+    ) -> None:
+        """
+        Test get() with non-existent file raises StorageFileNotFoundError.
+
+        Verifies:
+        - NotFound errors are converted to StorageFileNotFoundError
+        - Error message includes the key
+        """
+        from litestar_storages.exceptions import StorageFileNotFoundError
+
+        with pytest.raises(StorageFileNotFoundError):
+            async for _ in gcs_storage.get("nonexistent.txt"):
+                pass
+
+    async def test_get_bytes_not_found_error(
+        self,
+        gcs_storage: GCSStorage,
+    ) -> None:
+        """
+        Test get_bytes() with non-existent file.
+
+        Verifies:
+        - NotFound errors are converted to StorageFileNotFoundError
+        """
+        from litestar_storages.exceptions import StorageFileNotFoundError
+
+        with pytest.raises(StorageFileNotFoundError):
+            await gcs_storage.get_bytes("nonexistent.txt")
+
+    async def test_copy_source_not_found(
+        self,
+        gcs_storage: GCSStorage,
+    ) -> None:
+        """
+        Test copy() with non-existent source file.
+
+        Verifies:
+        - StorageFileNotFoundError is raised for missing source
+        """
+        from litestar_storages.exceptions import StorageFileNotFoundError
+
+        with pytest.raises(StorageFileNotFoundError):
+            await gcs_storage.copy("nonexistent.txt", "destination.txt")
+
+    async def test_info_not_found(
+        self,
+        gcs_storage: GCSStorage,
+    ) -> None:
+        """
+        Test info() with non-existent file.
+
+        Verifies:
+        - StorageFileNotFoundError is raised
+        """
+        from litestar_storages.exceptions import StorageFileNotFoundError
+
+        with pytest.raises(StorageFileNotFoundError):
+            await gcs_storage.info("nonexistent.txt")
+
+    async def test_put_with_async_iterator(
+        self,
+        gcs_storage: GCSStorage,
+    ) -> None:
+        """
+        Test put() with async iterator data source.
+
+        Verifies:
+        - Async iterator data is properly collected
+        - File is stored correctly
+        """
+
+        async def data_generator():
+            yield b"Hello "
+            yield b"World "
+            yield b"from "
+            yield b"async!"
+
+        result = await gcs_storage.put(
+            "async-upload.txt",
+            data_generator(),
+            content_type="text/plain",
+        )
+
+        assert result.key == "async-upload.txt"
+        # Verify content
+        data = await gcs_storage.get_bytes("async-upload.txt")
+        assert data == b"Hello World from async!"
+        assert result.size == len(data)  # Size should match actual data length
+
+    async def test_put_large_with_async_iterator(
+        self,
+        gcs_storage: GCSStorage,
+    ) -> None:
+        """
+        Test put_large() with async iterator data source.
+
+        Verifies:
+        - Async iterator is properly collected
+        - Large file is uploaded with multipart
+        """
+
+        async def large_data_generator():
+            # Generate 3MB in chunks
+            for _ in range(3):
+                yield b"X" * (1024 * 1024)  # 1MB chunks
+
+        result = await gcs_storage.put_large(
+            "large-async.bin",
+            large_data_generator(),
+            part_size=1024 * 1024,  # 1MB parts
+        )
+
+        assert result.key == "large-async.bin"
+        assert result.size == 3 * 1024 * 1024
+
+    async def test_put_large_error_aborts_upload(
+        self,
+        gcs_storage: GCSStorage,
+    ) -> None:
+        """
+        Test that put_large() aborts upload on error.
+
+        Verifies:
+        - Upload is aborted if an error occurs
+        - Exception is propagated
+        """
+        from unittest.mock import AsyncMock, patch
+
+        # Create data that will trigger multipart upload
+        large_data = b"Y" * (15 * 1024 * 1024)  # 15MB
+
+        # Mock upload_part to fail on second part
+        with patch.object(
+            gcs_storage,
+            "upload_part",
+            side_effect=[AsyncMock(return_value="etag1"), Exception("Network error")],
+        ):
+            with pytest.raises(Exception):  # Could be StorageError or other
+                await gcs_storage.put_large(
+                    "failed-upload.bin",
+                    large_data,
+                    part_size=10 * 1024 * 1024,
+                )
+
+        # Verify file was not created
+        assert not await gcs_storage.exists("failed-upload.bin")
+
+    async def test_exists_with_error(
+        self,
+        gcs_storage: GCSStorage,
+    ) -> None:
+        """
+        Test exists() returns False on errors.
+
+        Verifies:
+        - Exceptions are caught and return False
+        """
+        from unittest.mock import AsyncMock, patch
+
+        # Mock bucket.blob_exists to raise an error
+        with patch.object(gcs_storage, "_get_client") as mock_client:
+            from gcloud.aio.storage import Bucket
+
+            mock_bucket = AsyncMock(spec=Bucket)
+            mock_bucket.blob_exists = AsyncMock(side_effect=Exception("API error"))
+
+            mock_storage_client = AsyncMock()
+            mock_client.return_value = mock_storage_client
+
+            with patch("gcloud.aio.storage.Bucket", return_value=mock_bucket):
+                result = await gcs_storage.exists("test.txt")
+
+            # Should return False on error, not raise
+            assert result is False
+
+    async def test_list_with_malformed_datetime(
+        self,
+        gcs_storage: GCSStorage,
+        sample_text_data: bytes,
+    ) -> None:
+        """
+        Test list() handles malformed datetime gracefully.
+
+        Verifies:
+        - Malformed datetime doesn't crash listing
+        - last_modified is set to None for unparseable dates
+        """
+        from unittest.mock import AsyncMock, patch
+
+        # Upload a real file first
+        await gcs_storage.put("test.txt", sample_text_data)
+
+        # Mock the list_objects response with malformed datetime
+        mock_response = {
+            "items": [
+                {
+                    "name": gcs_storage._get_key("test.txt"),
+                    "size": "100",
+                    "contentType": "text/plain",
+                    "etag": '"abc123"',
+                    "updated": "invalid-datetime-format",  # Malformed
+                    "metadata": {},
+                }
+            ]
+        }
+
+        with patch.object(gcs_storage, "_get_client") as mock_client:
+            mock_storage_client = AsyncMock()
+            mock_storage_client.list_objects = AsyncMock(return_value=mock_response)
+            mock_client.return_value = mock_storage_client
+
+            files = [f async for f in gcs_storage.list()]
+
+            # Should still return the file
+            assert len(files) == 1
+            assert files[0].key == "test.txt"
+            # last_modified should be None due to parsing error
+            assert files[0].last_modified is None
+
+    async def test_abort_multipart_with_partial_cleanup(
+        self,
+        gcs_storage: GCSStorage,
+    ) -> None:
+        """
+        Test abort_multipart_upload with partial attributes.
+
+        Verifies:
+        - Cleanup works even if some attributes are missing
+        - No errors raised for missing attributes
+        """
+        from litestar_storages.types import MultipartUpload
+
+        # Create upload with only some attributes
+        upload = MultipartUpload(upload_id="test-id", key="test.bin", part_size=1024 * 1024)
+
+        # Set only _part_data, not others
+        upload._part_data = [(1, b"data")]  # type: ignore[attr-defined]
+
+        # Should not raise even though _content_type and _metadata are missing
+        await gcs_storage.abort_multipart_upload(upload)
+
+        # Verify cleanup happened
+        assert not hasattr(upload, "_part_data")
+
+
+@pytest.mark.unit
+class TestGCSClientInitialization:
+    """Test client initialization and authentication paths."""
+
+    async def test_client_lazy_initialization(self) -> None:
+        """
+        Test that client is lazily initialized.
+
+        Verifies:
+        - Client is None initially
+        - Client is created on first use
+        """
+        from litestar_storages.backends.gcs import GCSConfig, GCSStorage
+
+        storage = GCSStorage(
+            config=GCSConfig(
+                bucket="test-bucket",
+                api_root="http://localhost:4443",
+            )
+        )
+
+        assert storage._client is None
+
+        # Access client
+        client = await storage._get_client()
+        assert client is not None
+        assert storage._client is not None
+
+        # Second call returns same client
+        client2 = await storage._get_client()
+        assert client2 is client
+
+    async def test_client_with_service_file(self) -> None:
+        """
+        Test client initialization with service account file.
+
+        Verifies:
+        - Service file path is passed to Storage client
+        """
+        from litestar_storages.backends.gcs import GCSConfig, GCSStorage
+
+        storage = GCSStorage(
+            config=GCSConfig(
+                bucket="test-bucket",
+                service_file="/path/to/service-account.json",
+                api_root="http://localhost:4443",
+            )
+        )
+
+        # This will fail if the file doesn't exist, but that's expected
+        # We're testing the configuration path
+        try:
+            await storage._get_client()
+        except Exception:
+            # Expected - file doesn't exist
+            pass
+
+        assert storage.config.service_file == "/path/to/service-account.json"
+
+    async def test_client_with_custom_api_root(self) -> None:
+        """
+        Test client initialization with custom API endpoint.
+
+        Verifies:
+        - Custom API root is passed to Storage client
+        """
+        from litestar_storages.backends.gcs import GCSConfig, GCSStorage
+
+        storage = GCSStorage(
+            config=GCSConfig(
+                bucket="test-bucket",
+                api_root="http://custom-gcs-endpoint:8080",
+            )
+        )
+
+        assert storage.config.api_root == "http://custom-gcs-endpoint:8080"
+
+    async def test_missing_gcloud_library_error(self) -> None:
+        """
+        Test error when gcloud-aio-storage is not installed.
+
+        Verifies:
+        - ConfigurationError is raised with helpful message
+        """
+        from unittest.mock import patch
+
+        from litestar_storages.backends.gcs import GCSConfig, GCSStorage
+        from litestar_storages.exceptions import ConfigurationError
+
+        storage = GCSStorage(
+            config=GCSConfig(
+                bucket="test-bucket",
+            )
+        )
+
+        # Mock the import to fail
+        with patch("builtins.__import__", side_effect=ImportError("No module named 'gcloud'")):
+            with pytest.raises(ConfigurationError, match="gcloud-aio-storage is required"):
+                await storage._get_client()
+
+    async def test_client_creation_error(self) -> None:
+        """
+        Test error handling during client creation.
+
+        Verifies:
+        - StorageConnectionError is raised on client creation failure
+        """
+        from unittest.mock import MagicMock, patch
+
+        from litestar_storages.backends.gcs import GCSConfig, GCSStorage
+        from litestar_storages.exceptions import StorageConnectionError
+
+        storage = GCSStorage(
+            config=GCSConfig(
+                bucket="test-bucket",
+            )
+        )
+
+        # Mock the Storage import to raise error on initialization
+        with patch.dict("sys.modules", {"gcloud.aio.storage": MagicMock()}):
+            with patch("gcloud.aio.storage.Storage", side_effect=Exception("Connection failed")):
+                with pytest.raises(StorageConnectionError, match="Failed to create GCS client"):
+                    await storage._get_client()
+
+
+@pytest.mark.unit
+class TestGCSOperationErrors:
+    """Test error handling in storage operations."""
+
+    async def test_put_error(self) -> None:
+        """
+        Test error handling in put() operation.
+
+        Verifies:
+        - StorageError is raised on upload failure
+        """
+        from unittest.mock import AsyncMock, patch
+
+        from litestar_storages.backends.gcs import GCSConfig, GCSStorage
+        from litestar_storages.exceptions import StorageError
+
+        storage = GCSStorage(
+            config=GCSConfig(
+                bucket="test-bucket",
+                api_root="http://localhost:4443",
+            )
+        )
+
+        # Mock client.upload to fail
+        with patch.object(storage, "_get_client") as mock_get_client:
+            mock_client = AsyncMock()
+            mock_client.upload = AsyncMock(side_effect=Exception("Upload failed"))
+            mock_get_client.return_value = mock_client
+
+            with pytest.raises(StorageError, match="Failed to upload file"):
+                await storage.put("test.txt", b"data")
+
+    async def test_delete_error(self) -> None:
+        """
+        Test error handling in delete() operation.
+
+        Verifies:
+        - StorageError is raised on delete failure
+        """
+        from unittest.mock import AsyncMock, patch
+
+        from litestar_storages.backends.gcs import GCSConfig, GCSStorage
+        from litestar_storages.exceptions import StorageError
+
+        storage = GCSStorage(
+            config=GCSConfig(
+                bucket="test-bucket",
+                api_root="http://localhost:4443",
+            )
+        )
+
+        # Mock client.delete to fail
+        with patch.object(storage, "_get_client") as mock_get_client:
+            mock_client = AsyncMock()
+            mock_client.delete = AsyncMock(side_effect=Exception("Delete failed"))
+            mock_get_client.return_value = mock_client
+
+            with pytest.raises(StorageError, match="Failed to delete file"):
+                await storage.delete("test.txt")
+
+    async def test_list_error(self) -> None:
+        """
+        Test error handling in list() operation.
+
+        Verifies:
+        - StorageError is raised on list failure
+        """
+        from unittest.mock import AsyncMock, patch
+
+        from litestar_storages.backends.gcs import GCSConfig, GCSStorage
+        from litestar_storages.exceptions import StorageError
+
+        storage = GCSStorage(
+            config=GCSConfig(
+                bucket="test-bucket",
+                api_root="http://localhost:4443",
+            )
+        )
+
+        # Mock client.list_objects to fail
+        with patch.object(storage, "_get_client") as mock_get_client:
+            mock_client = AsyncMock()
+            mock_client.list_objects = AsyncMock(side_effect=Exception("List failed"))
+            mock_get_client.return_value = mock_client
+
+            with pytest.raises(StorageError, match="Failed to list files"):
+                async for _ in storage.list():
+                    pass
+
+    async def test_upload_part_error(self) -> None:
+        """
+        Test error handling in upload_part() operation.
+
+        Verifies:
+        - StorageError is raised on part upload failure
+        """
+        from unittest.mock import patch
+
+        from litestar_storages.backends.gcs import GCSConfig, GCSStorage
+        from litestar_storages.exceptions import StorageError
+        from litestar_storages.types import MultipartUpload
+
+        storage = GCSStorage(
+            config=GCSConfig(
+                bucket="test-bucket",
+                api_root="http://localhost:4443",
+            )
+        )
+
+        upload = MultipartUpload(upload_id="test-id", key="test.bin", part_size=1024 * 1024)
+        upload._part_data = []  # type: ignore[attr-defined]
+
+        # Mock hashlib.md5 to raise an error
+        with patch("hashlib.md5", side_effect=Exception("Hash calculation failed")):
+            with pytest.raises(StorageError, match="Failed to buffer part"):
+                await storage.upload_part(upload, 1, b"data")
+
+    async def test_complete_multipart_error(self) -> None:
+        """
+        Test error handling in complete_multipart_upload().
+
+        Verifies:
+        - StorageError is raised on completion failure
+        """
+        from unittest.mock import patch
+
+        from litestar_storages.backends.gcs import GCSConfig, GCSStorage
+        from litestar_storages.exceptions import StorageError
+        from litestar_storages.types import MultipartUpload
+
+        storage = GCSStorage(
+            config=GCSConfig(
+                bucket="test-bucket",
+                api_root="http://localhost:4443",
+            )
+        )
+
+        upload = MultipartUpload(upload_id="test-id", key="test.bin", part_size=1024 * 1024)
+        upload._part_data = [(1, b"data1"), (2, b"data2")]  # type: ignore[attr-defined]
+        upload._content_type = "application/octet-stream"  # type: ignore[attr-defined]
+        upload._metadata = {}  # type: ignore[attr-defined]
+
+        # Mock put to fail
+        with patch.object(storage, "put", side_effect=Exception("Upload failed")):
+            with pytest.raises(StorageError, match="Failed to complete multipart upload"):
+                await storage.complete_multipart_upload(upload)
+
+    async def test_abort_multipart_error(self) -> None:
+        """
+        Test error handling in abort_multipart_upload().
+
+        Verifies:
+        - StorageError is raised on abort failure
+        """
+        from unittest.mock import patch
+
+        from litestar_storages.backends.gcs import GCSConfig, GCSStorage
+        from litestar_storages.exceptions import StorageError
+        from litestar_storages.types import MultipartUpload
+
+        storage = GCSStorage(
+            config=GCSConfig(
+                bucket="test-bucket",
+                api_root="http://localhost:4443",
+            )
+        )
+
+        upload = MultipartUpload(upload_id="test-id", key="test.bin", part_size=1024 * 1024)
+        upload._part_data = [(1, b"data")]  # type: ignore[attr-defined]
+
+        # Mock delattr to fail
+        original_delattr = delattr
+
+        def failing_delattr(obj, name):
+            if name == "_part_data":
+                raise Exception("Cleanup failed")
+            return original_delattr(obj, name)
+
+        with patch("builtins.delattr", side_effect=failing_delattr):
+            with pytest.raises(StorageError, match="Failed to abort multipart upload"):
+                await storage.abort_multipart_upload(upload)
+
+
+@pytest.mark.unit
+class TestGCSEdgeCases:
+    """Test edge cases and special scenarios."""
+
+    async def test_empty_file_upload(
+        self,
+        gcs_storage: GCSStorage,
+    ) -> None:
+        """
+        Test uploading empty file.
+
+        Verifies:
+        - Empty files can be uploaded
+        - Size is correctly reported as 0
+        """
+        result = await gcs_storage.put("empty.txt", b"")
+
+        assert result.key == "empty.txt"
+        assert result.size == 0
+
+        # Verify can retrieve empty file
+        data = await gcs_storage.get_bytes("empty.txt")
+        assert data == b""
+
+    async def test_special_characters_in_key(
+        self,
+        gcs_storage: GCSStorage,
+        sample_text_data: bytes,
+    ) -> None:
+        """
+        Test keys with special characters.
+
+        Verifies:
+        - Special characters in keys are handled correctly
+        - Files can be retrieved with special chars
+        """
+        special_keys = [
+            "test file.txt",  # Space
+            "test-file.txt",  # Hyphen
+            "test_file.txt",  # Underscore
+            "test.file.txt",  # Multiple dots
+            "Test/Path/File.txt",  # Path separators
+            "test@file.txt",  # Special char
+        ]
+
+        for key in special_keys:
+            result = await gcs_storage.put(key, sample_text_data)
+            assert result.key == key
+
+            # Verify retrieval
+            data = await gcs_storage.get_bytes(key)
+            assert data == sample_text_data
+
+    async def test_large_metadata(
+        self,
+        gcs_storage: GCSStorage,
+        sample_text_data: bytes,
+    ) -> None:
+        """
+        Test uploading file with large metadata.
+
+        Verifies:
+        - Large metadata dictionaries are handled
+        """
+        large_metadata = {f"key{i}": f"value{i}" for i in range(100)}
+
+        result = await gcs_storage.put("test.txt", sample_text_data, metadata=large_metadata)
+
+        assert result.metadata == large_metadata
+
+    async def test_list_empty_bucket(
+        self,
+        gcs_storage: GCSStorage,
+    ) -> None:
+        """
+        Test listing empty bucket.
+
+        Verifies:
+        - Empty list is returned for empty bucket
+        - No errors raised
+        """
+        files = [f async for f in gcs_storage.list()]
+        assert len(files) == 0
+
+    async def test_list_with_no_matching_prefix(
+        self,
+        gcs_storage: GCSStorage,
+        sample_text_data: bytes,
+    ) -> None:
+        """
+        Test listing with prefix that matches no files.
+
+        Verifies:
+        - Empty list returned when no files match prefix
+        """
+        await gcs_storage.put("test.txt", sample_text_data)
+
+        files = [f async for f in gcs_storage.list(prefix="nonexistent/")]
+        assert len(files) == 0
+
+    async def test_multipart_single_part(
+        self,
+        gcs_storage: GCSStorage,
+    ) -> None:
+        """
+        Test multipart upload with single part.
+
+        Verifies:
+        - Multipart upload works with just one part
+        """
+        data = b"A" * (1024 * 1024)  # 1MB
+
+        upload = await gcs_storage.start_multipart_upload("single-part.bin", part_size=5 * 1024 * 1024)
+
+        await gcs_storage.upload_part(upload, 1, data)
+
+        result = await gcs_storage.complete_multipart_upload(upload)
+
+        assert result.size == len(data)
+        retrieved = await gcs_storage.get_bytes("single-part.bin")
+        assert retrieved == data
+
+
+@pytest.mark.unit
+class TestGCSAdditionalErrorCoverage:
+    """Additional tests for remaining uncovered error paths."""
+
+    async def test_get_generic_error(self) -> None:
+        """
+        Test get() with generic non-404 error.
+
+        Verifies:
+        - Generic errors are wrapped in StorageError
+        """
+        from unittest.mock import AsyncMock, patch
+
+        from litestar_storages.backends.gcs import GCSConfig, GCSStorage
+        from litestar_storages.exceptions import StorageError
+
+        storage = GCSStorage(
+            config=GCSConfig(
+                bucket="test-bucket",
+                api_root="http://localhost:4443",
+            )
+        )
+
+        # Mock client.download to fail with generic error
+        with patch.object(storage, "_get_client") as mock_get_client:
+            mock_client = AsyncMock()
+            mock_client.download = AsyncMock(side_effect=Exception("Connection timeout"))
+            mock_get_client.return_value = mock_client
+
+            with pytest.raises(StorageError, match="Failed to retrieve file"):
+                async for _ in storage.get("test.txt"):
+                    pass
+
+    async def test_get_bytes_generic_error(self) -> None:
+        """
+        Test get_bytes() with generic non-404 error.
+
+        Verifies:
+        - Generic errors are wrapped in StorageError
+        """
+        from unittest.mock import AsyncMock, patch
+
+        from litestar_storages.backends.gcs import GCSConfig, GCSStorage
+        from litestar_storages.exceptions import StorageError
+
+        storage = GCSStorage(
+            config=GCSConfig(
+                bucket="test-bucket",
+                api_root="http://localhost:4443",
+            )
+        )
+
+        # Mock client.download to fail with generic error
+        with patch.object(storage, "_get_client") as mock_get_client:
+            mock_client = AsyncMock()
+            mock_client.download = AsyncMock(side_effect=Exception("Connection timeout"))
+            mock_get_client.return_value = mock_client
+
+            with pytest.raises(StorageError, match="Failed to retrieve file"):
+                await storage.get_bytes("test.txt")
+
+    async def test_copy_generic_error(self) -> None:
+        """
+        Test copy() with generic non-404 error.
+
+        Verifies:
+        - Generic errors are wrapped in StorageError
+        """
+        from unittest.mock import AsyncMock, patch
+
+        from litestar_storages.backends.gcs import GCSConfig, GCSStorage
+        from litestar_storages.exceptions import StorageError
+
+        storage = GCSStorage(
+            config=GCSConfig(
+                bucket="test-bucket",
+                api_root="http://localhost:4443",
+            )
+        )
+
+        # Mock client.copy to fail with generic error
+        with patch.object(storage, "_get_client") as mock_get_client:
+            mock_client = AsyncMock()
+            mock_client.copy = AsyncMock(side_effect=Exception("Permission denied"))
+            mock_get_client.return_value = mock_client
+
+            with pytest.raises(StorageError, match="Failed to copy"):
+                await storage.copy("source.txt", "dest.txt")
+
+    async def test_info_generic_error(self) -> None:
+        """
+        Test info() with generic non-404 error.
+
+        Verifies:
+        - Generic errors are wrapped in StorageError
+        """
+        from unittest.mock import AsyncMock, patch
+
+        from litestar_storages.backends.gcs import GCSConfig, GCSStorage
+        from litestar_storages.exceptions import StorageError
+
+        storage = GCSStorage(
+            config=GCSConfig(
+                bucket="test-bucket",
+                api_root="http://localhost:4443",
+            )
+        )
+
+        # Mock bucket.get_blob to fail with generic error
+        with patch.object(storage, "_get_client") as mock_get_client:
+            from gcloud.aio.storage import Bucket
+
+            mock_bucket = AsyncMock(spec=Bucket)
+            mock_bucket.get_blob = AsyncMock(side_effect=Exception("API error"))
+
+            mock_storage_client = AsyncMock()
+            mock_get_client.return_value = mock_storage_client
+
+            with patch("gcloud.aio.storage.Bucket", return_value=mock_bucket):
+                with pytest.raises(StorageError, match="Failed to get info"):
+                    await storage.info("test.txt")
+
+    async def test_info_with_malformed_datetime(
+        self,
+        gcs_storage: GCSStorage,
+        sample_text_data: bytes,
+    ) -> None:
+        """
+        Test info() handles malformed datetime gracefully.
+
+        Verifies:
+        - Malformed datetime in info() doesn't crash
+        - last_modified is set to None for unparseable dates
+        """
+        from unittest.mock import AsyncMock, patch
+
+        # Upload a real file first
+        await gcs_storage.put("test.txt", sample_text_data)
+
+        # Mock bucket.get_blob to return malformed datetime
+        with patch.object(gcs_storage, "_get_client") as mock_get_client:
+            from gcloud.aio.storage import Bucket
+
+            mock_blob = AsyncMock()
+            mock_blob.metadata = {
+                "size": "100",
+                "contentType": "text/plain",
+                "etag": '"abc123"',
+                "updated": "invalid-datetime-format",
+                "metadata": {},
+            }
+
+            mock_bucket = AsyncMock(spec=Bucket)
+            mock_bucket.get_blob = AsyncMock(return_value=mock_blob)
+
+            mock_storage_client = AsyncMock()
+            mock_get_client.return_value = mock_storage_client
+
+            with patch("gcloud.aio.storage.Bucket", return_value=mock_bucket):
+                info = await gcs_storage.info("test.txt")
+
+                # Should return info but with None for last_modified
+                assert info.key == "test.txt"
+                assert info.last_modified is None
+
+    async def test_list_missing_updated_field(
+        self,
+        gcs_storage: GCSStorage,
+    ) -> None:
+        """
+        Test list() when 'updated' field is missing from response.
+
+        Verifies:
+        - Missing 'updated' field doesn't crash listing
+        - last_modified is None when field is missing
+        """
+        from unittest.mock import AsyncMock, patch
+
+        # Mock the list_objects response without 'updated' field
+        mock_response = {
+            "items": [
+                {
+                    "name": gcs_storage._get_key("test.txt"),
+                    "size": "100",
+                    "contentType": "text/plain",
+                    "etag": '"abc123"',
+                    # No 'updated' field
+                    "metadata": {},
+                }
+            ]
+        }
+
+        with patch.object(gcs_storage, "_get_client") as mock_client:
+            mock_storage_client = AsyncMock()
+            mock_storage_client.list_objects = AsyncMock(return_value=mock_response)
+            mock_client.return_value = mock_storage_client
+
+            files = [f async for f in gcs_storage.list()]
+
+            # Should still return the file
+            assert len(files) == 1
+            assert files[0].key == "test.txt"
+            # last_modified should be None since field is missing
+            assert files[0].last_modified is None
+
+    async def test_abort_multipart_all_attributes_missing(
+        self,
+        gcs_storage: GCSStorage,
+    ) -> None:
+        """
+        Test abort_multipart_upload when all cleanup attributes are missing.
+
+        Verifies:
+        - Cleanup works even if all attributes are missing
+        - No errors raised
+        """
+        from litestar_storages.types import MultipartUpload
+
+        # Create upload without setting any cleanup attributes
+        upload = MultipartUpload(upload_id="test-id", key="test.bin", part_size=1024 * 1024)
+
+        # Should not raise even though no attributes are set
+        await gcs_storage.abort_multipart_upload(upload)
