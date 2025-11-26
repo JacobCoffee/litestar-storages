@@ -26,6 +26,12 @@ url = await storage.url("photos/vacation.jpg", expires_in=timedelta(hours=1))
 
 The storage backends work with **any async Python application**. No framework dependencies required for the core functionality - just install and use with plain asyncio:
 
+```{note}
+Yes, we know. A library called "litestar-storages" that doesn't require Litestar.
+We considered renaming it to "asyncio-storages-that-also-works-great-with-litestar-but-you-do-you"
+but that didn't fit on the PyPI page. The name is a tribute to our roots, not a requirement for your imports.
+```
+
 ```python
 import asyncio
 from litestar_storages import FileSystemStorage, FileSystemConfig
