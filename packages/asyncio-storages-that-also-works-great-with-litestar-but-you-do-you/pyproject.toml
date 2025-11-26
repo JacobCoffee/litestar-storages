@@ -1,0 +1,60 @@
+[build-system]
+build-backend = "hatchling.build"
+requires = ["hatchling"]
+
+[project]
+name = "asyncio-storages-that-also-works-great-with-litestar-but-you-do-you"
+version = "0.1.0"
+description = "You found it. The package name that was too long for the docs but not for PyPI."
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.10"
+authors = [
+    { name = "Jacob Coffee", email = "jacob@z7x.org" },
+]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Framework :: AsyncIO",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Natural Language :: English",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Typing :: Typed",
+]
+keywords = [
+    "storage",
+    "async",
+    "litestar",
+    "you-do-you",
+    "why-are-you-reading-this",
+    "easter-egg",
+]
+dependencies = [
+    "litestar-storages",
+]
+
+[project.optional-dependencies]
+# Re-export all the extras from litestar-storages
+all = ["litestar-storages[all]"]
+azure = ["litestar-storages[azure]"]
+filesystem = ["litestar-storages[filesystem]"]
+gcs = ["litestar-storages[gcs]"]
+litestar = ["litestar-storages[litestar]"]
+s3 = ["litestar-storages[s3]"]
+
+[project.urls]
+"Bug Tracker" = "https://github.com/JacobCoffee/litestar-storages/issues"
+Changelog = "https://github.com/JacobCoffee/litestar-storages/releases/"
+Documentation = "https://jacobcoffee.github.io/litestar-storages/"
+Homepage = "https://github.com/JacobCoffee/litestar-storages"
+Repository = "https://github.com/JacobCoffee/litestar-storages"
+"The Real Package" = "https://pypi.org/project/litestar-storages/"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/asyncio_storages_that_also_works_great_with_litestar_but_you_do_you"]
