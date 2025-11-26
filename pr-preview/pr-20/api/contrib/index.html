@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en" data-accent-color="violet" data-content_root="../../">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Litestar Integration - litestar-storages</title><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="Storage Plugin" href="plugin.html" /><link rel="prev" title="Azure Storage" href="../backends/azure.html" /><script>
+    function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
+    setColorMode(localStorage._theme||"auto");
+  </script><link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=e1a1ceaf" />
+    <link rel="stylesheet" type="text/css" href="../../_static/shibuya.css?v=14737038" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link media="print" rel="stylesheet" type="text/css" href="../../_static/print.css?v=20ff2c19" />
+    <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=5f8f7e8c" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --sy-f-text: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+  --sy-f-heading: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+}
+</style>
+    <meta property="og:type" content="website"/><meta property="og:title" content="Litestar Integration"/>
+    <meta name="twitter:card" content="summary"/>
+  </head>
+<body><div class="sy-head">
+  <div class="sy-head-blur"></div>
+  <div class="sy-head-inner sy-container mx-auto">
+    <a class="sy-head-brand" href="../../index.html">
+      
+      
+      <strong>litestar-storages</strong>
+    </a>
+    <div class="sy-head-nav" id="head-nav">
+      <nav class="sy-head-links"><ul><li class="link">
+          <a href="https://litestar.dev/">
+            <span>Litestar</span></a>
+        </li><li class="link">
+          <a href="https://pypi.org/project/litestar-storages/">
+            <span>PyPI</span></a>
+        </li></ul></nav>
+      <div class="sy-head-extra flex items-center print:hidden"><form class="searchbox flex items-center" action="../../search.html" method="get">
+  <input type="text" name="q" placeholder="Search" />
+  <kbd>/</kbd>
+</form><div class="sy-head-socials">
+  <a href="https://github.com/JacobCoffee/litestar-storages" aria-label="GitHub">
+    <iconify-icon icon="simple-icons:github"></iconify-icon>
+  </a></div></div>
+    </div>
+    <div class="sy-head-actions flex items-center shrink-0 print:hidden"><button class="js-theme theme-switch flex items-center"
+data-aria-auto="Switch to light color mode"
+data-aria-light="Switch to dark color mode"
+data-aria-dark="Switch to auto color mode">
+<i class="i-lucide theme-icon"></i>
+</button><button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="head-nav" aria-expanded="false">
+        <div class="hamburger">
+          <span class="hamburger_1"></span>
+          <span class="hamburger_2"></span>
+          <span class="hamburger_3"></span>
+        </div>
+      </button>
+    </div>
+  </div>
+</div>
+<div class="sy-page sy-container flex mx-auto">
+  <aside id="lside" class="sy-lside md:w-72 md:shrink-0 print:hidden">
+    <div class="sy-lside-inner md:sticky">
+      <div class="sy-scrollbar p-6">
+        <div class="globaltoc" data-expand-depth="0"><p class="caption" role="heading" aria-level="3"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting-started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../examples.html">Example Applications</a></li>
+</ul>
+<p class="caption" role="heading" aria-level="3"><span class="caption-text">Storage Backends</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../backends/filesystem.html">FileSystem Storage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../backends/s3.html">S3 Storage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../backends/gcs.html">GCS Storage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../backends/azure.html">Azure Blob Storage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../backends/memory.html">Memory Storage</a></li>
+</ul>
+<p class="caption" role="heading" aria-level="3"><span class="caption-text">Advanced Topics</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../advanced/retry.html">Retry Utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../advanced/multipart-uploads.html">Multipart Uploads</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../advanced/progress-callbacks.html">Progress Callbacks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../advanced/custom-backends.html">Custom Backends</a></li>
+</ul>
+<p class="caption" role="heading" aria-level="3"><span class="caption-text">Cookbook</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../cookbook/index.html">Cookbook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../cookbook/file-upload-validation.html">File Upload with Validation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../cookbook/image-processing-pipeline.html">Image Processing Pipeline</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../cookbook/multi-backend-config.html">Multi-Backend Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../cookbook/streaming-large-files.html">Streaming Large Files</a></li>
+</ul>
+<p class="caption" role="heading" aria-level="3"><span class="caption-text">Reference</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">API Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../base.html">Base Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../types.html">Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../exceptions.html">Exceptions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../backends/index.html">Storage Backends</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../backends/memory.html">Memory Storage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../backends/filesystem.html">FileSystem Storage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../backends/s3.html">S3 Storage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../backends/gcs.html">GCS Storage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../backends/azure.html">Azure Storage</a></li>
+</ul>
+</li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Litestar Integration</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="plugin.html">Storage Plugin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dependencies.html">Dependencies</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dto.html">DTOs</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../comparison.html">Comparison with Other Libraries</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../changelog.html">Changelog</a></li>
+</ul>
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="lside-overlay js-menu" role="button" aria-label="Close left sidebar" aria-controls="lside" aria-expanded="false"></div>
+  <aside id="rside" class="sy-rside pb-3 w-64 shrink-0 order-last">
+    <button class="rside-close js-menu xl:hidden" aria-label="Close Table of Contents" type="button" aria-controls="rside" aria-expanded="false">
+      <i class="i-lucide close"></i>
+    </button>
+    <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4"><div class="localtoc"><h3>On this page</h3><ul>
+<li><a class="reference internal" href="#quick-start">Quick Start</a></li>
+<li><a class="reference internal" href="#multiple-storages">Multiple Storages</a></li>
+<li><a class="reference internal" href="#lifespan-management">Lifespan Management</a></li>
+</ul>
+</div><div id="ethical-ad-placement" data-ea-publisher="readthedocs"></div></div>
+  </aside>
+  <div class="rside-overlay js-menu" role="button" aria-label="Close Table of Contents" aria-controls="rside" aria-expanded="false"></div>
+  <main class="sy-main w-full max-sm:max-w-full print:pt-6">
+<div class="sy-breadcrumbs" role="navigation">
+  <div class="sy-breadcrumbs-inner flex items-center">
+    <div class="md:hidden mr-3">
+      <button class="js-menu" aria-label="Menu" type="button" aria-controls="lside" aria-expanded="false">
+        <i class="i-lucide menu"></i>
+      </button>
+    </div>
+    <ol class="flex-1" itemscope itemtype="https://schema.org/BreadcrumbList"><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="../../index.html"><span itemprop="name">litestar-storages</span></a>
+        <span>/</span>
+        <meta itemprop="position" content="1" />
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="../index.html"><span itemprop="name">API Reference</span></a>
+        <span>/</span>
+        <meta itemprop="position" content="2" />
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <strong itemprop="name">Litestar Integration</strong>
+        <meta itemprop="position" content="3" />
+      </li></ol>
+    <div class="xl:hidden ml-1">
+      <button class="js-menu" aria-label="Show table of contents" type="button" aria-controls="rside"
+        aria-expanded="false">
+        <i class="i-lucide outdent"></i>
+      </button>
+    </div>
+  </div>
+</div><div class="flex flex-col break-words justify-between">
+      <div class="min-w-0 max-w-6xl px-6 pb-6 pt-8 xl:px-12">
+        <article class="yue" role="main">
+          <section id="module-litestar_storages.contrib">
+<span id="litestar-integration"></span><h1>Litestar Integration<a class="headerlink" href="#module-litestar_storages.contrib" title="Link to this heading">¶</a></h1>
+<p>This module provides integration components for using litestar-storages with
+<a class="reference external" href="https://litestar.dev/">Litestar</a> applications, including:</p>
+<ul class="simple">
+<li><p><strong>StoragePlugin</strong> - Plugin for automatic dependency injection</p></li>
+<li><p><strong>Dependencies</strong> - Manual DI utilities</p></li>
+<li><p><strong>DTOs</strong> - Data transfer objects for API responses</p></li>
+</ul>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="plugin.html">Storage Plugin</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dependencies.html">Dependencies</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dto.html">DTOs</a></li>
+</ul>
+</div>
+<section id="quick-start">
+<h2>Quick Start<a class="headerlink" href="#quick-start" title="Link to this heading">¶</a></h2>
+<p>The simplest way to integrate storage into a Litestar application:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">post</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.datastructures</span><span class="w"> </span><span class="kn">import</span> <span class="n">UploadFile</span>
+</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_storages</span><span class="w"> </span><span class="kn">import</span> <span class="n">S3Storage</span><span class="p">,</span> <span class="n">S3Config</span><span class="p">,</span> <span class="n">Storage</span><span class="p">,</span> <span class="n">StoredFile</span>
+</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_storages.contrib</span><span class="w"> </span><span class="kn">import</span> <span class="n">StoragePlugin</span>
+</span><span data-line="5">
+</span><span data-line="6"><span class="c1"># Configure storage</span>
+</span><span data-line="7"><span class="n">storage</span> <span class="o">=</span> <span class="n">S3Storage</span><span class="p">(</span>
+</span><span data-line="8">    <span class="n">config</span><span class="o">=</span><span class="n">S3Config</span><span class="p">(</span><span class="n">bucket</span><span class="o">=</span><span class="s2">&quot;uploads&quot;</span><span class="p">,</span> <span class="n">region</span><span class="o">=</span><span class="s2">&quot;us-east-1&quot;</span><span class="p">)</span>
+</span><span data-line="9"><span class="p">)</span>
+</span><span data-line="10">
+</span><span data-line="11"><span class="c1"># Route handler with injected storage</span>
+</span><span data-line="12"><span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/upload&quot;</span><span class="p">)</span>
+</span><span data-line="13"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">upload_file</span><span class="p">(</span>
+</span><span data-line="14">    <span class="n">data</span><span class="p">:</span> <span class="n">UploadFile</span><span class="p">,</span>
+</span><span data-line="15">    <span class="n">storage</span><span class="p">:</span> <span class="n">Storage</span><span class="p">,</span>  <span class="c1"># Injected by plugin</span>
+</span><span data-line="16"><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">StoredFile</span><span class="p">:</span>
+</span><span data-line="17">    <span class="n">content</span> <span class="o">=</span> <span class="k">await</span> <span class="n">data</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+</span><span data-line="18">    <span class="k">return</span> <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">put</span><span class="p">(</span>
+</span><span data-line="19">        <span class="n">key</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;uploads/</span><span class="si">{</span><span class="n">data</span><span class="o">.</span><span class="n">filename</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+</span><span data-line="20">        <span class="n">data</span><span class="o">=</span><span class="n">content</span><span class="p">,</span>
+</span><span data-line="21">        <span class="n">content_type</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">content_type</span><span class="p">,</span>
+</span><span data-line="22">    <span class="p">)</span>
+</span><span data-line="23">
+</span><span data-line="24"><span class="c1"># Create application with plugin</span>
+</span><span data-line="25"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
+</span><span data-line="26">    <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">upload_file</span><span class="p">],</span>
+</span><span data-line="27">    <span class="n">plugins</span><span class="o">=</span><span class="p">[</span><span class="n">StoragePlugin</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="n">storage</span><span class="p">)],</span>
+</span><span data-line="28"><span class="p">)</span>
+</span></pre></div>
+</div>
+</section>
+<section id="multiple-storages">
+<h2>Multiple Storages<a class="headerlink" href="#multiple-storages" title="Link to this heading">¶</a></h2>
+<p>Use named storages for different purposes:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">post</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_storages</span><span class="w"> </span><span class="kn">import</span> <span class="n">S3Storage</span><span class="p">,</span> <span class="n">AzureStorage</span><span class="p">,</span> <span class="n">Storage</span>
+</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_storages.contrib</span><span class="w"> </span><span class="kn">import</span> <span class="n">StoragePlugin</span>
+</span><span data-line="4">
+</span><span data-line="5"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
+</span><span data-line="6">    <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="o">...</span><span class="p">],</span>
+</span><span data-line="7">    <span class="n">plugins</span><span class="o">=</span><span class="p">[</span>
+</span><span data-line="8">        <span class="n">StoragePlugin</span><span class="p">(</span>
+</span><span data-line="9">            <span class="n">default</span><span class="o">=</span><span class="n">S3Storage</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">S3Config</span><span class="p">(</span><span class="n">bucket</span><span class="o">=</span><span class="s2">&quot;main&quot;</span><span class="p">)),</span>
+</span><span data-line="10">            <span class="n">images</span><span class="o">=</span><span class="n">S3Storage</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">S3Config</span><span class="p">(</span><span class="n">bucket</span><span class="o">=</span><span class="s2">&quot;images&quot;</span><span class="p">)),</span>
+</span><span data-line="11">            <span class="n">documents</span><span class="o">=</span><span class="n">AzureStorage</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">AzureConfig</span><span class="p">(</span><span class="n">container</span><span class="o">=</span><span class="s2">&quot;docs&quot;</span><span class="p">)),</span>
+</span><span data-line="12">        <span class="p">)</span>
+</span><span data-line="13">    <span class="p">],</span>
+</span><span data-line="14"><span class="p">)</span>
+</span><span data-line="15">
+</span><span data-line="16">
+</span><span data-line="17"><span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/upload-image&quot;</span><span class="p">)</span>
+</span><span data-line="18"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">upload_image</span><span class="p">(</span>
+</span><span data-line="19">    <span class="n">data</span><span class="p">:</span> <span class="n">UploadFile</span><span class="p">,</span>
+</span><span data-line="20">    <span class="n">images_storage</span><span class="p">:</span> <span class="n">Storage</span><span class="p">,</span>  <span class="c1"># Named storage: &quot;{name}_storage&quot;</span>
+</span><span data-line="21"><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">StoredFile</span><span class="p">:</span>
+</span><span data-line="22">    <span class="o">...</span>
+</span><span data-line="23">
+</span><span data-line="24">
+</span><span data-line="25"><span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/upload-doc&quot;</span><span class="p">)</span>
+</span><span data-line="26"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">upload_doc</span><span class="p">(</span>
+</span><span data-line="27">    <span class="n">data</span><span class="p">:</span> <span class="n">UploadFile</span><span class="p">,</span>
+</span><span data-line="28">    <span class="n">documents_storage</span><span class="p">:</span> <span class="n">Storage</span><span class="p">,</span>  <span class="c1"># Named storage</span>
+</span><span data-line="29"><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">StoredFile</span><span class="p">:</span>
+</span><span data-line="30">    <span class="o">...</span>
+</span></pre></div>
+</div>
+</section>
+<section id="lifespan-management">
+<h2>Lifespan Management<a class="headerlink" href="#lifespan-management" title="Link to this heading">¶</a></h2>
+<p>The plugin automatically manages storage lifecycle:</p>
+<ol class="arabic simple">
+<li><p><strong>Startup</strong>: Storages are ready when the application starts</p></li>
+<li><p><strong>Shutdown</strong>: All storages are closed via <code class="docutils literal notranslate"><span class="pre">close()</span></code> method</p></li>
+</ol>
+<p>This ensures proper cleanup of HTTP sessions, connection pools, and other resources.</p>
+</section>
+</section>
+
+        </article><button class="back-to-top" type="button">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+  </svg>
+  <span>Back to top</span>
+</button><div class="navigation flex print:hidden"><div class="navigation-prev">
+    <a href="../backends/azure.html">
+      <i class="i-lucide chevron-left"></i>
+      <div class="page-info">
+        <span>Previous</span><div class="title">Azure Storage</div></div>
+    </a>
+  </div><div class="navigation-next">
+    <a href="plugin.html">
+      <div class="page-info">
+        <span>Next</span>
+        <div class="title">Storage Plugin</div>
+      </div>
+      <i class="i-lucide chevron-right"></i>
+    </a>
+  </div></div></div>
+    </div>
+  </main>
+</div>
+<footer class="sy-foot">
+  <div class="sy-foot-inner sy-container mx-auto">
+    <div class="sy-foot-reserved md:flex justify-between items-center">
+      <div class="sy-foot-copyright"><p>2025, Jacob Coffee</p>
+  
+  <p>
+    Made with
+    
+    <a href="https://www.sphinx-doc.org/">Sphinx</a> and
+    
+    <a href="https://shibuya.lepture.com">Shibuya theme</a>.
+  </p>
+</div>
+      <div class="sy-foot-socials">
+<a href="https://github.com/JacobCoffee/litestar-storages" aria-label="GitHub">
+  <iconify-icon icon="simple-icons:github"></iconify-icon>
+</a></div>
+    </div>
+  </div>
+</footer>
+      <script src="../../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=30646c52"></script>
+      <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+      <script src="../../_static/shibuya.js?v=c1cf1a6b"></script></body>
+</html>

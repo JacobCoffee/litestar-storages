@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en" data-accent-color="violet" data-content_root="../../">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Storage Plugin - litestar-storages</title><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="Dependencies" href="dependencies.html" /><link rel="prev" title="Litestar Integration" href="index.html" /><script>
+    function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
+    setColorMode(localStorage._theme||"auto");
+  </script><link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=e1a1ceaf" />
+    <link rel="stylesheet" type="text/css" href="../../_static/shibuya.css?v=14737038" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link media="print" rel="stylesheet" type="text/css" href="../../_static/print.css?v=20ff2c19" />
+    <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=5f8f7e8c" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --sy-f-text: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+  --sy-f-heading: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+}
+</style>
+    <meta property="og:type" content="website"/><meta property="og:title" content="Storage Plugin"/>
+    <meta name="twitter:card" content="summary"/>
+  </head>
+<body><div class="sy-head">
+  <div class="sy-head-blur"></div>
+  <div class="sy-head-inner sy-container mx-auto">
+    <a class="sy-head-brand" href="../../index.html">
+      
+      
+      <strong>litestar-storages</strong>
+    </a>
+    <div class="sy-head-nav" id="head-nav">
+      <nav class="sy-head-links"><ul><li class="link">
+          <a href="https://litestar.dev/">
+            <span>Litestar</span></a>
+        </li><li class="link">
+          <a href="https://pypi.org/project/litestar-storages/">
+            <span>PyPI</span></a>
+        </li></ul></nav>
+      <div class="sy-head-extra flex items-center print:hidden"><form class="searchbox flex items-center" action="../../search.html" method="get">
+  <input type="text" name="q" placeholder="Search" />
+  <kbd>/</kbd>
+</form><div class="sy-head-socials">
+  <a href="https://github.com/JacobCoffee/litestar-storages" aria-label="GitHub">
+    <iconify-icon icon="simple-icons:github"></iconify-icon>
+  </a></div></div>
+    </div>
+    <div class="sy-head-actions flex items-center shrink-0 print:hidden"><button class="js-theme theme-switch flex items-center"
+data-aria-auto="Switch to light color mode"
+data-aria-light="Switch to dark color mode"
+data-aria-dark="Switch to auto color mode">
+<i class="i-lucide theme-icon"></i>
+</button><button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="head-nav" aria-expanded="false">
+        <div class="hamburger">
+          <span class="hamburger_1"></span>
+          <span class="hamburger_2"></span>
+          <span class="hamburger_3"></span>
+        </div>
+      </button>
+    </div>
+  </div>
+</div>
+<div class="sy-page sy-container flex mx-auto">
+  <aside id="lside" class="sy-lside md:w-72 md:shrink-0 print:hidden">
+    <div class="sy-lside-inner md:sticky">
+      <div class="sy-scrollbar p-6">
+        <div class="globaltoc" data-expand-depth="0"><p class="caption" role="heading" aria-level="3"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting-started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../examples.html">Example Applications</a></li>
+</ul>
+<p class="caption" role="heading" aria-level="3"><span class="caption-text">Storage Backends</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../backends/filesystem.html">FileSystem Storage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../backends/s3.html">S3 Storage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../backends/gcs.html">GCS Storage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../backends/azure.html">Azure Blob Storage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../backends/memory.html">Memory Storage</a></li>
+</ul>
+<p class="caption" role="heading" aria-level="3"><span class="caption-text">Advanced Topics</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../advanced/retry.html">Retry Utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../advanced/multipart-uploads.html">Multipart Uploads</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../advanced/progress-callbacks.html">Progress Callbacks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../advanced/custom-backends.html">Custom Backends</a></li>
+</ul>
+<p class="caption" role="heading" aria-level="3"><span class="caption-text">Cookbook</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../cookbook/index.html">Cookbook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../cookbook/file-upload-validation.html">File Upload with Validation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../cookbook/image-processing-pipeline.html">Image Processing Pipeline</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../cookbook/multi-backend-config.html">Multi-Backend Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../cookbook/streaming-large-files.html">Streaming Large Files</a></li>
+</ul>
+<p class="caption" role="heading" aria-level="3"><span class="caption-text">Reference</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">API Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../base.html">Base Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../types.html">Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../exceptions.html">Exceptions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../backends/index.html">Storage Backends</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../backends/memory.html">Memory Storage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../backends/filesystem.html">FileSystem Storage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../backends/s3.html">S3 Storage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../backends/gcs.html">GCS Storage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../backends/azure.html">Azure Storage</a></li>
+</ul>
+</li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">Litestar Integration</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Storage Plugin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dependencies.html">Dependencies</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dto.html">DTOs</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../comparison.html">Comparison with Other Libraries</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../changelog.html">Changelog</a></li>
+</ul>
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="lside-overlay js-menu" role="button" aria-label="Close left sidebar" aria-controls="lside" aria-expanded="false"></div>
+  <aside id="rside" class="sy-rside pb-3 w-64 shrink-0 order-last">
+    <button class="rside-close js-menu xl:hidden" aria-label="Close Table of Contents" type="button" aria-controls="rside" aria-expanded="false">
+      <i class="i-lucide close"></i>
+    </button>
+    <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4"><div class="localtoc"><h3>On this page</h3><ul>
+<li><a class="reference internal" href="#plugin-class">Plugin Class</a><ul>
+<li><a class="reference internal" href="#litestar_storages.contrib.plugin.StoragePlugin"><code class="docutils literal notranslate"><span class="pre">StoragePlugin</span></code></a><ul>
+<li><a class="reference internal" href="#litestar_storages.contrib.plugin.StoragePlugin.__init__"><code class="docutils literal notranslate">__init__()</span></code></a></li>
+<li><a class="reference internal" href="#litestar_storages.contrib.plugin.StoragePlugin.storages"><code class="docutils literal notranslate">storages</span></code></a></li>
+<li><a class="reference internal" href="#litestar_storages.contrib.plugin.StoragePlugin.on_app_init"><code class="docutils literal notranslate">on_app_init()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#features">Features</a><ul>
+<li><a class="reference internal" href="#dependency-injection">Dependency Injection</a></li>
+<li><a class="reference internal" href="#named-storages">Named Storages</a></li>
+<li><a class="reference internal" href="#automatic-cleanup">Automatic Cleanup</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#usage-examples">Usage Examples</a><ul>
+<li><a class="reference internal" href="#single-storage">Single Storage</a></li>
+<li><a class="reference internal" href="#multiple-storages-by-environment">Multiple Storages by Environment</a></li>
+<li><a class="reference internal" href="#with-dtos">With DTOs</a></li>
+<li><a class="reference internal" href="#complete-application">Complete Application</a></li>
+</ul>
+</li>
+</ul>
+</div><div id="ethical-ad-placement" data-ea-publisher="readthedocs"></div></div>
+  </aside>
+  <div class="rside-overlay js-menu" role="button" aria-label="Close Table of Contents" aria-controls="rside" aria-expanded="false"></div>
+  <main class="sy-main w-full max-sm:max-w-full print:pt-6">
+<div class="sy-breadcrumbs" role="navigation">
+  <div class="sy-breadcrumbs-inner flex items-center">
+    <div class="md:hidden mr-3">
+      <button class="js-menu" aria-label="Menu" type="button" aria-controls="lside" aria-expanded="false">
+        <i class="i-lucide menu"></i>
+      </button>
+    </div>
+    <ol class="flex-1" itemscope itemtype="https://schema.org/BreadcrumbList"><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="../../index.html"><span itemprop="name">litestar-storages</span></a>
+        <span>/</span>
+        <meta itemprop="position" content="1" />
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="../index.html"><span itemprop="name">API Reference</span></a>
+        <span>/</span>
+        <meta itemprop="position" content="2" />
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="index.html"><span itemprop="name">Litestar Integration</span></a>
+        <span>/</span>
+        <meta itemprop="position" content="3" />
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <strong itemprop="name">Storage Plugin</strong>
+        <meta itemprop="position" content="4" />
+      </li></ol>
+    <div class="xl:hidden ml-1">
+      <button class="js-menu" aria-label="Show table of contents" type="button" aria-controls="rside"
+        aria-expanded="false">
+        <i class="i-lucide outdent"></i>
+      </button>
+    </div>
+  </div>
+</div><div class="flex flex-col break-words justify-between">
+      <div class="min-w-0 max-w-6xl px-6 pb-6 pt-8 xl:px-12">
+        <article class="yue" role="main">
+          <section id="module-litestar_storages.contrib.plugin">
+<span id="storage-plugin"></span><h1>Storage Plugin<a class="headerlink" href="#module-litestar_storages.contrib.plugin" title="Link to this heading">¶</a></h1>
+<p>The <code class="docutils literal notranslate"><span class="pre">StoragePlugin</span></code> provides seamless integration with Litestar applications,
+handling dependency injection and lifecycle management for storage instances.</p>
+<section id="plugin-class">
+<h2>Plugin Class<a class="headerlink" href="#plugin-class" title="Link to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="litestar_storages.contrib.plugin.StoragePlugin">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar_storages.contrib.plugin.</span></span><span class="sig-name descname"><span class="pre">StoragePlugin</span></span><a class="reference internal" href="../../_modules/litestar_storages/contrib/plugin.html#StoragePlugin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#litestar_storages.contrib.plugin.StoragePlugin" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.litestar.dev/2/reference/plugins/index.html#litestar.plugins.InitPluginProtocol" title="(in Litestar)"><code class="xref py py-class docutils literal notranslate"><span class="pre">InitPluginProtocol</span></code></a></p>
+<p>Litestar plugin for storage integration.</p>
+<p>This plugin provides dependency injection support for storage instances,
+enabling seamless integration with Litestar applications. It supports
+both single and multiple named storage configurations.</p>
+<dl class="simple">
+<dt>Provides:</dt><dd><ul class="simple">
+<li><p>Dependency injection of storage instances</p></li>
+<li><p>Lifespan management (connection cleanup)</p></li>
+<li><p>Multiple named storage support</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition-example admonition">
+<p class="admonition-title">Example</p>
+<p>Single storage configuration:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_storages</span><span class="w"> </span><span class="kn">import</span> <span class="n">S3Storage</span><span class="p">,</span> <span class="n">S3Config</span><span class="p">,</span> <span class="n">StoragePlugin</span>
+</span><span data-line="3">
+</span><span data-line="4"><span class="n">storage</span> <span class="o">=</span> <span class="n">S3Storage</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">S3Config</span><span class="p">(</span><span class="n">bucket</span><span class="o">=</span><span class="s2">&quot;uploads&quot;</span><span class="p">))</span>
+</span><span data-line="5">
+</span><span data-line="6"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
+</span><span data-line="7">    <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="o">...</span><span class="p">],</span>
+</span><span data-line="8">    <span class="n">plugins</span><span class="o">=</span><span class="p">[</span><span class="n">StoragePlugin</span><span class="p">(</span><span class="n">storage</span><span class="p">)],</span>
+</span><span data-line="9"><span class="p">)</span>
+</span></pre></div>
+</div>
+<p>Multiple named storages:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_storages</span><span class="w"> </span><span class="kn">import</span> <span class="n">S3Storage</span><span class="p">,</span> <span class="n">AzureStorage</span><span class="p">,</span> <span class="n">StoragePlugin</span>
+</span><span data-line="3">
+</span><span data-line="4"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
+</span><span data-line="5">    <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="o">...</span><span class="p">],</span>
+</span><span data-line="6">    <span class="n">plugins</span><span class="o">=</span><span class="p">[</span>
+</span><span data-line="7">        <span class="n">StoragePlugin</span><span class="p">(</span>
+</span><span data-line="8">            <span class="n">default</span><span class="o">=</span><span class="n">S3Storage</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">S3Config</span><span class="p">(</span><span class="n">bucket</span><span class="o">=</span><span class="s2">&quot;main-uploads&quot;</span><span class="p">)),</span>
+</span><span data-line="9">            <span class="n">images</span><span class="o">=</span><span class="n">S3Storage</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">S3Config</span><span class="p">(</span><span class="n">bucket</span><span class="o">=</span><span class="s2">&quot;images&quot;</span><span class="p">)),</span>
+</span><span data-line="10">            <span class="n">documents</span><span class="o">=</span><span class="n">AzureStorage</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">AzureConfig</span><span class="p">(</span><span class="n">container</span><span class="o">=</span><span class="s2">&quot;docs&quot;</span><span class="p">)),</span>
+</span><span data-line="11">        <span class="p">)</span>
+</span><span data-line="12">    <span class="p">],</span>
+</span><span data-line="13"><span class="p">)</span>
+</span></pre></div>
+</div>
+<p>Using in route handlers:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">post</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.datastructures</span><span class="w"> </span><span class="kn">import</span> <span class="n">UploadFile</span>
+</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_storages</span><span class="w"> </span><span class="kn">import</span> <span class="n">Storage</span><span class="p">,</span> <span class="n">StoredFile</span>
+</span><span data-line="4">
+</span><span data-line="5">
+</span><span data-line="6"><span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/upload&quot;</span><span class="p">)</span>
+</span><span data-line="7"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">upload</span><span class="p">(</span>
+</span><span data-line="8">    <span class="n">data</span><span class="p">:</span> <span class="n">UploadFile</span><span class="p">,</span>
+</span><span data-line="9">    <span class="n">storage</span><span class="p">:</span> <span class="n">Storage</span><span class="p">,</span>  <span class="c1"># Injected default storage</span>
+</span><span data-line="10"><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">StoredFile</span><span class="p">:</span>
+</span><span data-line="11">    <span class="k">return</span> <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">put</span><span class="p">(</span>
+</span><span data-line="12">        <span class="n">key</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;uploads/</span><span class="si">{</span><span class="n">data</span><span class="o">.</span><span class="n">filename</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+</span><span data-line="13">        <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">file</span><span class="p">,</span>
+</span><span data-line="14">        <span class="n">content_type</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">content_type</span><span class="p">,</span>
+</span><span data-line="15">    <span class="p">)</span>
+</span><span data-line="16">
+</span><span data-line="17">
+</span><span data-line="18"><span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/upload-image&quot;</span><span class="p">)</span>
+</span><span data-line="19"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">upload_image</span><span class="p">(</span>
+</span><span data-line="20">    <span class="n">data</span><span class="p">:</span> <span class="n">UploadFile</span><span class="p">,</span>
+</span><span data-line="21">    <span class="n">images_storage</span><span class="p">:</span> <span class="n">Storage</span><span class="p">,</span>  <span class="c1"># Injected named storage</span>
+</span><span data-line="22"><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">StoredFile</span><span class="p">:</span>
+</span><span data-line="23">    <span class="k">return</span> <span class="k">await</span> <span class="n">images_storage</span><span class="o">.</span><span class="n">put</span><span class="p">(</span>
+</span><span data-line="24">        <span class="n">key</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;images/</span><span class="si">{</span><span class="n">data</span><span class="o">.</span><span class="n">filename</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+</span><span data-line="25">        <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">file</span><span class="p">,</span>
+</span><span data-line="26">        <span class="n">content_type</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">content_type</span><span class="p">,</span>
+</span><span data-line="27">    <span class="p">)</span>
+</span></pre></div>
+</div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>default</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="../base.html#litestar_storages.base.Storage" title="litestar_storages.base.Storage"><code class="xref py py-class docutils literal notranslate"><span class="pre">Storage</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span>)</p></li>
+<li><p><strong>named_storages</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="../base.html#litestar_storages.base.Storage" title="litestar_storages.base.Storage"><code class="xref py py-class docutils literal notranslate"><span class="pre">Storage</span></code></a></span>)</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar_storages.contrib.plugin.StoragePlugin.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">named_storages</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/litestar_storages/contrib/plugin.html#StoragePlugin.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#litestar_storages.contrib.plugin.StoragePlugin.__init__" title="Link to this definition">¶</a></dt>
+<dd><p>Initialize the StoragePlugin.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>default</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="../base.html#litestar_storages.base.Storage" title="litestar_storages.base.Storage"><code class="xref py py-class docutils literal notranslate"><span class="pre">Storage</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span>) – Optional default storage instance. If provided, it will be
+registered as the “storage” dependency.</p></li>
+<li><p><strong>**named_storages</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="../base.html#litestar_storages.base.Storage" title="litestar_storages.base.Storage"><code class="xref py py-class docutils literal notranslate"><span class="pre">Storage</span></code></a></span>) – Named storage instances. Each will be registered
+as “{name}_storage” dependency.</p></li>
+</ul>
+</dd>
+</dl>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="n">plugin</span> <span class="o">=</span> <span class="n">StoragePlugin</span><span class="p">(</span>
+</span><span data-line="2">    <span class="n">default</span><span class="o">=</span><span class="n">S3Storage</span><span class="p">(</span><span class="o">...</span><span class="p">),</span>
+</span><span data-line="3">    <span class="n">images</span><span class="o">=</span><span class="n">S3Storage</span><span class="p">(</span><span class="o">...</span><span class="p">),</span>
+</span><span data-line="4">    <span class="n">documents</span><span class="o">=</span><span class="n">AzureStorage</span><span class="p">(</span><span class="o">...</span><span class="p">),</span>
+</span><span data-line="5"><span class="p">)</span>
+</span></pre></div>
+</div>
+<dl class="simple">
+<dt>This registers three dependencies:</dt><dd><ul class="simple">
+<li><p><cite>storage</cite> (from default)</p></li>
+<li><p><cite>images_storage</cite></p></li>
+<li><p><cite>documents_storage</cite></p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="litestar_storages.contrib.plugin.StoragePlugin.storages">
+<span class="sig-name descname"><span class="pre">storages</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a><span class="pre">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a><span class="pre">,</span> <a class="reference internal" href="../base.html#litestar_storages.base.Storage" title="litestar_storages.base.Storage"><code class="xref py py-class docutils literal notranslate"><span class="pre">Storage</span></code></a><span class="pre">]</span></em><a class="headerlink" href="#litestar_storages.contrib.plugin.StoragePlugin.storages" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar_storages.contrib.plugin.StoragePlugin.on_app_init">
+<span class="sig-name descname"><span class="pre">on_app_init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">app_config</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/litestar_storages/contrib/plugin.html#StoragePlugin.on_app_init"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#litestar_storages.contrib.plugin.StoragePlugin.on_app_init" title="Link to this definition">¶</a></dt>
+<dd><p>Register storage instances as dependencies on application initialization.</p>
+<p>This method is called by Litestar during application startup. It registers
+each storage instance as a dependency that can be injected into route handlers.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>app_config</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.litestar.dev/2/reference/config.html#litestar.config.app.AppConfig" title="(in Litestar)"><code class="xref py py-class docutils literal notranslate"><span class="pre">AppConfig</span></code></a></span>) – The Litestar application configuration</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.litestar.dev/2/reference/config.html#litestar.config.app.AppConfig" title="(in Litestar)"><code class="xref py py-class docutils literal notranslate"><span class="pre">AppConfig</span></code></a></span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Modified application configuration with storage dependencies registered</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p>The “default” storage is registered as “storage”</p></li>
+<li><p>Named storages are registered as “{name}_storage”</p></li>
+<li><p>Existing dependencies are preserved</p></li>
+</ul>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="features">
+<h2>Features<a class="headerlink" href="#features" title="Link to this heading">¶</a></h2>
+<section id="dependency-injection">
+<h3>Dependency Injection<a class="headerlink" href="#dependency-injection" title="Link to this heading">¶</a></h3>
+<p>The plugin registers storage instances as dependencies that can be injected
+into route handlers:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span><span class="p">,</span> <span class="n">post</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_storages</span><span class="w"> </span><span class="kn">import</span> <span class="n">Storage</span><span class="p">,</span> <span class="n">StoredFile</span>
+</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_storages.contrib</span><span class="w"> </span><span class="kn">import</span> <span class="n">StoragePlugin</span>
+</span><span data-line="4">
+</span><span data-line="5"><span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/upload&quot;</span><span class="p">)</span>
+</span><span data-line="6"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">upload</span><span class="p">(</span>
+</span><span data-line="7">    <span class="n">data</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">,</span>
+</span><span data-line="8">    <span class="n">storage</span><span class="p">:</span> <span class="n">Storage</span><span class="p">,</span>  <span class="c1"># Injected</span>
+</span><span data-line="9"><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">StoredFile</span><span class="p">:</span>
+</span><span data-line="10">    <span class="k">return</span> <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="s2">&quot;file.txt&quot;</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+</span><span data-line="11">
+</span><span data-line="12"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/files&quot;</span><span class="p">)</span>
+</span><span data-line="13"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">list_files</span><span class="p">(</span><span class="n">storage</span><span class="p">:</span> <span class="n">Storage</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">StoredFile</span><span class="p">]:</span>
+</span><span data-line="14">    <span class="k">return</span> <span class="p">[</span><span class="n">file</span> <span class="k">async</span> <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">storage</span><span class="o">.</span><span class="n">list</span><span class="p">()]</span>
+</span></pre></div>
+</div>
+</section>
+<section id="named-storages">
+<h3>Named Storages<a class="headerlink" href="#named-storages" title="Link to this heading">¶</a></h3>
+<p>Register multiple storages with different names:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="n">plugin</span> <span class="o">=</span> <span class="n">StoragePlugin</span><span class="p">(</span>
+</span><span data-line="2">    <span class="n">default</span><span class="o">=</span><span class="n">s3_storage</span><span class="p">,</span>      <span class="c1"># Injected as &quot;storage&quot;</span>
+</span><span data-line="3">    <span class="n">uploads</span><span class="o">=</span><span class="n">upload_storage</span><span class="p">,</span>  <span class="c1"># Injected as &quot;uploads_storage&quot;</span>
+</span><span data-line="4">    <span class="n">cache</span><span class="o">=</span><span class="n">cache_storage</span><span class="p">,</span>     <span class="c1"># Injected as &quot;cache_storage&quot;</span>
+</span><span data-line="5"><span class="p">)</span>
+</span><span data-line="6">
+</span><span data-line="7"><span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/upload&quot;</span><span class="p">)</span>
+</span><span data-line="8"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">upload</span><span class="p">(</span>
+</span><span data-line="9">    <span class="n">storage</span><span class="p">:</span> <span class="n">Storage</span><span class="p">,</span>         <span class="c1"># Default storage</span>
+</span><span data-line="10">    <span class="n">uploads_storage</span><span class="p">:</span> <span class="n">Storage</span><span class="p">,</span> <span class="c1"># Named storage</span>
+</span><span data-line="11"><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">StoredFile</span><span class="p">:</span>
+</span><span data-line="12">    <span class="o">...</span>
+</span></pre></div>
+</div>
+</section>
+<section id="automatic-cleanup">
+<h3>Automatic Cleanup<a class="headerlink" href="#automatic-cleanup" title="Link to this heading">¶</a></h3>
+<p>The plugin registers a shutdown handler that closes all storage instances:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="c1"># On application shutdown, this is called automatically:</span>
+</span><span data-line="2"><span class="k">for</span> <span class="n">storage</span> <span class="ow">in</span> <span class="n">storages</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+</span><span data-line="3">    <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</span></pre></div>
+</div>
+<p>This ensures proper cleanup of:</p>
+<ul class="simple">
+<li><p>HTTP sessions (aioboto3, gcloud-aio-storage, azure-storage-blob)</p></li>
+<li><p>Connection pools</p></li>
+<li><p>File handles</p></li>
+</ul>
+</section>
+</section>
+<section id="usage-examples">
+<h2>Usage Examples<a class="headerlink" href="#usage-examples" title="Link to this heading">¶</a></h2>
+<section id="single-storage">
+<h3>Single Storage<a class="headerlink" href="#single-storage" title="Link to this heading">¶</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_storages</span><span class="w"> </span><span class="kn">import</span> <span class="n">S3Storage</span><span class="p">,</span> <span class="n">S3Config</span>
+</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_storages.contrib</span><span class="w"> </span><span class="kn">import</span> <span class="n">StoragePlugin</span>
+</span><span data-line="4">
+</span><span data-line="5"><span class="n">storage</span> <span class="o">=</span> <span class="n">S3Storage</span><span class="p">(</span>
+</span><span data-line="6">    <span class="n">config</span><span class="o">=</span><span class="n">S3Config</span><span class="p">(</span>
+</span><span data-line="7">        <span class="n">bucket</span><span class="o">=</span><span class="s2">&quot;my-uploads&quot;</span><span class="p">,</span>
+</span><span data-line="8">        <span class="n">region</span><span class="o">=</span><span class="s2">&quot;us-east-1&quot;</span><span class="p">,</span>
+</span><span data-line="9">    <span class="p">)</span>
+</span><span data-line="10"><span class="p">)</span>
+</span><span data-line="11">
+</span><span data-line="12"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
+</span><span data-line="13">    <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="o">...</span><span class="p">],</span>
+</span><span data-line="14">    <span class="n">plugins</span><span class="o">=</span><span class="p">[</span><span class="n">StoragePlugin</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="n">storage</span><span class="p">)],</span>
+</span><span data-line="15"><span class="p">)</span>
+</span></pre></div>
+</div>
+</section>
+<section id="multiple-storages-by-environment">
+<h3>Multiple Storages by Environment<a class="headerlink" href="#multiple-storages-by-environment" title="Link to this heading">¶</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span>
+</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_storages</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+</span><span data-line="4">    <span class="n">MemoryStorage</span><span class="p">,</span>
+</span><span data-line="5">    <span class="n">S3Storage</span><span class="p">,</span> <span class="n">S3Config</span><span class="p">,</span>
+</span><span data-line="6">    <span class="n">FileSystemStorage</span><span class="p">,</span> <span class="n">FileSystemConfig</span><span class="p">,</span>
+</span><span data-line="7"><span class="p">)</span>
+</span><span data-line="8"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_storages.contrib</span><span class="w"> </span><span class="kn">import</span> <span class="n">StoragePlugin</span>
+</span><span data-line="9">
+</span><span data-line="10"><span class="k">def</span><span class="w"> </span><span class="nf">get_storage</span><span class="p">():</span>
+</span><span data-line="11">    <span class="n">env</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;ENV&quot;</span><span class="p">,</span> <span class="s2">&quot;development&quot;</span><span class="p">)</span>
+</span><span data-line="12">
+</span><span data-line="13">    <span class="k">if</span> <span class="n">env</span> <span class="o">==</span> <span class="s2">&quot;production&quot;</span><span class="p">:</span>
+</span><span data-line="14">        <span class="k">return</span> <span class="n">S3Storage</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">S3Config</span><span class="p">(</span>
+</span><span data-line="15">            <span class="n">bucket</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;S3_BUCKET&quot;</span><span class="p">],</span>
+</span><span data-line="16">            <span class="n">region</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;AWS_REGION&quot;</span><span class="p">],</span>
+</span><span data-line="17">        <span class="p">))</span>
+</span><span data-line="18">    <span class="k">elif</span> <span class="n">env</span> <span class="o">==</span> <span class="s2">&quot;staging&quot;</span><span class="p">:</span>
+</span><span data-line="19">        <span class="k">return</span> <span class="n">FileSystemStorage</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">FileSystemConfig</span><span class="p">(</span>
+</span><span data-line="20">            <span class="n">path</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;/var/uploads&quot;</span><span class="p">),</span>
+</span><span data-line="21">        <span class="p">))</span>
+</span><span data-line="22">    <span class="k">else</span><span class="p">:</span>
+</span><span data-line="23">        <span class="k">return</span> <span class="n">MemoryStorage</span><span class="p">()</span>
+</span><span data-line="24">
+</span><span data-line="25"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
+</span><span data-line="26">    <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="o">...</span><span class="p">],</span>
+</span><span data-line="27">    <span class="n">plugins</span><span class="o">=</span><span class="p">[</span><span class="n">StoragePlugin</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="n">get_storage</span><span class="p">())],</span>
+</span><span data-line="28"><span class="p">)</span>
+</span></pre></div>
+</div>
+</section>
+<section id="with-dtos">
+<h3>With DTOs<a class="headerlink" href="#with-dtos" title="Link to this heading">¶</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">post</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.datastructures</span><span class="w"> </span><span class="kn">import</span> <span class="n">UploadFile</span>
+</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_storages</span><span class="w"> </span><span class="kn">import</span> <span class="n">Storage</span><span class="p">,</span> <span class="n">StoredFile</span>
+</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_storages.contrib</span><span class="w"> </span><span class="kn">import</span> <span class="n">StoragePlugin</span><span class="p">,</span> <span class="n">StoredFileDTO</span>
+</span><span data-line="5">
+</span><span data-line="6"><span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/upload&quot;</span><span class="p">,</span> <span class="n">return_dto</span><span class="o">=</span><span class="n">StoredFileDTO</span><span class="p">)</span>
+</span><span data-line="7"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">upload</span><span class="p">(</span>
+</span><span data-line="8">    <span class="n">data</span><span class="p">:</span> <span class="n">UploadFile</span><span class="p">,</span>
+</span><span data-line="9">    <span class="n">storage</span><span class="p">:</span> <span class="n">Storage</span><span class="p">,</span>
+</span><span data-line="10"><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">StoredFile</span><span class="p">:</span>
+</span><span data-line="11">    <span class="n">content</span> <span class="o">=</span> <span class="k">await</span> <span class="n">data</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+</span><span data-line="12">    <span class="k">return</span> <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">put</span><span class="p">(</span>
+</span><span data-line="13">        <span class="n">key</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;uploads/</span><span class="si">{</span><span class="n">data</span><span class="o">.</span><span class="n">filename</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+</span><span data-line="14">        <span class="n">data</span><span class="o">=</span><span class="n">content</span><span class="p">,</span>
+</span><span data-line="15">        <span class="n">content_type</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">content_type</span><span class="p">,</span>
+</span><span data-line="16">    <span class="p">)</span>
+</span></pre></div>
+</div>
+</section>
+<section id="complete-application">
+<h3>Complete Application<a class="headerlink" href="#complete-application" title="Link to this heading">¶</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span><span class="p">,</span> <span class="n">post</span><span class="p">,</span> <span class="n">delete</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.datastructures</span><span class="w"> </span><span class="kn">import</span> <span class="n">UploadFile</span>
+</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.response</span><span class="w"> </span><span class="kn">import</span> <span class="n">Stream</span>
+</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_storages</span><span class="w"> </span><span class="kn">import</span> <span class="n">Storage</span><span class="p">,</span> <span class="n">StoredFile</span>
+</span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_storages.contrib</span><span class="w"> </span><span class="kn">import</span> <span class="n">StoragePlugin</span><span class="p">,</span> <span class="n">StoredFileDTO</span>
+</span><span data-line="6"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_storages.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">StorageFileNotFoundError</span>
+</span><span data-line="7">
+</span><span data-line="8"><span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/files&quot;</span><span class="p">,</span> <span class="n">return_dto</span><span class="o">=</span><span class="n">StoredFileDTO</span><span class="p">)</span>
+</span><span data-line="9"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">upload_file</span><span class="p">(</span>
+</span><span data-line="10">    <span class="n">data</span><span class="p">:</span> <span class="n">UploadFile</span><span class="p">,</span>
+</span><span data-line="11">    <span class="n">storage</span><span class="p">:</span> <span class="n">Storage</span><span class="p">,</span>
+</span><span data-line="12"><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">StoredFile</span><span class="p">:</span>
+</span><span data-line="13">    <span class="n">content</span> <span class="o">=</span> <span class="k">await</span> <span class="n">data</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+</span><span data-line="14">    <span class="k">return</span> <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">put</span><span class="p">(</span>
+</span><span data-line="15">        <span class="n">key</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;files/</span><span class="si">{</span><span class="n">data</span><span class="o">.</span><span class="n">filename</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+</span><span data-line="16">        <span class="n">data</span><span class="o">=</span><span class="n">content</span><span class="p">,</span>
+</span><span data-line="17">        <span class="n">content_type</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">content_type</span><span class="p">,</span>
+</span><span data-line="18">    <span class="p">)</span>
+</span><span data-line="19">
+</span><span data-line="20"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/files/{key:path}&quot;</span><span class="p">)</span>
+</span><span data-line="21"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">download_file</span><span class="p">(</span>
+</span><span data-line="22">    <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+</span><span data-line="23">    <span class="n">storage</span><span class="p">:</span> <span class="n">Storage</span><span class="p">,</span>
+</span><span data-line="24"><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Stream</span><span class="p">:</span>
+</span><span data-line="25">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">stream</span><span class="p">():</span>
+</span><span data-line="26">        <span class="k">async</span> <span class="k">for</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="n">storage</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;files/</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">):</span>
+</span><span data-line="27">            <span class="k">yield</span> <span class="n">chunk</span>
+</span><span data-line="28">    <span class="k">return</span> <span class="n">Stream</span><span class="p">(</span><span class="n">stream</span><span class="p">())</span>
+</span><span data-line="29">
+</span><span data-line="30"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/files/{key:path}/info&quot;</span><span class="p">,</span> <span class="n">return_dto</span><span class="o">=</span><span class="n">StoredFileDTO</span><span class="p">)</span>
+</span><span data-line="31"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_file_info</span><span class="p">(</span>
+</span><span data-line="32">    <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+</span><span data-line="33">    <span class="n">storage</span><span class="p">:</span> <span class="n">Storage</span><span class="p">,</span>
+</span><span data-line="34"><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">StoredFile</span><span class="p">:</span>
+</span><span data-line="35">    <span class="k">return</span> <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;files/</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</span><span data-line="36">
+</span><span data-line="37"><span class="nd">@delete</span><span class="p">(</span><span class="s2">&quot;/files/{key:path}&quot;</span><span class="p">)</span>
+</span><span data-line="38"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">delete_file</span><span class="p">(</span>
+</span><span data-line="39">    <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+</span><span data-line="40">    <span class="n">storage</span><span class="p">:</span> <span class="n">Storage</span><span class="p">,</span>
+</span><span data-line="41"><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="42">    <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;files/</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</span><span data-line="43">
+</span><span data-line="44"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
+</span><span data-line="45">    <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">upload_file</span><span class="p">,</span> <span class="n">download_file</span><span class="p">,</span> <span class="n">get_file_info</span><span class="p">,</span> <span class="n">delete_file</span><span class="p">],</span>
+</span><span data-line="46">    <span class="n">plugins</span><span class="o">=</span><span class="p">[</span><span class="n">StoragePlugin</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="n">S3Storage</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">S3Config</span><span class="p">(</span><span class="n">bucket</span><span class="o">=</span><span class="s2">&quot;files&quot;</span><span class="p">)))],</span>
+</span><span data-line="47"><span class="p">)</span>
+</span></pre></div>
+</div>
+</section>
+</section>
+</section>
+
+        </article><button class="back-to-top" type="button">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+  </svg>
+  <span>Back to top</span>
+</button><div class="navigation flex print:hidden"><div class="navigation-prev">
+    <a href="index.html">
+      <i class="i-lucide chevron-left"></i>
+      <div class="page-info">
+        <span>Previous</span><div class="title">Litestar Integration</div></div>
+    </a>
+  </div><div class="navigation-next">
+    <a href="dependencies.html">
+      <div class="page-info">
+        <span>Next</span>
+        <div class="title">Dependencies</div>
+      </div>
+      <i class="i-lucide chevron-right"></i>
+    </a>
+  </div></div></div>
+    </div>
+  </main>
+</div>
+<footer class="sy-foot">
+  <div class="sy-foot-inner sy-container mx-auto">
+    <div class="sy-foot-reserved md:flex justify-between items-center">
+      <div class="sy-foot-copyright"><p>2025, Jacob Coffee</p>
+  
+  <p>
+    Made with
+    
+    <a href="https://www.sphinx-doc.org/">Sphinx</a> and
+    
+    <a href="https://shibuya.lepture.com">Shibuya theme</a>.
+  </p>
+</div>
+      <div class="sy-foot-socials">
+<a href="https://github.com/JacobCoffee/litestar-storages" aria-label="GitHub">
+  <iconify-icon icon="simple-icons:github"></iconify-icon>
+</a></div>
+    </div>
+  </div>
+</footer>
+      <script src="../../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=30646c52"></script>
+      <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+      <script src="../../_static/shibuya.js?v=c1cf1a6b"></script></body>
+</html>
