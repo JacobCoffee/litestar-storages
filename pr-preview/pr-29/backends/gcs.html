@@ -1,0 +1,1166 @@
+<!DOCTYPE html>
+<html lang="en" data-accent-color="violet" data-content_root="../">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>GCS Storage - litestar-storages</title><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Azure Blob Storage" href="azure.html" /><link rel="prev" title="S3 Storage" href="s3.html" /><script>
+    function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
+    setColorMode(localStorage._theme||"auto");
+  </script><link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=e1a1ceaf" />
+    <link rel="stylesheet" type="text/css" href="../_static/shibuya.css?v=14737038" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link media="print" rel="stylesheet" type="text/css" href="../_static/print.css?v=20ff2c19" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=5f8f7e8c" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --sy-f-text: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+  --sy-f-heading: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+}
+</style>
+    <meta property="og:type" content="website"/><meta property="og:title" content="GCS Storage"/>
+    <meta name="twitter:card" content="summary"/>
+  </head>
+<body><div class="sy-head">
+  <div class="sy-head-blur"></div>
+  <div class="sy-head-inner sy-container mx-auto">
+    <a class="sy-head-brand" href="../index.html">
+      
+      
+      <strong>litestar-storages</strong>
+    </a>
+    <div class="sy-head-nav" id="head-nav">
+      <nav class="sy-head-links"><ul><li class="link">
+          <a href="https://litestar.dev/">
+            <span>Litestar</span></a>
+        </li><li class="link">
+          <a href="https://pypi.org/project/litestar-storages/">
+            <span>PyPI</span></a>
+        </li></ul></nav>
+      <div class="sy-head-extra flex items-center print:hidden"><form class="searchbox flex items-center" action="../search.html" method="get">
+  <input type="text" name="q" placeholder="Search" />
+  <kbd>/</kbd>
+</form><div class="sy-head-socials">
+  <a href="https://github.com/JacobCoffee/litestar-storages" aria-label="GitHub">
+    <iconify-icon icon="simple-icons:github"></iconify-icon>
+  </a></div></div>
+    </div>
+    <div class="sy-head-actions flex items-center shrink-0 print:hidden"><button class="js-theme theme-switch flex items-center"
+data-aria-auto="Switch to light color mode"
+data-aria-light="Switch to dark color mode"
+data-aria-dark="Switch to auto color mode">
+<i class="i-lucide theme-icon"></i>
+</button><button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="head-nav" aria-expanded="false">
+        <div class="hamburger">
+          <span class="hamburger_1"></span>
+          <span class="hamburger_2"></span>
+          <span class="hamburger_3"></span>
+        </div>
+      </button>
+    </div>
+  </div>
+</div>
+<div class="sy-page sy-container flex mx-auto">
+  <aside id="lside" class="sy-lside md:w-72 md:shrink-0 print:hidden">
+    <div class="sy-lside-inner md:sticky">
+      <div class="sy-scrollbar p-6">
+        <div class="globaltoc" data-expand-depth="0"><p class="caption" role="heading" aria-level="3"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../getting-started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Example Applications</a></li>
+</ul>
+<p class="caption" role="heading" aria-level="3"><span class="caption-text">Storage Backends</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="filesystem.html">FileSystem Storage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="s3.html">S3 Storage</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">GCS Storage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="azure.html">Azure Blob Storage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="memory.html">Memory Storage</a></li>
+</ul>
+<p class="caption" role="heading" aria-level="3"><span class="caption-text">Advanced Topics</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../advanced/retry.html">Retry Utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../advanced/multipart-uploads.html">Multipart Uploads</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../advanced/progress-callbacks.html">Progress Callbacks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../advanced/custom-backends.html">Custom Backends</a></li>
+</ul>
+<p class="caption" role="heading" aria-level="3"><span class="caption-text">Cookbook</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../cookbook/index.html">Cookbook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cookbook/file-upload-validation.html">File Upload with Validation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cookbook/image-processing-pipeline.html">Image Processing Pipeline</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cookbook/multi-backend-config.html">Multi-Backend Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cookbook/streaming-large-files.html">Streaming Large Files</a></li>
+</ul>
+<p class="caption" role="heading" aria-level="3"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/index.html">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../api/base.html">Base Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/types.html">Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/exceptions.html">Exceptions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/backends/index.html">Storage Backends</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../api/backends/memory.html">Memory Storage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/backends/filesystem.html">FileSystem Storage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/backends/s3.html">S3 Storage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/backends/gcs.html">GCS Storage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/backends/azure.html">Azure Storage</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../api/contrib/index.html">Litestar Integration</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../api/contrib/plugin.html">Storage Plugin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/contrib/dependencies.html">Dependencies</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/contrib/dto.html">DTOs</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../comparison.html">Comparison with Other Libraries</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
+</ul>
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="lside-overlay js-menu" role="button" aria-label="Close left sidebar" aria-controls="lside" aria-expanded="false"></div>
+  <aside id="rside" class="sy-rside pb-3 w-64 shrink-0 order-last">
+    <button class="rside-close js-menu xl:hidden" aria-label="Close Table of Contents" type="button" aria-controls="rside" aria-expanded="false">
+      <i class="i-lucide close"></i>
+    </button>
+    <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4"><div class="localtoc"><h3>On this page</h3><ul>
+<li><a class="reference internal" href="#when-to-use-gcs-storage">When to Use GCS Storage</a></li>
+<li><a class="reference internal" href="#installation">Installation</a></li>
+<li><a class="reference internal" href="#configuration">Configuration</a><ul>
+<li><a class="reference internal" href="#gcsconfig-options">GCSConfig Options</a></li>
+<li><a class="reference internal" href="#configuration-options">Configuration Options</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#authentication-methods">Authentication Methods</a><ul>
+<li><a class="reference internal" href="#service-account-json-file">Service Account JSON File</a></li>
+<li><a class="reference internal" href="#application-default-credentials-adc">Application Default Credentials (ADC)</a></li>
+<li><a class="reference internal" href="#running-on-gcp-auto-detection">Running on GCP (Auto-Detection)</a></li>
+<li><a class="reference internal" href="#emulator-support-fake-gcs-server">Emulator Support (fake-gcs-server)</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#usage-examples">Usage Examples</a><ul>
+<li><a class="reference internal" href="#basic-upload-and-download">Basic Upload and Download</a></li>
+<li><a class="reference internal" href="#signed-urls">Signed URLs</a></li>
+<li><a class="reference internal" href="#using-with-prefix">Using with Prefix</a></li>
+<li><a class="reference internal" href="#streaming-large-files">Streaming Large Files</a></li>
+<li><a class="reference internal" href="#file-upload-with-metadata">File Upload with Metadata</a></li>
+<li><a class="reference internal" href="#listing-files">Listing Files</a></li>
+<li><a class="reference internal" href="#copy-and-move-operations">Copy and Move Operations</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#emulator-setup-for-testing">Emulator Setup for Testing</a><ul>
+<li><a class="reference internal" href="#running-with-docker">Running with Docker</a></li>
+<li><a class="reference internal" href="#configuring-gcsstorage-for-emulator">Configuring GCSStorage for Emulator</a></li>
+<li><a class="reference internal" href="#pytest-fixture-example">Pytest Fixture Example</a></li>
+<li><a class="reference internal" href="#docker-compose-setup">Docker Compose Setup</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#best-practices-and-credential-management">Best Practices and Credential Management</a><ul>
+<li><a class="reference internal" href="#credential-hierarchy">Credential Hierarchy</a></li>
+<li><a class="reference internal" href="#environment-variable-configuration">Environment Variable Configuration</a></li>
+<li><a class="reference internal" href="#never-commit-credentials">Never Commit Credentials</a></li>
+<li><a class="reference internal" href="#workload-identity-gke">Workload Identity (GKE)</a></li>
+<li><a class="reference internal" href="#principle-of-least-privilege">Principle of Least Privilege</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#error-handling">Error Handling</a><ul>
+<li><a class="reference internal" href="#common-error-scenarios">Common Error Scenarios</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#large-file-uploads">Large File Uploads</a><ul>
+<li><a class="reference internal" href="#using-put-large">Using put_large()</a></li>
+<li><a class="reference internal" href="#progress-tracking">Progress Tracking</a></li>
+<li><a class="reference internal" href="#manual-multipart-upload">Manual Multipart Upload</a></li>
+<li><a class="reference internal" href="#memory-buffering-approach">Memory Buffering Approach</a></li>
+<li><a class="reference internal" href="#gcs-specific-notes">GCS-Specific Notes</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#comparison-with-other-backends">Comparison with Other Backends</a></li>
+<li><a class="reference internal" href="#next-steps">Next Steps</a></li>
+</ul>
+</div><div id="ethical-ad-placement" data-ea-publisher="readthedocs"></div></div>
+  </aside>
+  <div class="rside-overlay js-menu" role="button" aria-label="Close Table of Contents" aria-controls="rside" aria-expanded="false"></div>
+  <main class="sy-main w-full max-sm:max-w-full print:pt-6">
+<div class="sy-breadcrumbs" role="navigation">
+  <div class="sy-breadcrumbs-inner flex items-center">
+    <div class="md:hidden mr-3">
+      <button class="js-menu" aria-label="Menu" type="button" aria-controls="lside" aria-expanded="false">
+        <i class="i-lucide menu"></i>
+      </button>
+    </div>
+    <ol class="flex-1" itemscope itemtype="https://schema.org/BreadcrumbList"><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="../index.html"><span itemprop="name">litestar-storages</span></a>
+        <span>/</span>
+        <meta itemprop="position" content="1" />
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <strong itemprop="name">GCS Storage</strong>
+        <meta itemprop="position" content="2" />
+      </li></ol>
+    <div class="xl:hidden ml-1">
+      <button class="js-menu" aria-label="Show table of contents" type="button" aria-controls="rside"
+        aria-expanded="false">
+        <i class="i-lucide outdent"></i>
+      </button>
+    </div>
+  </div>
+</div><div class="flex flex-col break-words justify-between">
+      <div class="min-w-0 max-w-6xl px-6 pb-6 pt-8 xl:px-12">
+        <article class="yue" role="main">
+          <section id="gcs-storage">
+<h1>GCS Storage<a class="headerlink" href="#gcs-storage" title="Link to this heading">¶</a></h1>
+<p>The <code class="docutils literal notranslate"><span class="pre">GCSStorage</span></code> backend stores files in Google Cloud Storage. It provides async operations using <code class="docutils literal notranslate"><span class="pre">gcloud-aio-storage</span></code>, supports signed URLs for temporary access, and works seamlessly with Google Cloud’s authentication mechanisms.</p>
+<section id="when-to-use-gcs-storage">
+<h2>When to Use GCS Storage<a class="headerlink" href="#when-to-use-gcs-storage" title="Link to this heading">¶</a></h2>
+<p><strong>Ideal for:</strong></p>
+<ul class="simple">
+<li><p>Applications deployed on Google Cloud Platform (GKE, Cloud Run, Compute Engine)</p></li>
+<li><p>Teams already using the Google Cloud ecosystem</p></li>
+<li><p>Workloads that benefit from GCS features (lifecycle policies, multi-regional storage)</p></li>
+<li><p>Integration with other Google Cloud services (BigQuery, Dataflow, etc.)</p></li>
+</ul>
+</section>
+<section id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Link to this heading">¶</a></h2>
+<p>Install with the GCS extra:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">pip<span class="w"> </span>install<span class="w"> </span>litestar-storages<span class="o">[</span>gcs<span class="o">]</span>
+</span></pre></div>
+</div>
+<p>This installs <code class="docutils literal notranslate"><span class="pre">gcloud-aio-storage</span></code> for async GCS operations.</p>
+</section>
+<section id="configuration">
+<h2>Configuration<a class="headerlink" href="#configuration" title="Link to this heading">¶</a></h2>
+<section id="gcsconfig-options">
+<h3>GCSConfig Options<a class="headerlink" href="#gcsconfig-options" title="Link to this heading">¶</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">timedelta</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_storages</span><span class="w"> </span><span class="kn">import</span> <span class="n">GCSStorage</span><span class="p">,</span> <span class="n">GCSConfig</span>
+</span><span data-line="3">
+</span><span data-line="4"><span class="n">config</span> <span class="o">=</span> <span class="n">GCSConfig</span><span class="p">(</span>
+</span><span data-line="5">    <span class="n">bucket</span><span class="o">=</span><span class="s2">&quot;my-bucket&quot;</span><span class="p">,</span>                       <span class="c1"># Required: GCS bucket name</span>
+</span><span data-line="6">    <span class="n">project</span><span class="o">=</span><span class="s2">&quot;my-gcp-project&quot;</span><span class="p">,</span>                 <span class="c1"># Optional: GCP project ID</span>
+</span><span data-line="7">    <span class="n">service_file</span><span class="o">=</span><span class="s2">&quot;/path/to/credentials.json&quot;</span><span class="p">,</span> <span class="c1"># Optional: service account key</span>
+</span><span data-line="8">    <span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>                                <span class="c1"># Optional: key prefix for all operations</span>
+</span><span data-line="9">    <span class="n">presigned_expiry</span><span class="o">=</span><span class="n">timedelta</span><span class="p">(</span><span class="n">hours</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>      <span class="c1"># Optional: default URL expiration</span>
+</span><span data-line="10">    <span class="n">api_root</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>                            <span class="c1"># Optional: custom endpoint (for emulators)</span>
+</span><span data-line="11"><span class="p">)</span>
+</span><span data-line="12">
+</span><span data-line="13"><span class="n">storage</span> <span class="o">=</span> <span class="n">GCSStorage</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+</span></pre></div>
+</div>
+</section>
+<section id="configuration-options">
+<h3>Configuration Options<a class="headerlink" href="#configuration-options" title="Link to this heading">¶</a></h3>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Option</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">bucket</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">str</span></code></p></td>
+<td><p>Required</p></td>
+<td><p>GCS bucket name</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">project</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
+<td><p>GCP project ID (required for some operations)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">service_file</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
+<td><p>Path to service account JSON key file</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">prefix</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">str</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&quot;&quot;</span></code></p></td>
+<td><p>Key prefix applied to all operations</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">presigned_expiry</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">timedelta</span></code></p></td>
+<td><p>1 hour</p></td>
+<td><p>Default expiration for signed URLs</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">api_root</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
+<td><p>Custom API endpoint (for emulators like fake-gcs-server)</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</section>
+<section id="authentication-methods">
+<h2>Authentication Methods<a class="headerlink" href="#authentication-methods" title="Link to this heading">¶</a></h2>
+<p>GCSStorage supports multiple authentication methods, automatically detecting credentials when possible.</p>
+<section id="service-account-json-file">
+<h3>Service Account JSON File<a class="headerlink" href="#service-account-json-file" title="Link to this heading">¶</a></h3>
+<p>The most explicit method - provide a path to your service account key file:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_storages</span><span class="w"> </span><span class="kn">import</span> <span class="n">GCSStorage</span><span class="p">,</span> <span class="n">GCSConfig</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="n">storage</span> <span class="o">=</span> <span class="n">GCSStorage</span><span class="p">(</span>
+</span><span data-line="4">    <span class="n">config</span><span class="o">=</span><span class="n">GCSConfig</span><span class="p">(</span>
+</span><span data-line="5">        <span class="n">bucket</span><span class="o">=</span><span class="s2">&quot;my-app-uploads&quot;</span><span class="p">,</span>
+</span><span data-line="6">        <span class="n">service_file</span><span class="o">=</span><span class="s2">&quot;/path/to/service-account.json&quot;</span><span class="p">,</span>
+</span><span data-line="7">    <span class="p">)</span>
+</span><span data-line="8"><span class="p">)</span>
+</span></pre></div>
+</div>
+<p>Create a service account in the Google Cloud Console:</p>
+<ol class="arabic simple">
+<li><p>Go to IAM &amp; Admin &gt; Service Accounts</p></li>
+<li><p>Create a new service account</p></li>
+<li><p>Grant the “Storage Object Admin” role (or more restrictive roles as needed)</p></li>
+<li><p>Create a key and download the JSON file</p></li>
+</ol>
+<p>Required IAM roles for full functionality:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="n">roles</span><span class="o">/</span><span class="n">storage</span><span class="o">.</span><span class="n">objectViewer</span>    <span class="c1"># For read operations (get, list, exists)</span>
+</span><span data-line="2"><span class="n">roles</span><span class="o">/</span><span class="n">storage</span><span class="o">.</span><span class="n">objectCreator</span>   <span class="c1"># For write operations (put)</span>
+</span><span data-line="3"><span class="n">roles</span><span class="o">/</span><span class="n">storage</span><span class="o">.</span><span class="n">objectAdmin</span>     <span class="c1"># For all operations including delete and copy</span>
+</span></pre></div>
+</div>
+<p>Minimal custom role permissions:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="n">storage</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">create</span>
+</span><span data-line="2"><span class="n">storage</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">delete</span>
+</span><span data-line="3"><span class="n">storage</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span>
+</span><span data-line="4"><span class="n">storage</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">list</span>
+</span><span data-line="5"><span class="n">storage</span><span class="o">.</span><span class="n">buckets</span><span class="o">.</span><span class="n">get</span>
+</span></pre></div>
+</div>
+</section>
+<section id="application-default-credentials-adc">
+<h3>Application Default Credentials (ADC)<a class="headerlink" href="#application-default-credentials-adc" title="Link to this heading">¶</a></h3>
+<p>When no explicit credentials are provided, GCSStorage uses Application Default Credentials:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="c1"># Uses ADC automatically</span>
+</span><span data-line="2"><span class="n">storage</span> <span class="o">=</span> <span class="n">GCSStorage</span><span class="p">(</span>
+</span><span data-line="3">    <span class="n">config</span><span class="o">=</span><span class="n">GCSConfig</span><span class="p">(</span>
+</span><span data-line="4">        <span class="n">bucket</span><span class="o">=</span><span class="s2">&quot;my-app-uploads&quot;</span><span class="p">,</span>
+</span><span data-line="5">        <span class="n">project</span><span class="o">=</span><span class="s2">&quot;my-gcp-project&quot;</span><span class="p">,</span>
+</span><span data-line="6">    <span class="p">)</span>
+</span><span data-line="7"><span class="p">)</span>
+</span></pre></div>
+</div>
+<p>Set up ADC locally with the gcloud CLI:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="c1"># Authenticate with your user account</span>
+</span><span data-line="2">gcloud<span class="w"> </span>auth<span class="w"> </span>application-default<span class="w"> </span>login
+</span><span data-line="3">
+</span><span data-line="4"><span class="c1"># Or use a service account</span>
+</span><span data-line="5">gcloud<span class="w"> </span>auth<span class="w"> </span>activate-service-account<span class="w"> </span><span class="se">\</span>
+</span><span data-line="6"><span class="w">    </span>--key-file<span class="o">=</span>/path/to/service-account.json
+</span></pre></div>
+</div>
+</section>
+<section id="running-on-gcp-auto-detection">
+<h3>Running on GCP (Auto-Detection)<a class="headerlink" href="#running-on-gcp-auto-detection" title="Link to this heading">¶</a></h3>
+<p>When running on GCP infrastructure, credentials are automatically available:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="c1"># No credentials needed on GKE, Cloud Run, Compute Engine, etc.</span>
+</span><span data-line="2"><span class="n">storage</span> <span class="o">=</span> <span class="n">GCSStorage</span><span class="p">(</span>
+</span><span data-line="3">    <span class="n">config</span><span class="o">=</span><span class="n">GCSConfig</span><span class="p">(</span>
+</span><span data-line="4">        <span class="n">bucket</span><span class="o">=</span><span class="s2">&quot;my-app-uploads&quot;</span><span class="p">,</span>
+</span><span data-line="5">        <span class="c1"># Credentials auto-detected from environment</span>
+</span><span data-line="6">    <span class="p">)</span>
+</span><span data-line="7"><span class="p">)</span>
+</span></pre></div>
+</div>
+<p><strong>Compute Engine / GKE:</strong> Uses the service account attached to the VM or node pool.</p>
+<p><strong>Cloud Run:</strong> Uses the service account configured for the Cloud Run service.</p>
+<p><strong>Cloud Functions:</strong> Uses the function’s service account.</p>
+<p>Ensure the service account has the necessary Storage permissions.</p>
+</section>
+<section id="emulator-support-fake-gcs-server">
+<h3>Emulator Support (fake-gcs-server)<a class="headerlink" href="#emulator-support-fake-gcs-server" title="Link to this heading">¶</a></h3>
+<p>For local development and testing, use the <code class="docutils literal notranslate"><span class="pre">api_root</span></code> option to connect to an emulator:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="n">storage</span> <span class="o">=</span> <span class="n">GCSStorage</span><span class="p">(</span>
+</span><span data-line="2">    <span class="n">config</span><span class="o">=</span><span class="n">GCSConfig</span><span class="p">(</span>
+</span><span data-line="3">        <span class="n">bucket</span><span class="o">=</span><span class="s2">&quot;test-bucket&quot;</span><span class="p">,</span>
+</span><span data-line="4">        <span class="n">api_root</span><span class="o">=</span><span class="s2">&quot;http://localhost:4443&quot;</span><span class="p">,</span>
+</span><span data-line="5">    <span class="p">)</span>
+</span><span data-line="6"><span class="p">)</span>
+</span></pre></div>
+</div>
+<p>See the <a class="reference internal" href="#emulator-setup-for-testing">Emulator Setup</a> section for running fake-gcs-server.</p>
+</section>
+</section>
+<section id="usage-examples">
+<h2>Usage Examples<a class="headerlink" href="#usage-examples" title="Link to this heading">¶</a></h2>
+<section id="basic-upload-and-download">
+<h3>Basic Upload and Download<a class="headerlink" href="#basic-upload-and-download" title="Link to this heading">¶</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_storages</span><span class="w"> </span><span class="kn">import</span> <span class="n">GCSStorage</span><span class="p">,</span> <span class="n">GCSConfig</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="n">storage</span> <span class="o">=</span> <span class="n">GCSStorage</span><span class="p">(</span>
+</span><span data-line="4">    <span class="n">config</span><span class="o">=</span><span class="n">GCSConfig</span><span class="p">(</span>
+</span><span data-line="5">        <span class="n">bucket</span><span class="o">=</span><span class="s2">&quot;my-bucket&quot;</span><span class="p">,</span>
+</span><span data-line="6">        <span class="n">project</span><span class="o">=</span><span class="s2">&quot;my-project&quot;</span><span class="p">,</span>
+</span><span data-line="7">    <span class="p">)</span>
+</span><span data-line="8"><span class="p">)</span>
+</span><span data-line="9">
+</span><span data-line="10"><span class="c1"># Upload a file</span>
+</span><span data-line="11"><span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">put</span><span class="p">(</span>
+</span><span data-line="12">    <span class="s2">&quot;documents/report.pdf&quot;</span><span class="p">,</span>
+</span><span data-line="13">    <span class="sa">b</span><span class="s2">&quot;PDF content here...&quot;</span><span class="p">,</span>
+</span><span data-line="14">    <span class="n">content_type</span><span class="o">=</span><span class="s2">&quot;application/pdf&quot;</span><span class="p">,</span>
+</span><span data-line="15">    <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;author&quot;</span><span class="p">:</span> <span class="s2">&quot;Jane Doe&quot;</span><span class="p">,</span> <span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="s2">&quot;1.0&quot;</span><span class="p">},</span>
+</span><span data-line="16"><span class="p">)</span>
+</span><span data-line="17"><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Uploaded: </span><span class="si">{</span><span class="n">result</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">, size: </span><span class="si">{</span><span class="n">result</span><span class="o">.</span><span class="n">size</span><span class="si">}</span><span class="s2">, etag: </span><span class="si">{</span><span class="n">result</span><span class="o">.</span><span class="n">etag</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</span><span data-line="18">
+</span><span data-line="19"><span class="c1"># Check if file exists</span>
+</span><span data-line="20"><span class="n">exists</span> <span class="o">=</span> <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="s2">&quot;documents/report.pdf&quot;</span><span class="p">)</span>
+</span><span data-line="21">
+</span><span data-line="22"><span class="c1"># Download as bytes</span>
+</span><span data-line="23"><span class="n">content</span> <span class="o">=</span> <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">get_bytes</span><span class="p">(</span><span class="s2">&quot;documents/report.pdf&quot;</span><span class="p">)</span>
+</span><span data-line="24">
+</span><span data-line="25"><span class="c1"># Get file info without downloading</span>
+</span><span data-line="26"><span class="n">info</span> <span class="o">=</span> <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;documents/report.pdf&quot;</span><span class="p">)</span>
+</span><span data-line="27"><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Size: </span><span class="si">{</span><span class="n">info</span><span class="o">.</span><span class="n">size</span><span class="si">}</span><span class="s2">, Type: </span><span class="si">{</span><span class="n">info</span><span class="o">.</span><span class="n">content_type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</span><span data-line="28">
+</span><span data-line="29"><span class="c1"># Delete the file</span>
+</span><span data-line="30"><span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="s2">&quot;documents/report.pdf&quot;</span><span class="p">)</span>
+</span></pre></div>
+</div>
+</section>
+<section id="signed-urls">
+<h3>Signed URLs<a class="headerlink" href="#signed-urls" title="Link to this heading">¶</a></h3>
+<p>Signed URLs provide temporary access to private files without exposing credentials:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">timedelta</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="c1"># Use default expiration (from config)</span>
+</span><span data-line="4"><span class="n">url</span> <span class="o">=</span> <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">url</span><span class="p">(</span><span class="s2">&quot;documents/report.pdf&quot;</span><span class="p">)</span>
+</span><span data-line="5">
+</span><span data-line="6"><span class="c1"># Custom expiration</span>
+</span><span data-line="7"><span class="n">url</span> <span class="o">=</span> <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">url</span><span class="p">(</span>
+</span><span data-line="8">    <span class="s2">&quot;documents/report.pdf&quot;</span><span class="p">,</span>
+</span><span data-line="9">    <span class="n">expires_in</span><span class="o">=</span><span class="n">timedelta</span><span class="p">(</span><span class="n">minutes</span><span class="o">=</span><span class="mi">15</span><span class="p">),</span>
+</span><span data-line="10"><span class="p">)</span>
+</span><span data-line="11">
+</span><span data-line="12"><span class="c1"># Long-lived URL (use sparingly)</span>
+</span><span data-line="13"><span class="n">url</span> <span class="o">=</span> <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">url</span><span class="p">(</span>
+</span><span data-line="14">    <span class="s2">&quot;public/image.jpg&quot;</span><span class="p">,</span>
+</span><span data-line="15">    <span class="n">expires_in</span><span class="o">=</span><span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">7</span><span class="p">),</span>
+</span><span data-line="16"><span class="p">)</span>
+</span></pre></div>
+</div>
+<p><strong>Generating download links in API responses:</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">get</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_storages</span><span class="w"> </span><span class="kn">import</span> <span class="n">Storage</span>
+</span><span data-line="3">
+</span><span data-line="4">
+</span><span data-line="5"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/files/{key:path}/download-url&quot;</span><span class="p">)</span>
+</span><span data-line="6"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_download_url</span><span class="p">(</span>
+</span><span data-line="7">    <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+</span><span data-line="8">    <span class="n">storage</span><span class="p">:</span> <span class="n">Storage</span><span class="p">,</span>
+</span><span data-line="9"><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+</span><span data-line="10"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate a temporary download URL.&quot;&quot;&quot;</span>
+</span><span data-line="11">    <span class="n">url</span> <span class="o">=</span> <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">url</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">expires_in</span><span class="o">=</span><span class="n">timedelta</span><span class="p">(</span><span class="n">minutes</span><span class="o">=</span><span class="mi">30</span><span class="p">))</span>
+</span><span data-line="12">    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;download_url&quot;</span><span class="p">:</span> <span class="n">url</span><span class="p">,</span> <span class="s2">&quot;expires_in&quot;</span><span class="p">:</span> <span class="s2">&quot;30 minutes&quot;</span><span class="p">}</span>
+</span></pre></div>
+</div>
+<p><strong>Direct browser downloads:</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">get</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.response</span><span class="w"> </span><span class="kn">import</span> <span class="n">Redirect</span>
+</span><span data-line="3">
+</span><span data-line="4">
+</span><span data-line="5"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/files/{key:path}/download&quot;</span><span class="p">)</span>
+</span><span data-line="6"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">download_file</span><span class="p">(</span>
+</span><span data-line="7">    <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+</span><span data-line="8">    <span class="n">storage</span><span class="p">:</span> <span class="n">Storage</span><span class="p">,</span>
+</span><span data-line="9"><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Redirect</span><span class="p">:</span>
+</span><span data-line="10"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Redirect to signed URL for download.&quot;&quot;&quot;</span>
+</span><span data-line="11">    <span class="n">url</span> <span class="o">=</span> <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">url</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">expires_in</span><span class="o">=</span><span class="n">timedelta</span><span class="p">(</span><span class="n">minutes</span><span class="o">=</span><span class="mi">5</span><span class="p">))</span>
+</span><span data-line="12">    <span class="k">return</span> <span class="n">Redirect</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+</span></pre></div>
+</div>
+</section>
+<section id="using-with-prefix">
+<h3>Using with Prefix<a class="headerlink" href="#using-with-prefix" title="Link to this heading">¶</a></h3>
+<p>Prefixes help organize files within a single bucket:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="c1"># All operations will be prefixed with &quot;app-name/uploads/&quot;</span>
+</span><span data-line="2"><span class="n">storage</span> <span class="o">=</span> <span class="n">GCSStorage</span><span class="p">(</span>
+</span><span data-line="3">    <span class="n">config</span><span class="o">=</span><span class="n">GCSConfig</span><span class="p">(</span>
+</span><span data-line="4">        <span class="n">bucket</span><span class="o">=</span><span class="s2">&quot;shared-bucket&quot;</span><span class="p">,</span>
+</span><span data-line="5">        <span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;app-name/uploads/&quot;</span><span class="p">,</span>
+</span><span data-line="6">    <span class="p">)</span>
+</span><span data-line="7"><span class="p">)</span>
+</span><span data-line="8">
+</span><span data-line="9"><span class="c1"># Stores at: gs://shared-bucket/app-name/uploads/images/photo.jpg</span>
+</span><span data-line="10"><span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="s2">&quot;images/photo.jpg&quot;</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+</span><span data-line="11">
+</span><span data-line="12"><span class="c1"># Lists only files under the prefix</span>
+</span><span data-line="13"><span class="k">async</span> <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">storage</span><span class="o">.</span><span class="n">list</span><span class="p">(</span><span class="s2">&quot;images/&quot;</span><span class="p">):</span>
+</span><span data-line="14">    <span class="nb">print</span><span class="p">(</span><span class="n">file</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>  <span class="c1"># Returns &quot;images/photo.jpg&quot;, not full path</span>
+</span></pre></div>
+</div>
+<p>This is useful for:</p>
+<ul class="simple">
+<li><p>Multiple applications sharing a bucket</p></li>
+<li><p>Environment separation (production/, staging/)</p></li>
+<li><p>Tenant isolation in multi-tenant applications</p></li>
+</ul>
+</section>
+<section id="streaming-large-files">
+<h3>Streaming Large Files<a class="headerlink" href="#streaming-large-files" title="Link to this heading">¶</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">get</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.response</span><span class="w"> </span><span class="kn">import</span> <span class="n">Stream</span>
+</span><span data-line="3">
+</span><span data-line="4">
+</span><span data-line="5"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/files/{key:path}&quot;</span><span class="p">)</span>
+</span><span data-line="6"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">stream_file</span><span class="p">(</span>
+</span><span data-line="7">    <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+</span><span data-line="8">    <span class="n">storage</span><span class="p">:</span> <span class="n">Storage</span><span class="p">,</span>
+</span><span data-line="9"><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Stream</span><span class="p">:</span>
+</span><span data-line="10"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Stream a file directly from GCS.&quot;&quot;&quot;</span>
+</span><span data-line="11">    <span class="n">info</span> <span class="o">=</span> <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+</span><span data-line="12">
+</span><span data-line="13">    <span class="k">return</span> <span class="n">Stream</span><span class="p">(</span>
+</span><span data-line="14">        <span class="n">storage</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">),</span>
+</span><span data-line="15">        <span class="n">media_type</span><span class="o">=</span><span class="n">info</span><span class="o">.</span><span class="n">content_type</span> <span class="ow">or</span> <span class="s2">&quot;application/octet-stream&quot;</span><span class="p">,</span>
+</span><span data-line="16">        <span class="n">headers</span><span class="o">=</span><span class="p">{</span>
+</span><span data-line="17">            <span class="s2">&quot;Content-Length&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">info</span><span class="o">.</span><span class="n">size</span><span class="p">),</span>
+</span><span data-line="18">            <span class="s2">&quot;Content-Disposition&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s1">&#39;attachment; filename=&quot;</span><span class="si">{</span><span class="n">key</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s1">&quot;&#39;</span><span class="p">,</span>
+</span><span data-line="19">        <span class="p">},</span>
+</span><span data-line="20">    <span class="p">)</span>
+</span></pre></div>
+</div>
+</section>
+<section id="file-upload-with-metadata">
+<h3>File Upload with Metadata<a class="headerlink" href="#file-upload-with-metadata" title="Link to this heading">¶</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">post</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.datastructures</span><span class="w"> </span><span class="kn">import</span> <span class="n">UploadFile</span>
+</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_storages</span><span class="w"> </span><span class="kn">import</span> <span class="n">Storage</span><span class="p">,</span> <span class="n">StoredFile</span>
+</span><span data-line="4">
+</span><span data-line="5">
+</span><span data-line="6"><span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/upload&quot;</span><span class="p">)</span>
+</span><span data-line="7"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">upload_file</span><span class="p">(</span>
+</span><span data-line="8">    <span class="n">data</span><span class="p">:</span> <span class="n">UploadFile</span><span class="p">,</span>
+</span><span data-line="9">    <span class="n">storage</span><span class="p">:</span> <span class="n">Storage</span><span class="p">,</span>
+</span><span data-line="10"><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+</span><span data-line="11"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Upload a file and return download URL.&quot;&quot;&quot;</span>
+</span><span data-line="12">    <span class="n">content</span> <span class="o">=</span> <span class="k">await</span> <span class="n">data</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+</span><span data-line="13">
+</span><span data-line="14">    <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">put</span><span class="p">(</span>
+</span><span data-line="15">        <span class="n">key</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;uploads/</span><span class="si">{</span><span class="n">data</span><span class="o">.</span><span class="n">filename</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+</span><span data-line="16">        <span class="n">data</span><span class="o">=</span><span class="n">content</span><span class="p">,</span>
+</span><span data-line="17">        <span class="n">content_type</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">content_type</span><span class="p">,</span>
+</span><span data-line="18">        <span class="n">metadata</span><span class="o">=</span><span class="p">{</span>
+</span><span data-line="19">            <span class="s2">&quot;original-name&quot;</span><span class="p">:</span> <span class="n">data</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span>
+</span><span data-line="20">            <span class="s2">&quot;uploaded-by&quot;</span><span class="p">:</span> <span class="s2">&quot;user-123&quot;</span><span class="p">,</span>
+</span><span data-line="21">        <span class="p">},</span>
+</span><span data-line="22">    <span class="p">)</span>
+</span><span data-line="23">
+</span><span data-line="24">    <span class="n">download_url</span> <span class="o">=</span> <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">url</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">expires_in</span><span class="o">=</span><span class="n">timedelta</span><span class="p">(</span><span class="n">hours</span><span class="o">=</span><span class="mi">24</span><span class="p">))</span>
+</span><span data-line="25">
+</span><span data-line="26">    <span class="k">return</span> <span class="p">{</span>
+</span><span data-line="27">        <span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="n">result</span><span class="o">.</span><span class="n">key</span><span class="p">,</span>
+</span><span data-line="28">        <span class="s2">&quot;size&quot;</span><span class="p">:</span> <span class="n">result</span><span class="o">.</span><span class="n">size</span><span class="p">,</span>
+</span><span data-line="29">        <span class="s2">&quot;content_type&quot;</span><span class="p">:</span> <span class="n">result</span><span class="o">.</span><span class="n">content_type</span><span class="p">,</span>
+</span><span data-line="30">        <span class="s2">&quot;download_url&quot;</span><span class="p">:</span> <span class="n">download_url</span><span class="p">,</span>
+</span><span data-line="31">    <span class="p">}</span>
+</span></pre></div>
+</div>
+</section>
+<section id="listing-files">
+<h3>Listing Files<a class="headerlink" href="#listing-files" title="Link to this heading">¶</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="c1"># List all files</span>
+</span><span data-line="2"><span class="k">async</span> <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">storage</span><span class="o">.</span><span class="n">list</span><span class="p">():</span>
+</span><span data-line="3">    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">file</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">file</span><span class="o">.</span><span class="n">size</span><span class="si">}</span><span class="s2"> bytes&quot;</span><span class="p">)</span>
+</span><span data-line="4">
+</span><span data-line="5"><span class="c1"># List files with a prefix filter</span>
+</span><span data-line="6"><span class="k">async</span> <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">storage</span><span class="o">.</span><span class="n">list</span><span class="p">(</span><span class="s2">&quot;images/&quot;</span><span class="p">):</span>
+</span><span data-line="7">    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">file</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">file</span><span class="o">.</span><span class="n">content_type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</span><span data-line="8">
+</span><span data-line="9"><span class="c1"># Limit results</span>
+</span><span data-line="10"><span class="k">async</span> <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">storage</span><span class="o">.</span><span class="n">list</span><span class="p">(</span><span class="n">limit</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
+</span><span data-line="11">    <span class="nb">print</span><span class="p">(</span><span class="n">file</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
+</span></pre></div>
+</div>
+</section>
+<section id="copy-and-move-operations">
+<h3>Copy and Move Operations<a class="headerlink" href="#copy-and-move-operations" title="Link to this heading">¶</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_storages</span><span class="w"> </span><span class="kn">import</span> <span class="n">StoredFile</span>
+</span><span data-line="2">
+</span><span data-line="3">
+</span><span data-line="4"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">publish_draft</span><span class="p">(</span><span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">storage</span><span class="p">:</span> <span class="n">Storage</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">StoredFile</span><span class="p">:</span>
+</span><span data-line="5"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Move a file from drafts to published.&quot;&quot;&quot;</span>
+</span><span data-line="6">    <span class="n">source</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;drafts/</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span data-line="7">    <span class="n">destination</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;published/</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span data-line="8">
+</span><span data-line="9">    <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">destination</span><span class="p">)</span>
+</span><span data-line="10">    <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
+</span><span data-line="11">
+</span><span data-line="12">    <span class="k">return</span> <span class="n">result</span>
+</span><span data-line="13">
+</span><span data-line="14">
+</span><span data-line="15"><span class="c1"># Or use the built-in move method</span>
+</span><span data-line="16"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">archive_file</span><span class="p">(</span><span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">storage</span><span class="p">:</span> <span class="n">Storage</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">StoredFile</span><span class="p">:</span>
+</span><span data-line="17"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Move a file to the archive.&quot;&quot;&quot;</span>
+</span><span data-line="18">    <span class="k">return</span> <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;archive/</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</span></pre></div>
+</div>
+</section>
+</section>
+<section id="emulator-setup-for-testing">
+<h2>Emulator Setup for Testing<a class="headerlink" href="#emulator-setup-for-testing" title="Link to this heading">¶</a></h2>
+<p>Use <a class="reference external" href="https://github.com/fsouza/fake-gcs-server">fake-gcs-server</a> for local testing without GCP credentials.</p>
+<section id="running-with-docker">
+<h3>Running with Docker<a class="headerlink" href="#running-with-docker" title="Link to this heading">¶</a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="c1"># Start fake-gcs-server</span>
+</span><span data-line="2">docker<span class="w"> </span>run<span class="w"> </span>-d<span class="w"> </span><span class="se">\</span>
+</span><span data-line="3"><span class="w">    </span>--name<span class="w"> </span>fake-gcs<span class="w"> </span><span class="se">\</span>
+</span><span data-line="4"><span class="w">    </span>-p<span class="w"> </span><span class="m">4443</span>:4443<span class="w"> </span><span class="se">\</span>
+</span><span data-line="5"><span class="w">    </span>-v<span class="w"> </span><span class="k">$(</span><span class="nb">pwd</span><span class="k">)</span>/gcs-data:/data<span class="w"> </span><span class="se">\</span>
+</span><span data-line="6"><span class="w">    </span>fsouza/fake-gcs-server:latest<span class="w"> </span><span class="se">\</span>
+</span><span data-line="7"><span class="w">    </span>-scheme<span class="w"> </span>http<span class="w"> </span><span class="se">\</span>
+</span><span data-line="8"><span class="w">    </span>-port<span class="w"> </span><span class="m">4443</span>
+</span><span data-line="9">
+</span><span data-line="10"><span class="c1"># Create a test bucket (optional - fake-gcs-server auto-creates buckets)</span>
+</span><span data-line="11">curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span><span class="s2">&quot;http://localhost:4443/storage/v1/b?project=test-project&quot;</span><span class="w"> </span><span class="se">\</span>
+</span><span data-line="12"><span class="w">    </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
+</span><span data-line="13"><span class="w">    </span>-d<span class="w"> </span><span class="s1">&#39;{&quot;name&quot;: &quot;test-bucket&quot;}&#39;</span>
+</span></pre></div>
+</div>
+</section>
+<section id="configuring-gcsstorage-for-emulator">
+<h3>Configuring GCSStorage for Emulator<a class="headerlink" href="#configuring-gcsstorage-for-emulator" title="Link to this heading">¶</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="n">storage</span> <span class="o">=</span> <span class="n">GCSStorage</span><span class="p">(</span>
+</span><span data-line="2">    <span class="n">config</span><span class="o">=</span><span class="n">GCSConfig</span><span class="p">(</span>
+</span><span data-line="3">        <span class="n">bucket</span><span class="o">=</span><span class="s2">&quot;test-bucket&quot;</span><span class="p">,</span>
+</span><span data-line="4">        <span class="n">api_root</span><span class="o">=</span><span class="s2">&quot;http://localhost:4443&quot;</span><span class="p">,</span>
+</span><span data-line="5">        <span class="c1"># No service_file needed for emulator</span>
+</span><span data-line="6">    <span class="p">)</span>
+</span><span data-line="7"><span class="p">)</span>
+</span></pre></div>
+</div>
+</section>
+<section id="pytest-fixture-example">
+<h3>Pytest Fixture Example<a class="headerlink" href="#pytest-fixture-example" title="Link to this heading">¶</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">import</span><span class="w"> </span><span class="nn">pytest</span>
+</span><span data-line="2"><span class="kn">import</span><span class="w"> </span><span class="nn">subprocess</span>
+</span><span data-line="3"><span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_storages</span><span class="w"> </span><span class="kn">import</span> <span class="n">GCSStorage</span><span class="p">,</span> <span class="n">GCSConfig</span>
+</span><span data-line="5">
+</span><span data-line="6">
+</span><span data-line="7"><span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="s2">&quot;session&quot;</span><span class="p">)</span>
+</span><span data-line="8"><span class="k">def</span><span class="w"> </span><span class="nf">gcs_emulator</span><span class="p">():</span>
+</span><span data-line="9"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Start fake-gcs-server for the test session.&quot;&quot;&quot;</span>
+</span><span data-line="10">    <span class="n">container</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
+</span><span data-line="11">        <span class="p">[</span>
+</span><span data-line="12">            <span class="s2">&quot;docker&quot;</span><span class="p">,</span> <span class="s2">&quot;run&quot;</span><span class="p">,</span> <span class="s2">&quot;-d&quot;</span><span class="p">,</span>
+</span><span data-line="13">            <span class="s2">&quot;--name&quot;</span><span class="p">,</span> <span class="s2">&quot;test-gcs&quot;</span><span class="p">,</span>
+</span><span data-line="14">            <span class="s2">&quot;-p&quot;</span><span class="p">,</span> <span class="s2">&quot;4443:4443&quot;</span><span class="p">,</span>
+</span><span data-line="15">            <span class="s2">&quot;fsouza/fake-gcs-server:latest&quot;</span><span class="p">,</span>
+</span><span data-line="16">            <span class="s2">&quot;-scheme&quot;</span><span class="p">,</span> <span class="s2">&quot;http&quot;</span><span class="p">,</span>
+</span><span data-line="17">            <span class="s2">&quot;-port&quot;</span><span class="p">,</span> <span class="s2">&quot;4443&quot;</span><span class="p">,</span>
+</span><span data-line="18">        <span class="p">],</span>
+</span><span data-line="19">        <span class="n">capture_output</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+</span><span data-line="20">        <span class="n">text</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+</span><span data-line="21">    <span class="p">)</span>
+</span><span data-line="22">    <span class="n">container_id</span> <span class="o">=</span> <span class="n">container</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+</span><span data-line="23">    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>  <span class="c1"># Wait for server to start</span>
+</span><span data-line="24">
+</span><span data-line="25">    <span class="k">yield</span> <span class="s2">&quot;http://localhost:4443&quot;</span>
+</span><span data-line="26">
+</span><span data-line="27">    <span class="c1"># Cleanup</span>
+</span><span data-line="28">    <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">([</span><span class="s2">&quot;docker&quot;</span><span class="p">,</span> <span class="s2">&quot;stop&quot;</span><span class="p">,</span> <span class="n">container_id</span><span class="p">])</span>
+</span><span data-line="29">    <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">([</span><span class="s2">&quot;docker&quot;</span><span class="p">,</span> <span class="s2">&quot;rm&quot;</span><span class="p">,</span> <span class="n">container_id</span><span class="p">])</span>
+</span><span data-line="30">
+</span><span data-line="31">
+</span><span data-line="32"><span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span>
+</span><span data-line="33"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">gcs_storage</span><span class="p">(</span><span class="n">gcs_emulator</span><span class="p">):</span>
+</span><span data-line="34"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Provide GCS storage connected to emulator.&quot;&quot;&quot;</span>
+</span><span data-line="35">    <span class="n">storage</span> <span class="o">=</span> <span class="n">GCSStorage</span><span class="p">(</span>
+</span><span data-line="36">        <span class="n">config</span><span class="o">=</span><span class="n">GCSConfig</span><span class="p">(</span>
+</span><span data-line="37">            <span class="n">bucket</span><span class="o">=</span><span class="s2">&quot;test-bucket&quot;</span><span class="p">,</span>
+</span><span data-line="38">            <span class="n">api_root</span><span class="o">=</span><span class="n">gcs_emulator</span><span class="p">,</span>
+</span><span data-line="39">        <span class="p">)</span>
+</span><span data-line="40">    <span class="p">)</span>
+</span><span data-line="41">    <span class="k">yield</span> <span class="n">storage</span>
+</span><span data-line="42">    <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</span><span data-line="43">
+</span><span data-line="44">
+</span><span data-line="45"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">test_upload_download</span><span class="p">(</span><span class="n">gcs_storage</span><span class="p">):</span>
+</span><span data-line="46"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Test file upload and download.&quot;&quot;&quot;</span>
+</span><span data-line="47">    <span class="k">await</span> <span class="n">gcs_storage</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="s2">&quot;test.txt&quot;</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot;Hello, GCS!&quot;</span><span class="p">)</span>
+</span><span data-line="48">    <span class="n">content</span> <span class="o">=</span> <span class="k">await</span> <span class="n">gcs_storage</span><span class="o">.</span><span class="n">get_bytes</span><span class="p">(</span><span class="s2">&quot;test.txt&quot;</span><span class="p">)</span>
+</span><span data-line="49">    <span class="k">assert</span> <span class="n">content</span> <span class="o">==</span> <span class="sa">b</span><span class="s2">&quot;Hello, GCS!&quot;</span>
+</span></pre></div>
+</div>
+</section>
+<section id="docker-compose-setup">
+<h3>Docker Compose Setup<a class="headerlink" href="#docker-compose-setup" title="Link to this heading">¶</a></h3>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="c1"># docker-compose.yml</span>
+</span><span data-line="2"><span class="nt">services</span><span class="p">:</span>
+</span><span data-line="3"><span class="w">  </span><span class="nt">fake-gcs</span><span class="p">:</span>
+</span><span data-line="4"><span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">fsouza/fake-gcs-server:latest</span>
+</span><span data-line="5"><span class="w">    </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;-scheme&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;http&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;-port&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;4443&quot;</span><span class="p p-Indicator">]</span>
+</span><span data-line="6"><span class="w">    </span><span class="nt">ports</span><span class="p">:</span>
+</span><span data-line="7"><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;4443:4443&quot;</span>
+</span><span data-line="8"><span class="w">    </span><span class="nt">volumes</span><span class="p">:</span>
+</span><span data-line="9"><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">gcs-data:/data</span>
+</span><span data-line="10">
+</span><span data-line="11"><span class="nt">volumes</span><span class="p">:</span>
+</span><span data-line="12"><span class="w">  </span><span class="nt">gcs-data</span><span class="p">:</span>
+</span></pre></div>
+</div>
+</section>
+</section>
+<section id="best-practices-and-credential-management">
+<h2>Best Practices and Credential Management<a class="headerlink" href="#best-practices-and-credential-management" title="Link to this heading">¶</a></h2>
+<section id="credential-hierarchy">
+<h3>Credential Hierarchy<a class="headerlink" href="#credential-hierarchy" title="Link to this heading">¶</a></h3>
+<p>GCSStorage uses credentials in this order:</p>
+<ol class="arabic simple">
+<li><p>Explicit <code class="docutils literal notranslate"><span class="pre">service_file</span></code> in config</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">GOOGLE_APPLICATION_CREDENTIALS</span></code> environment variable</p></li>
+<li><p>Application Default Credentials (ADC)</p></li>
+<li><p>Metadata server (when running on GCP)</p></li>
+</ol>
+<p><strong>Recommended approach by environment:</strong></p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Environment</p></th>
+<th class="head"><p>Credential Method</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Local development</p></td>
+<td><p>ADC via <code class="docutils literal notranslate"><span class="pre">gcloud</span> <span class="pre">auth</span> <span class="pre">application-default</span> <span class="pre">login</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>CI/CD</p></td>
+<td><p>Service account JSON (as secret)</p></td>
+</tr>
+<tr class="row-even"><td><p>GKE</p></td>
+<td><p>Workload Identity</p></td>
+</tr>
+<tr class="row-odd"><td><p>Cloud Run</p></td>
+<td><p>Service account attached to the service</p></td>
+</tr>
+<tr class="row-even"><td><p>Compute Engine</p></td>
+<td><p>Service account attached to the VM</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="environment-variable-configuration">
+<h3>Environment Variable Configuration<a class="headerlink" href="#environment-variable-configuration" title="Link to this heading">¶</a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="c1"># Set service account credentials via environment variable</span>
+</span><span data-line="2"><span class="nb">export</span><span class="w"> </span><span class="nv">GOOGLE_APPLICATION_CREDENTIALS</span><span class="o">=</span><span class="s2">&quot;/path/to/service-account.json&quot;</span>
+</span><span data-line="3">
+</span><span data-line="4"><span class="c1"># Set default project</span>
+</span><span data-line="5"><span class="nb">export</span><span class="w"> </span><span class="nv">GCLOUD_PROJECT</span><span class="o">=</span><span class="s2">&quot;my-gcp-project&quot;</span>
+</span></pre></div>
+</div>
+</section>
+<section id="never-commit-credentials">
+<h3>Never Commit Credentials<a class="headerlink" href="#never-commit-credentials" title="Link to this heading">¶</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="c1"># BAD - credentials path hardcoded</span>
+</span><span data-line="2"><span class="n">storage</span> <span class="o">=</span> <span class="n">GCSStorage</span><span class="p">(</span><span class="n">GCSConfig</span><span class="p">(</span>
+</span><span data-line="3">    <span class="n">bucket</span><span class="o">=</span><span class="s2">&quot;my-bucket&quot;</span><span class="p">,</span>
+</span><span data-line="4">    <span class="n">service_file</span><span class="o">=</span><span class="s2">&quot;/home/user/my-service-account.json&quot;</span><span class="p">,</span>  <span class="c1"># Never do this!</span>
+</span><span data-line="5"><span class="p">))</span>
+</span><span data-line="6">
+</span><span data-line="7"><span class="c1"># GOOD - credentials from environment</span>
+</span><span data-line="8"><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+</span><span data-line="9">
+</span><span data-line="10"><span class="n">storage</span> <span class="o">=</span> <span class="n">GCSStorage</span><span class="p">(</span><span class="n">GCSConfig</span><span class="p">(</span>
+</span><span data-line="11">    <span class="n">bucket</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;GCS_BUCKET&quot;</span><span class="p">],</span>
+</span><span data-line="12">    <span class="n">project</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;GCP_PROJECT&quot;</span><span class="p">),</span>
+</span><span data-line="13">    <span class="c1"># Credentials loaded via ADC or GOOGLE_APPLICATION_CREDENTIALS</span>
+</span><span data-line="14"><span class="p">))</span>
+</span></pre></div>
+</div>
+</section>
+<section id="workload-identity-gke">
+<h3>Workload Identity (GKE)<a class="headerlink" href="#workload-identity-gke" title="Link to this heading">¶</a></h3>
+<p>For GKE deployments, use Workload Identity instead of service account keys:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="c1"># Kubernetes ServiceAccount with Workload Identity</span>
+</span><span data-line="2"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span>
+</span><span data-line="3"><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ServiceAccount</span>
+</span><span data-line="4"><span class="nt">metadata</span><span class="p">:</span>
+</span><span data-line="5"><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my-app</span>
+</span><span data-line="6"><span class="w">  </span><span class="nt">annotations</span><span class="p">:</span>
+</span><span data-line="7"><span class="w">    </span><span class="nt">iam.gke.io/gcp-service-account</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my-app@my-project.iam.gserviceaccount.com</span>
+</span></pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="c1"># No credentials needed - Workload Identity provides them</span>
+</span><span data-line="2"><span class="n">storage</span> <span class="o">=</span> <span class="n">GCSStorage</span><span class="p">(</span>
+</span><span data-line="3">    <span class="n">config</span><span class="o">=</span><span class="n">GCSConfig</span><span class="p">(</span>
+</span><span data-line="4">        <span class="n">bucket</span><span class="o">=</span><span class="s2">&quot;my-bucket&quot;</span><span class="p">,</span>
+</span><span data-line="5">    <span class="p">)</span>
+</span><span data-line="6"><span class="p">)</span>
+</span></pre></div>
+</div>
+</section>
+<section id="principle-of-least-privilege">
+<h3>Principle of Least Privilege<a class="headerlink" href="#principle-of-least-privilege" title="Link to this heading">¶</a></h3>
+<p>Create custom IAM roles with minimal required permissions:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="c1"># custom-storage-role.yaml</span>
+</span><span data-line="2"><span class="nt">title</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Custom</span><span class="nv"> </span><span class="s">Storage</span><span class="nv"> </span><span class="s">Writer&quot;</span>
+</span><span data-line="3"><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Minimal</span><span class="nv"> </span><span class="s">permissions</span><span class="nv"> </span><span class="s">for</span><span class="nv"> </span><span class="s">application</span><span class="nv"> </span><span class="s">storage&quot;</span>
+</span><span data-line="4"><span class="nt">stage</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">GA</span>
+</span><span data-line="5"><span class="nt">includedPermissions</span><span class="p">:</span>
+</span><span data-line="6"><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">storage.objects.create</span>
+</span><span data-line="7"><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">storage.objects.get</span>
+</span><span data-line="8"><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">storage.objects.delete</span>
+</span><span data-line="9"><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">storage.objects.list</span>
+</span></pre></div>
+</div>
+</section>
+</section>
+<section id="error-handling">
+<h2>Error Handling<a class="headerlink" href="#error-handling" title="Link to this heading">¶</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_storages</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+</span><span data-line="2">    <span class="n">StorageError</span><span class="p">,</span>
+</span><span data-line="3">    <span class="n">StorageFileNotFoundError</span><span class="p">,</span>
+</span><span data-line="4">    <span class="n">StorageConnectionError</span><span class="p">,</span>
+</span><span data-line="5">    <span class="n">ConfigurationError</span><span class="p">,</span>
+</span><span data-line="6"><span class="p">)</span>
+</span><span data-line="7">
+</span><span data-line="8">
+</span><span data-line="9"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">safe_download</span><span class="p">(</span><span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">storage</span><span class="p">:</span> <span class="n">Storage</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="10"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Download a file with comprehensive error handling.&quot;&quot;&quot;</span>
+</span><span data-line="11">    <span class="k">try</span><span class="p">:</span>
+</span><span data-line="12">        <span class="k">return</span> <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">get_bytes</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+</span><span data-line="13">    <span class="k">except</span> <span class="n">StorageFileNotFoundError</span><span class="p">:</span>
+</span><span data-line="14">        <span class="c1"># File does not exist</span>
+</span><span data-line="15">        <span class="k">return</span> <span class="kc">None</span>
+</span><span data-line="16">    <span class="k">except</span> <span class="n">StorageConnectionError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+</span><span data-line="17">        <span class="c1"># Network or authentication issues</span>
+</span><span data-line="18">        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Connection error: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</span><span data-line="19">        <span class="k">raise</span>
+</span><span data-line="20">    <span class="k">except</span> <span class="n">ConfigurationError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+</span><span data-line="21">        <span class="c1"># Missing dependencies or invalid config</span>
+</span><span data-line="22">        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Configuration error: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</span><span data-line="23">        <span class="k">raise</span>
+</span><span data-line="24">    <span class="k">except</span> <span class="n">StorageError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+</span><span data-line="25">        <span class="c1"># Generic storage error</span>
+</span><span data-line="26">        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Storage error: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</span><span data-line="27">        <span class="k">raise</span>
+</span></pre></div>
+</div>
+<section id="common-error-scenarios">
+<h3>Common Error Scenarios<a class="headerlink" href="#common-error-scenarios" title="Link to this heading">¶</a></h3>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Error</p></th>
+<th class="head"><p>Cause</p></th>
+<th class="head"><p>Solution</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ConfigurationError</span></code></p></td>
+<td><p>Missing gcloud-aio-storage</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">litestar-storages[gcs]</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ConfigurationError</span></code></p></td>
+<td><p>Empty bucket name</p></td>
+<td><p>Provide a valid bucket name</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">StorageFileNotFoundError</span></code></p></td>
+<td><p>File does not exist</p></td>
+<td><p>Check the key and prefix</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">StorageConnectionError</span></code></p></td>
+<td><p>Invalid credentials</p></td>
+<td><p>Verify service account or ADC</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">StorageError</span></code></p></td>
+<td><p>Signed URL failure</p></td>
+<td><p>Ensure service account has signing permissions</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</section>
+<section id="large-file-uploads">
+<h2>Large File Uploads<a class="headerlink" href="#large-file-uploads" title="Link to this heading">¶</a></h2>
+<p>For files larger than 100MB, use <code class="docutils literal notranslate"><span class="pre">put_large()</span></code> or the manual multipart upload API. Note that GCS multipart uploads in this library use a buffering approach - parts are held in memory until the upload is completed.</p>
+<section id="using-put-large">
+<h3>Using put_large()<a class="headerlink" href="#using-put-large" title="Link to this heading">¶</a></h3>
+<p>The simplest way to upload large files with automatic chunking and progress tracking:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_storages</span><span class="w"> </span><span class="kn">import</span> <span class="n">GCSStorage</span><span class="p">,</span> <span class="n">GCSConfig</span><span class="p">,</span> <span class="n">ProgressInfo</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="n">storage</span> <span class="o">=</span> <span class="n">GCSStorage</span><span class="p">(</span>
+</span><span data-line="4">    <span class="n">GCSConfig</span><span class="p">(</span>
+</span><span data-line="5">        <span class="n">bucket</span><span class="o">=</span><span class="s2">&quot;my-bucket&quot;</span><span class="p">,</span>
+</span><span data-line="6">        <span class="n">project</span><span class="o">=</span><span class="s2">&quot;my-project&quot;</span><span class="p">,</span>
+</span><span data-line="7">    <span class="p">)</span>
+</span><span data-line="8"><span class="p">)</span>
+</span><span data-line="9">
+</span><span data-line="10"><span class="c1"># Upload a large file with automatic chunking</span>
+</span><span data-line="11"><span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">put_large</span><span class="p">(</span>
+</span><span data-line="12">    <span class="n">key</span><span class="o">=</span><span class="s2">&quot;backups/database-dump.sql.gz&quot;</span><span class="p">,</span>
+</span><span data-line="13">    <span class="n">data</span><span class="o">=</span><span class="n">large_file_bytes</span><span class="p">,</span>
+</span><span data-line="14">    <span class="n">content_type</span><span class="o">=</span><span class="s2">&quot;application/gzip&quot;</span><span class="p">,</span>
+</span><span data-line="15">    <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;source&quot;</span><span class="p">:</span> <span class="s2">&quot;daily-backup&quot;</span><span class="p">},</span>
+</span><span data-line="16">    <span class="n">part_size</span><span class="o">=</span><span class="mi">10</span> <span class="o">*</span> <span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span><span class="p">,</span>  <span class="c1"># 10MB parts (default)</span>
+</span><span data-line="17"><span class="p">)</span>
+</span><span data-line="18">
+</span><span data-line="19"><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Uploaded </span><span class="si">{</span><span class="n">result</span><span class="o">.</span><span class="n">size</span><span class="si">}</span><span class="s2"> bytes to </span><span class="si">{</span><span class="n">result</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</span></pre></div>
+</div>
+</section>
+<section id="progress-tracking">
+<h3>Progress Tracking<a class="headerlink" href="#progress-tracking" title="Link to this heading">¶</a></h3>
+<p>Monitor upload progress with a callback function:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_storages</span><span class="w"> </span><span class="kn">import</span> <span class="n">ProgressInfo</span>
+</span><span data-line="2">
+</span><span data-line="3">
+</span><span data-line="4"><span class="k">def</span><span class="w"> </span><span class="nf">show_progress</span><span class="p">(</span><span class="n">info</span><span class="p">:</span> <span class="n">ProgressInfo</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="5"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Display upload progress.&quot;&quot;&quot;</span>
+</span><span data-line="6">    <span class="k">if</span> <span class="n">info</span><span class="o">.</span><span class="n">percentage</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="7">        <span class="n">bar_length</span> <span class="o">=</span> <span class="mi">40</span>
+</span><span data-line="8">        <span class="n">filled</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">bar_length</span> <span class="o">*</span> <span class="n">info</span><span class="o">.</span><span class="n">percentage</span> <span class="o">/</span> <span class="mi">100</span><span class="p">)</span>
+</span><span data-line="9">        <span class="n">bar</span> <span class="o">=</span> <span class="s2">&quot;=&quot;</span> <span class="o">*</span> <span class="n">filled</span> <span class="o">+</span> <span class="s2">&quot;-&quot;</span> <span class="o">*</span> <span class="p">(</span><span class="n">bar_length</span> <span class="o">-</span> <span class="n">filled</span><span class="p">)</span>
+</span><span data-line="10">        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\r</span><span class="s2">[</span><span class="si">{</span><span class="n">bar</span><span class="si">}</span><span class="s2">] </span><span class="si">{</span><span class="n">info</span><span class="o">.</span><span class="n">percentage</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">%&quot;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span data-line="11">
+</span><span data-line="12">
+</span><span data-line="13"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">upload_with_progress</span><span class="p">(</span><span class="n">storage</span><span class="p">:</span> <span class="n">GCSStorage</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="14"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Upload a large file with progress display.&quot;&quot;&quot;</span>
+</span><span data-line="15">    <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">put_large</span><span class="p">(</span>
+</span><span data-line="16">        <span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">,</span>
+</span><span data-line="17">        <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
+</span><span data-line="18">        <span class="n">progress_callback</span><span class="o">=</span><span class="n">show_progress</span><span class="p">,</span>
+</span><span data-line="19">    <span class="p">)</span>
+</span><span data-line="20">    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Complete! Uploaded </span><span class="si">{</span><span class="n">result</span><span class="o">.</span><span class="n">size</span><span class="si">}</span><span class="s2"> bytes&quot;</span><span class="p">)</span>
+</span><span data-line="21">
+</span><span data-line="22">
+</span><span data-line="23"><span class="c1"># Usage</span>
+</span><span data-line="24"><span class="k">await</span> <span class="n">upload_with_progress</span><span class="p">(</span><span class="n">storage</span><span class="p">,</span> <span class="s2">&quot;videos/presentation.mp4&quot;</span><span class="p">,</span> <span class="n">video_data</span><span class="p">)</span>
+</span></pre></div>
+</div>
+</section>
+<section id="manual-multipart-upload">
+<h3>Manual Multipart Upload<a class="headerlink" href="#manual-multipart-upload" title="Link to this heading">¶</a></h3>
+<p>For fine-grained control over the upload process:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_storages</span><span class="w"> </span><span class="kn">import</span> <span class="n">GCSStorage</span><span class="p">,</span> <span class="n">GCSConfig</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="n">storage</span> <span class="o">=</span> <span class="n">GCSStorage</span><span class="p">(</span>
+</span><span data-line="4">    <span class="n">GCSConfig</span><span class="p">(</span>
+</span><span data-line="5">        <span class="n">bucket</span><span class="o">=</span><span class="s2">&quot;my-bucket&quot;</span><span class="p">,</span>
+</span><span data-line="6">        <span class="n">project</span><span class="o">=</span><span class="s2">&quot;my-project&quot;</span><span class="p">,</span>
+</span><span data-line="7">    <span class="p">)</span>
+</span><span data-line="8"><span class="p">)</span>
+</span><span data-line="9">
+</span><span data-line="10"><span class="c1"># Step 1: Start the upload</span>
+</span><span data-line="11"><span class="n">upload</span> <span class="o">=</span> <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">start_multipart_upload</span><span class="p">(</span>
+</span><span data-line="12">    <span class="n">key</span><span class="o">=</span><span class="s2">&quot;large-archive.tar.gz&quot;</span><span class="p">,</span>
+</span><span data-line="13">    <span class="n">content_type</span><span class="o">=</span><span class="s2">&quot;application/gzip&quot;</span><span class="p">,</span>
+</span><span data-line="14">    <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;created-by&quot;</span><span class="p">:</span> <span class="s2">&quot;backup-service&quot;</span><span class="p">},</span>
+</span><span data-line="15">    <span class="n">part_size</span><span class="o">=</span><span class="mi">10</span> <span class="o">*</span> <span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span><span class="p">,</span>  <span class="c1"># 10MB parts</span>
+</span><span data-line="16"><span class="p">)</span>
+</span><span data-line="17">
+</span><span data-line="18"><span class="c1"># Step 2: Upload parts (buffered in memory)</span>
+</span><span data-line="19"><span class="n">part_size</span> <span class="o">=</span> <span class="mi">10</span> <span class="o">*</span> <span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span>
+</span><span data-line="20"><span class="n">data</span> <span class="o">=</span> <span class="n">load_large_file</span><span class="p">()</span>
+</span><span data-line="21">
+</span><span data-line="22"><span class="k">try</span><span class="p">:</span>
+</span><span data-line="23">    <span class="n">part_num</span> <span class="o">=</span> <span class="mi">1</span>
+</span><span data-line="24">    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="n">part_size</span><span class="p">):</span>
+</span><span data-line="25">        <span class="n">part_data</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">i</span> <span class="o">+</span> <span class="n">part_size</span><span class="p">]</span>
+</span><span data-line="26">        <span class="n">etag</span> <span class="o">=</span> <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">upload_part</span><span class="p">(</span><span class="n">upload</span><span class="p">,</span> <span class="n">part_num</span><span class="p">,</span> <span class="n">part_data</span><span class="p">)</span>
+</span><span data-line="27">        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Buffered part </span><span class="si">{</span><span class="n">part_num</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">etag</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</span><span data-line="28">        <span class="n">part_num</span> <span class="o">+=</span> <span class="mi">1</span>
+</span><span data-line="29">
+</span><span data-line="30">    <span class="c1"># Step 3: Complete the upload (all data uploaded at once)</span>
+</span><span data-line="31">    <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">complete_multipart_upload</span><span class="p">(</span><span class="n">upload</span><span class="p">)</span>
+</span><span data-line="32">    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Upload complete: </span><span class="si">{</span><span class="n">result</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</span><span data-line="33">
+</span><span data-line="34"><span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+</span><span data-line="35">    <span class="c1"># Clean up buffered data</span>
+</span><span data-line="36">    <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">abort_multipart_upload</span><span class="p">(</span><span class="n">upload</span><span class="p">)</span>
+</span><span data-line="37">    <span class="k">raise</span>
+</span></pre></div>
+</div>
+</section>
+<section id="memory-buffering-approach">
+<h3>Memory Buffering Approach<a class="headerlink" href="#memory-buffering-approach" title="Link to this heading">¶</a></h3>
+<p>Unlike S3 and Azure, GCS multipart uploads in this library buffer all parts in memory before uploading. This has important implications:</p>
+<p><strong>Why buffering?</strong></p>
+<p>The <code class="docutils literal notranslate"><span class="pre">gcloud-aio-storage</span></code> library doesn’t expose GCS’s native resumable upload API. To provide a consistent multipart interface across all backends, parts are collected in memory and uploaded together.</p>
+<p><strong>Memory considerations:</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="c1"># Memory usage = total file size during upload</span>
+</span><span data-line="2"><span class="c1"># For a 500MB file:</span>
+</span><span data-line="3"><span class="c1"># - All 500MB held in memory until complete_multipart_upload()</span>
+</span><span data-line="4"><span class="c1"># - After upload completes, memory is released</span>
+</span><span data-line="5">
+</span><span data-line="6"><span class="c1"># For very large files, consider:</span>
+</span><span data-line="7"><span class="c1"># 1. Using smaller files when possible</span>
+</span><span data-line="8"><span class="c1"># 2. Direct GCS resumable upload API for multi-GB files</span>
+</span><span data-line="9"><span class="c1"># 3. Streaming with regular put() for moderate sizes</span>
+</span></pre></div>
+</div>
+<p><strong>When to use put_large() vs put():</strong></p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>File Size</p></th>
+<th class="head"><p>Recommendation</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>&lt; 100MB</p></td>
+<td><p>Use <code class="docutils literal notranslate"><span class="pre">put()</span></code> - simpler and sufficient</p></td>
+</tr>
+<tr class="row-odd"><td><p>100MB - 500MB</p></td>
+<td><p>Use <code class="docutils literal notranslate"><span class="pre">put_large()</span></code> - progress tracking and chunked processing</p></td>
+</tr>
+<tr class="row-even"><td><p>500MB - 2GB</p></td>
+<td><p>Use <code class="docutils literal notranslate"><span class="pre">put_large()</span></code> with caution - monitor memory usage</p></td>
+</tr>
+<tr class="row-odd"><td><p>&gt; 2GB</p></td>
+<td><p>Consider GCS resumable upload API directly</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="gcs-specific-notes">
+<h3>GCS-Specific Notes<a class="headerlink" href="#gcs-specific-notes" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p><strong>No server-side part storage</strong>: Parts exist only in memory until <code class="docutils literal notranslate"><span class="pre">complete_multipart_upload()</span></code></p></li>
+<li><p><strong>No resume capability</strong>: If the process restarts, buffered data is lost</p></li>
+<li><p><strong>Single upload</strong>: The actual upload happens when completing, not during <code class="docutils literal notranslate"><span class="pre">upload_part()</span></code></p></li>
+<li><p><strong>Abort is lightweight</strong>: Simply clears the memory buffer</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="c1"># GCS multipart is best for:</span>
+</span><span data-line="2"><span class="c1"># - Files where you want progress tracking</span>
+</span><span data-line="3"><span class="c1"># - Situations where you&#39;re already buffering data</span>
+</span><span data-line="4"><span class="c1"># - Consistent API across multiple backends</span>
+</span><span data-line="5">
+</span><span data-line="6"><span class="c1"># For true resumable uploads on GCS, use google-cloud-storage directly:</span>
+</span><span data-line="7"><span class="kn">from</span><span class="w"> </span><span class="nn">google.cloud</span><span class="w"> </span><span class="kn">import</span> <span class="n">storage</span> <span class="k">as</span> <span class="n">gcs_storage</span>
+</span><span data-line="8">
+</span><span data-line="9"><span class="k">def</span><span class="w"> </span><span class="nf">resumable_upload</span><span class="p">(</span><span class="n">bucket_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">blob_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">file_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="10"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Use GCS native resumable upload for very large files.&quot;&quot;&quot;</span>
+</span><span data-line="11">    <span class="n">client</span> <span class="o">=</span> <span class="n">gcs_storage</span><span class="o">.</span><span class="n">Client</span><span class="p">()</span>
+</span><span data-line="12">    <span class="n">bucket</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">bucket</span><span class="p">(</span><span class="n">bucket_name</span><span class="p">)</span>
+</span><span data-line="13">    <span class="n">blob</span> <span class="o">=</span> <span class="n">bucket</span><span class="o">.</span><span class="n">blob</span><span class="p">(</span><span class="n">blob_name</span><span class="p">)</span>
+</span><span data-line="14">
+</span><span data-line="15">    <span class="c1"># This automatically handles resumable uploads</span>
+</span><span data-line="16">    <span class="n">blob</span><span class="o">.</span><span class="n">upload_from_filename</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
+</span></pre></div>
+</div>
+</section>
+</section>
+<section id="comparison-with-other-backends">
+<h2>Comparison with Other Backends<a class="headerlink" href="#comparison-with-other-backends" title="Link to this heading">¶</a></h2>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Feature</p></th>
+<th class="head"><p>GCSStorage</p></th>
+<th class="head"><p>S3Storage</p></th>
+<th class="head"><p>FileSystemStorage</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Setup complexity</p></td>
+<td><p>Moderate</p></td>
+<td><p>Moderate</p></td>
+<td><p>Simple</p></td>
+</tr>
+<tr class="row-odd"><td><p>Multi-region</p></td>
+<td><p>Native</p></td>
+<td><p>Via replication</p></td>
+<td><p>No</p></td>
+</tr>
+<tr class="row-even"><td><p>Signed URLs</p></td>
+<td><p>Yes</p></td>
+<td><p>Yes (presigned)</p></td>
+<td><p>With base_url only</p></td>
+</tr>
+<tr class="row-odd"><td><p>Streaming</p></td>
+<td><p>Yes</p></td>
+<td><p>Yes</p></td>
+<td><p>Yes</p></td>
+</tr>
+<tr class="row-even"><td><p>GCP integration</p></td>
+<td><p>Native</p></td>
+<td><p>Via S3-compatible API</p></td>
+<td><p>No</p></td>
+</tr>
+<tr class="row-odd"><td><p>Local testing</p></td>
+<td><p>fake-gcs-server</p></td>
+<td><p>moto/MinIO</p></td>
+<td><p>Directory</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="next-steps">
+<h2>Next Steps<a class="headerlink" href="#next-steps" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>Learn about <a class="reference internal" href="memory.html"><span class="std std-doc">Memory storage</span></a> for testing without external dependencies</p></li>
+<li><p>Explore <a class="reference internal" href="s3.html"><span class="std std-doc">S3 storage</span></a> for AWS or S3-compatible services</p></li>
+<li><p>Review <a class="reference internal" href="filesystem.html"><span class="std std-doc">FileSystem storage</span></a> for local deployments</p></li>
+<li><p>Create <a class="reference internal" href="../advanced/custom-backends.html"><span class="std std-doc">custom backends</span></a> for other cloud providers</p></li>
+</ul>
+</section>
+</section>
+
+        </article><button class="back-to-top" type="button">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+  </svg>
+  <span>Back to top</span>
+</button><div class="navigation flex print:hidden"><div class="navigation-prev">
+    <a href="s3.html">
+      <i class="i-lucide chevron-left"></i>
+      <div class="page-info">
+        <span>Previous</span><div class="title">S3 Storage</div></div>
+    </a>
+  </div><div class="navigation-next">
+    <a href="azure.html">
+      <div class="page-info">
+        <span>Next</span>
+        <div class="title">Azure Blob Storage</div>
+      </div>
+      <i class="i-lucide chevron-right"></i>
+    </a>
+  </div></div></div>
+    </div>
+  </main>
+</div>
+<footer class="sy-foot">
+  <div class="sy-foot-inner sy-container mx-auto">
+    <div class="sy-foot-reserved md:flex justify-between items-center">
+      <div class="sy-foot-copyright"><p>2025, Jacob Coffee</p>
+  
+  <p>
+    Made with
+    
+    <a href="https://www.sphinx-doc.org/">Sphinx</a> and
+    
+    <a href="https://shibuya.lepture.com">Shibuya theme</a>.
+  </p>
+</div>
+      <div class="sy-foot-socials">
+<a href="https://github.com/JacobCoffee/litestar-storages" aria-label="GitHub">
+  <iconify-icon icon="simple-icons:github"></iconify-icon>
+</a></div>
+    </div>
+  </div>
+</footer>
+      <script src="../_static/documentation_options.js?v=000c92bf"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../_static/copybutton.js?v=30646c52"></script>
+      <script src="../_static/design-tabs.js?v=f930bc37"></script>
+      <script src="../_static/shibuya.js?v=c1cf1a6b"></script></body>
+</html>

@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en" data-accent-color="violet" data-content_root="../">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>FileSystem Storage - litestar-storages</title><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="S3 Storage" href="s3.html" /><link rel="prev" title="Example Applications" href="../examples.html" /><script>
+    function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
+    setColorMode(localStorage._theme||"auto");
+  </script><link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=e1a1ceaf" />
+    <link rel="stylesheet" type="text/css" href="../_static/shibuya.css?v=14737038" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link media="print" rel="stylesheet" type="text/css" href="../_static/print.css?v=20ff2c19" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=5f8f7e8c" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --sy-f-text: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+  --sy-f-heading: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+}
+</style>
+    <meta property="og:type" content="website"/><meta property="og:title" content="FileSystem Storage"/>
+    <meta name="twitter:card" content="summary"/>
+  </head>
+<body><div class="sy-head">
+  <div class="sy-head-blur"></div>
+  <div class="sy-head-inner sy-container mx-auto">
+    <a class="sy-head-brand" href="../index.html">
+      
+      
+      <strong>litestar-storages</strong>
+    </a>
+    <div class="sy-head-nav" id="head-nav">
+      <nav class="sy-head-links"><ul><li class="link">
+          <a href="https://litestar.dev/">
+            <span>Litestar</span></a>
+        </li><li class="link">
+          <a href="https://pypi.org/project/litestar-storages/">
+            <span>PyPI</span></a>
+        </li></ul></nav>
+      <div class="sy-head-extra flex items-center print:hidden"><form class="searchbox flex items-center" action="../search.html" method="get">
+  <input type="text" name="q" placeholder="Search" />
+  <kbd>/</kbd>
+</form><div class="sy-head-socials">
+  <a href="https://github.com/JacobCoffee/litestar-storages" aria-label="GitHub">
+    <iconify-icon icon="simple-icons:github"></iconify-icon>
+  </a></div></div>
+    </div>
+    <div class="sy-head-actions flex items-center shrink-0 print:hidden"><button class="js-theme theme-switch flex items-center"
+data-aria-auto="Switch to light color mode"
+data-aria-light="Switch to dark color mode"
+data-aria-dark="Switch to auto color mode">
+<i class="i-lucide theme-icon"></i>
+</button><button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="head-nav" aria-expanded="false">
+        <div class="hamburger">
+          <span class="hamburger_1"></span>
+          <span class="hamburger_2"></span>
+          <span class="hamburger_3"></span>
+        </div>
+      </button>
+    </div>
+  </div>
+</div>
+<div class="sy-page sy-container flex mx-auto">
+  <aside id="lside" class="sy-lside md:w-72 md:shrink-0 print:hidden">
+    <div class="sy-lside-inner md:sticky">
+      <div class="sy-scrollbar p-6">
+        <div class="globaltoc" data-expand-depth="0"><p class="caption" role="heading" aria-level="3"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../getting-started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Example Applications</a></li>
+</ul>
+<p class="caption" role="heading" aria-level="3"><span class="caption-text">Storage Backends</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">FileSystem Storage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="s3.html">S3 Storage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gcs.html">GCS Storage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="azure.html">Azure Blob Storage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="memory.html">Memory Storage</a></li>
+</ul>
+<p class="caption" role="heading" aria-level="3"><span class="caption-text">Advanced Topics</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../advanced/retry.html">Retry Utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../advanced/multipart-uploads.html">Multipart Uploads</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../advanced/progress-callbacks.html">Progress Callbacks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../advanced/custom-backends.html">Custom Backends</a></li>
+</ul>
+<p class="caption" role="heading" aria-level="3"><span class="caption-text">Cookbook</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../cookbook/index.html">Cookbook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cookbook/file-upload-validation.html">File Upload with Validation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cookbook/image-processing-pipeline.html">Image Processing Pipeline</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cookbook/multi-backend-config.html">Multi-Backend Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cookbook/streaming-large-files.html">Streaming Large Files</a></li>
+</ul>
+<p class="caption" role="heading" aria-level="3"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/index.html">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../api/base.html">Base Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/types.html">Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/exceptions.html">Exceptions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/backends/index.html">Storage Backends</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../api/backends/memory.html">Memory Storage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/backends/filesystem.html">FileSystem Storage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/backends/s3.html">S3 Storage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/backends/gcs.html">GCS Storage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/backends/azure.html">Azure Storage</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../api/contrib/index.html">Litestar Integration</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../api/contrib/plugin.html">Storage Plugin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/contrib/dependencies.html">Dependencies</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/contrib/dto.html">DTOs</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../comparison.html">Comparison with Other Libraries</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
+</ul>
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="lside-overlay js-menu" role="button" aria-label="Close left sidebar" aria-controls="lside" aria-expanded="false"></div>
+  <aside id="rside" class="sy-rside pb-3 w-64 shrink-0 order-last">
+    <button class="rside-close js-menu xl:hidden" aria-label="Close Table of Contents" type="button" aria-controls="rside" aria-expanded="false">
+      <i class="i-lucide close"></i>
+    </button>
+    <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4"><div class="localtoc"><h3>On this page</h3><ul>
+<li><a class="reference internal" href="#configuration">Configuration</a><ul>
+<li><a class="reference internal" href="#configuration-options">Configuration Options</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#basic-usage">Basic Usage</a><ul>
+<li><a class="reference internal" href="#storing-files">Storing Files</a></li>
+<li><a class="reference internal" href="#retrieving-files">Retrieving Files</a></li>
+<li><a class="reference internal" href="#listing-files">Listing Files</a></li>
+<li><a class="reference internal" href="#other-operations">Other Operations</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#path-handling-and-security">Path Handling and Security</a><ul>
+<li><a class="reference internal" href="#key-normalization">Key Normalization</a></li>
+<li><a class="reference internal" href="#directory-structure">Directory Structure</a></li>
+<li><a class="reference internal" href="#file-permissions">File Permissions</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#url-generation">URL Generation</a><ul>
+<li><a class="reference internal" href="#without-base-url">Without base_url</a></li>
+<li><a class="reference internal" href="#with-base-url">With base_url</a></li>
+<li><a class="reference internal" href="#url-configuration-patterns">URL Configuration Patterns</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#usage-examples">Usage Examples</a><ul>
+<li><a class="reference internal" href="#file-upload-handler">File Upload Handler</a></li>
+<li><a class="reference internal" href="#organized-file-storage">Organized File Storage</a></li>
+<li><a class="reference internal" href="#cleanup-old-files">Cleanup Old Files</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#limitations">Limitations</a></li>
+<li><a class="reference internal" href="#next-steps">Next Steps</a></li>
+</ul>
+</div><div id="ethical-ad-placement" data-ea-publisher="readthedocs"></div></div>
+  </aside>
+  <div class="rside-overlay js-menu" role="button" aria-label="Close Table of Contents" aria-controls="rside" aria-expanded="false"></div>
+  <main class="sy-main w-full max-sm:max-w-full print:pt-6">
+<div class="sy-breadcrumbs" role="navigation">
+  <div class="sy-breadcrumbs-inner flex items-center">
+    <div class="md:hidden mr-3">
+      <button class="js-menu" aria-label="Menu" type="button" aria-controls="lside" aria-expanded="false">
+        <i class="i-lucide menu"></i>
+      </button>
+    </div>
+    <ol class="flex-1" itemscope itemtype="https://schema.org/BreadcrumbList"><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="../index.html"><span itemprop="name">litestar-storages</span></a>
+        <span>/</span>
+        <meta itemprop="position" content="1" />
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <strong itemprop="name">FileSystem Storage</strong>
+        <meta itemprop="position" content="2" />
+      </li></ol>
+    <div class="xl:hidden ml-1">
+      <button class="js-menu" aria-label="Show table of contents" type="button" aria-controls="rside"
+        aria-expanded="false">
+        <i class="i-lucide outdent"></i>
+      </button>
+    </div>
+  </div>
+</div><div class="flex flex-col break-words justify-between">
+      <div class="min-w-0 max-w-6xl px-6 pb-6 pt-8 xl:px-12">
+        <article class="yue" role="main">
+          <section id="filesystem-storage">
+<h1>FileSystem Storage<a class="headerlink" href="#filesystem-storage" title="Link to this heading">¶</a></h1>
+<p>The <code class="docutils literal notranslate"><span class="pre">FileSystemStorage</span></code> backend stores files on the local filesystem. It’s ideal for development, single-server deployments, or when you need direct filesystem access to stored files.</p>
+<section id="configuration">
+<h2>Configuration<a class="headerlink" href="#configuration" title="Link to this heading">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">FileSystemConfig</span></code> dataclass controls all filesystem storage behavior:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_storages</span><span class="w"> </span><span class="kn">import</span> <span class="n">FileSystemStorage</span><span class="p">,</span> <span class="n">FileSystemConfig</span>
+</span><span data-line="3">
+</span><span data-line="4"><span class="n">config</span> <span class="o">=</span> <span class="n">FileSystemConfig</span><span class="p">(</span>
+</span><span data-line="5">    <span class="n">path</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;/var/uploads&quot;</span><span class="p">),</span>      <span class="c1"># Required: base directory for storage</span>
+</span><span data-line="6">    <span class="n">base_url</span><span class="o">=</span><span class="s2">&quot;https://cdn.example.com/uploads&quot;</span><span class="p">,</span>  <span class="c1"># Optional: URL prefix</span>
+</span><span data-line="7">    <span class="n">create_dirs</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>               <span class="c1"># Optional: auto-create directories (default: True)</span>
+</span><span data-line="8">    <span class="n">permissions</span><span class="o">=</span><span class="mo">0o644</span><span class="p">,</span>              <span class="c1"># Optional: file permissions (default: 0o644)</span>
+</span><span data-line="9"><span class="p">)</span>
+</span><span data-line="10">
+</span><span data-line="11"><span class="n">storage</span> <span class="o">=</span> <span class="n">FileSystemStorage</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+</span></pre></div>
+</div>
+<section id="configuration-options">
+<h3>Configuration Options<a class="headerlink" href="#configuration-options" title="Link to this heading">¶</a></h3>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Option</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">path</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Path</span></code></p></td>
+<td><p>Required</p></td>
+<td><p>Base directory for all stored files</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">base_url</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
+<td><p>URL prefix for generating file URLs</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">create_dirs</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">bool</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">True</span></code></p></td>
+<td><p>Automatically create directories as needed</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">permissions</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">int</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0o644</span></code></p></td>
+<td><p>Unix file permissions for created files</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</section>
+<section id="basic-usage">
+<h2>Basic Usage<a class="headerlink" href="#basic-usage" title="Link to this heading">¶</a></h2>
+<section id="storing-files">
+<h3>Storing Files<a class="headerlink" href="#storing-files" title="Link to this heading">¶</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_storages</span><span class="w"> </span><span class="kn">import</span> <span class="n">FileSystemStorage</span><span class="p">,</span> <span class="n">FileSystemConfig</span>
+</span><span data-line="3">
+</span><span data-line="4"><span class="n">storage</span> <span class="o">=</span> <span class="n">FileSystemStorage</span><span class="p">(</span>
+</span><span data-line="5">    <span class="n">config</span><span class="o">=</span><span class="n">FileSystemConfig</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;./uploads&quot;</span><span class="p">))</span>
+</span><span data-line="6"><span class="p">)</span>
+</span><span data-line="7">
+</span><span data-line="8"><span class="c1"># Store bytes directly</span>
+</span><span data-line="9"><span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">put</span><span class="p">(</span>
+</span><span data-line="10">    <span class="s2">&quot;documents/report.pdf&quot;</span><span class="p">,</span>
+</span><span data-line="11">    <span class="n">pdf_bytes</span><span class="p">,</span>
+</span><span data-line="12">    <span class="n">content_type</span><span class="o">=</span><span class="s2">&quot;application/pdf&quot;</span><span class="p">,</span>
+</span><span data-line="13"><span class="p">)</span>
+</span><span data-line="14"><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Stored: </span><span class="si">{</span><span class="n">result</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">, size: </span><span class="si">{</span><span class="n">result</span><span class="o">.</span><span class="n">size</span><span class="si">}</span><span class="s2"> bytes&quot;</span><span class="p">)</span>
+</span><span data-line="15">
+</span><span data-line="16"><span class="c1"># Store with custom metadata</span>
+</span><span data-line="17"><span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">put</span><span class="p">(</span>
+</span><span data-line="18">    <span class="s2">&quot;images/photo.jpg&quot;</span><span class="p">,</span>
+</span><span data-line="19">    <span class="n">image_bytes</span><span class="p">,</span>
+</span><span data-line="20">    <span class="n">content_type</span><span class="o">=</span><span class="s2">&quot;image/jpeg&quot;</span><span class="p">,</span>
+</span><span data-line="21">    <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;author&quot;</span><span class="p">:</span> <span class="s2">&quot;John Doe&quot;</span><span class="p">,</span> <span class="s2">&quot;camera&quot;</span><span class="p">:</span> <span class="s2">&quot;Canon EOS R5&quot;</span><span class="p">},</span>
+</span><span data-line="22"><span class="p">)</span>
+</span></pre></div>
+</div>
+</section>
+<section id="retrieving-files">
+<h3>Retrieving Files<a class="headerlink" href="#retrieving-files" title="Link to this heading">¶</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="c1"># Get entire file as bytes (for small files)</span>
+</span><span data-line="2"><span class="n">content</span> <span class="o">=</span> <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">get_bytes</span><span class="p">(</span><span class="s2">&quot;documents/report.pdf&quot;</span><span class="p">)</span>
+</span><span data-line="3">
+</span><span data-line="4"><span class="c1"># Stream file contents (for large files)</span>
+</span><span data-line="5"><span class="k">async</span> <span class="k">for</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="n">storage</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;videos/large-video.mp4&quot;</span><span class="p">):</span>
+</span><span data-line="6">    <span class="k">await</span> <span class="n">process_chunk</span><span class="p">(</span><span class="n">chunk</span><span class="p">)</span>
+</span><span data-line="7">
+</span><span data-line="8"><span class="c1"># Get file metadata without downloading</span>
+</span><span data-line="9"><span class="n">info</span> <span class="o">=</span> <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;documents/report.pdf&quot;</span><span class="p">)</span>
+</span><span data-line="10"><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Size: </span><span class="si">{</span><span class="n">info</span><span class="o">.</span><span class="n">size</span><span class="si">}</span><span class="s2">, Modified: </span><span class="si">{</span><span class="n">info</span><span class="o">.</span><span class="n">last_modified</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</span></pre></div>
+</div>
+</section>
+<section id="listing-files">
+<h3>Listing Files<a class="headerlink" href="#listing-files" title="Link to this heading">¶</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="c1"># List all files</span>
+</span><span data-line="2"><span class="k">async</span> <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">storage</span><span class="o">.</span><span class="n">list</span><span class="p">():</span>
+</span><span data-line="3">    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">file</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">file</span><span class="o">.</span><span class="n">size</span><span class="si">}</span><span class="s2"> bytes&quot;</span><span class="p">)</span>
+</span><span data-line="4">
+</span><span data-line="5"><span class="c1"># List files with a prefix (like a directory)</span>
+</span><span data-line="6"><span class="k">async</span> <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">storage</span><span class="o">.</span><span class="n">list</span><span class="p">(</span><span class="s2">&quot;images/&quot;</span><span class="p">):</span>
+</span><span data-line="7">    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Image: </span><span class="si">{</span><span class="n">file</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</span><span data-line="8">
+</span><span data-line="9"><span class="c1"># Limit results</span>
+</span><span data-line="10"><span class="k">async</span> <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">storage</span><span class="o">.</span><span class="n">list</span><span class="p">(</span><span class="s2">&quot;logs/&quot;</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="mi">100</span><span class="p">):</span>
+</span><span data-line="11">    <span class="nb">print</span><span class="p">(</span><span class="n">file</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
+</span></pre></div>
+</div>
+</section>
+<section id="other-operations">
+<h3>Other Operations<a class="headerlink" href="#other-operations" title="Link to this heading">¶</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="c1"># Check if file exists</span>
+</span><span data-line="2"><span class="k">if</span> <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="s2">&quot;documents/report.pdf&quot;</span><span class="p">):</span>
+</span><span data-line="3">    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;File exists!&quot;</span><span class="p">)</span>
+</span><span data-line="4">
+</span><span data-line="5"><span class="c1"># Copy a file</span>
+</span><span data-line="6"><span class="n">new_file</span> <span class="o">=</span> <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="s2">&quot;images/photo.jpg&quot;</span><span class="p">,</span> <span class="s2">&quot;images/photo-backup.jpg&quot;</span><span class="p">)</span>
+</span><span data-line="7">
+</span><span data-line="8"><span class="c1"># Move/rename a file</span>
+</span><span data-line="9"><span class="n">moved</span> <span class="o">=</span> <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="s2">&quot;temp/upload.jpg&quot;</span><span class="p">,</span> <span class="s2">&quot;images/final.jpg&quot;</span><span class="p">)</span>
+</span><span data-line="10">
+</span><span data-line="11"><span class="c1"># Delete a file</span>
+</span><span data-line="12"><span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="s2">&quot;temp/old-file.txt&quot;</span><span class="p">)</span>
+</span></pre></div>
+</div>
+</section>
+</section>
+<section id="path-handling-and-security">
+<h2>Path Handling and Security<a class="headerlink" href="#path-handling-and-security" title="Link to this heading">¶</a></h2>
+<section id="key-normalization">
+<h3>Key Normalization<a class="headerlink" href="#key-normalization" title="Link to this heading">¶</a></h3>
+<p>Keys are automatically normalized for security and consistency:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="c1"># Backslashes are converted to forward slashes</span>
+</span><span data-line="2"><span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="s2">&quot;path</span><span class="se">\\</span><span class="s2">to</span><span class="se">\\</span><span class="s2">file.txt&quot;</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>  <span class="c1"># Stored as &quot;path/to/file.txt&quot;</span>
+</span><span data-line="3">
+</span><span data-line="4"><span class="c1"># Leading slashes are removed</span>
+</span><span data-line="5"><span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="s2">&quot;/absolute/path.txt&quot;</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>  <span class="c1"># Stored as &quot;absolute/path.txt&quot;</span>
+</span><span data-line="6">
+</span><span data-line="7"><span class="c1"># Path traversal attempts are blocked</span>
+</span><span data-line="8"><span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="s2">&quot;../../../etc/passwd&quot;</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>  <span class="c1"># Raises error or sanitized</span>
+</span></pre></div>
+</div>
+</section>
+<section id="directory-structure">
+<h3>Directory Structure<a class="headerlink" href="#directory-structure" title="Link to this heading">¶</a></h3>
+<p>Files are stored in subdirectories matching their keys:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="c1"># Configuration</span>
+</span><span data-line="2"><span class="n">storage</span> <span class="o">=</span> <span class="n">FileSystemStorage</span><span class="p">(</span>
+</span><span data-line="3">    <span class="n">config</span><span class="o">=</span><span class="n">FileSystemConfig</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;/var/uploads&quot;</span><span class="p">))</span>
+</span><span data-line="4"><span class="p">)</span>
+</span><span data-line="5">
+</span><span data-line="6"><span class="c1"># Storing files creates directory structure automatically</span>
+</span><span data-line="7"><span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="s2">&quot;users/123/avatar.jpg&quot;</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+</span><span data-line="8"><span class="c1"># Creates: /var/uploads/users/123/avatar.jpg</span>
+</span><span data-line="9">
+</span><span data-line="10"><span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="s2">&quot;documents/2024/01/report.pdf&quot;</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+</span><span data-line="11"><span class="c1"># Creates: /var/uploads/documents/2024/01/report.pdf</span>
+</span></pre></div>
+</div>
+</section>
+<section id="file-permissions">
+<h3>File Permissions<a class="headerlink" href="#file-permissions" title="Link to this heading">¶</a></h3>
+<p>Control permissions on created files:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="c1"># Readable by owner only</span>
+</span><span data-line="2"><span class="n">config</span> <span class="o">=</span> <span class="n">FileSystemConfig</span><span class="p">(</span>
+</span><span data-line="3">    <span class="n">path</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;/secure/uploads&quot;</span><span class="p">),</span>
+</span><span data-line="4">    <span class="n">permissions</span><span class="o">=</span><span class="mo">0o600</span><span class="p">,</span>  <span class="c1"># rw-------</span>
+</span><span data-line="5"><span class="p">)</span>
+</span><span data-line="6">
+</span><span data-line="7"><span class="c1"># World-readable (for public assets)</span>
+</span><span data-line="8"><span class="n">config</span> <span class="o">=</span> <span class="n">FileSystemConfig</span><span class="p">(</span>
+</span><span data-line="9">    <span class="n">path</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;/public/assets&quot;</span><span class="p">),</span>
+</span><span data-line="10">    <span class="n">permissions</span><span class="o">=</span><span class="mo">0o644</span><span class="p">,</span>  <span class="c1"># rw-r--r--</span>
+</span><span data-line="11"><span class="p">)</span>
+</span></pre></div>
+</div>
+</section>
+</section>
+<section id="url-generation">
+<h2>URL Generation<a class="headerlink" href="#url-generation" title="Link to this heading">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">url()</span></code> method generates URLs for accessing files. Behavior depends on whether <code class="docutils literal notranslate"><span class="pre">base_url</span></code> is configured.</p>
+<section id="without-base-url">
+<h3>Without base_url<a class="headerlink" href="#without-base-url" title="Link to this heading">¶</a></h3>
+<p>Returns the absolute filesystem path:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="n">storage</span> <span class="o">=</span> <span class="n">FileSystemStorage</span><span class="p">(</span>
+</span><span data-line="2">    <span class="n">config</span><span class="o">=</span><span class="n">FileSystemConfig</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;/var/uploads&quot;</span><span class="p">))</span>
+</span><span data-line="3"><span class="p">)</span>
+</span><span data-line="4">
+</span><span data-line="5"><span class="n">url</span> <span class="o">=</span> <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">url</span><span class="p">(</span><span class="s2">&quot;images/photo.jpg&quot;</span><span class="p">)</span>
+</span><span data-line="6"><span class="c1"># Returns: &quot;/var/uploads/images/photo.jpg&quot;</span>
+</span></pre></div>
+</div>
+</section>
+<section id="with-base-url">
+<h3>With base_url<a class="headerlink" href="#with-base-url" title="Link to this heading">¶</a></h3>
+<p>Returns a URL combining the base URL and file key:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="n">storage</span> <span class="o">=</span> <span class="n">FileSystemStorage</span><span class="p">(</span>
+</span><span data-line="2">    <span class="n">config</span><span class="o">=</span><span class="n">FileSystemConfig</span><span class="p">(</span>
+</span><span data-line="3">        <span class="n">path</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;/var/uploads&quot;</span><span class="p">),</span>
+</span><span data-line="4">        <span class="n">base_url</span><span class="o">=</span><span class="s2">&quot;https://cdn.example.com/uploads&quot;</span><span class="p">,</span>
+</span><span data-line="5">    <span class="p">)</span>
+</span><span data-line="6"><span class="p">)</span>
+</span><span data-line="7">
+</span><span data-line="8"><span class="n">url</span> <span class="o">=</span> <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">url</span><span class="p">(</span><span class="s2">&quot;images/photo.jpg&quot;</span><span class="p">)</span>
+</span><span data-line="9"><span class="c1"># Returns: &quot;https://cdn.example.com/uploads/images/photo.jpg&quot;</span>
+</span></pre></div>
+</div>
+</section>
+<section id="url-configuration-patterns">
+<h3>URL Configuration Patterns<a class="headerlink" href="#url-configuration-patterns" title="Link to this heading">¶</a></h3>
+<p><strong>Serving via reverse proxy (nginx, Caddy):</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="c1"># Files in /var/www/static/uploads</span>
+</span><span data-line="2"><span class="c1"># Nginx serves /var/www/static at https://example.com/static</span>
+</span><span data-line="3"><span class="n">config</span> <span class="o">=</span> <span class="n">FileSystemConfig</span><span class="p">(</span>
+</span><span data-line="4">    <span class="n">path</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;/var/www/static/uploads&quot;</span><span class="p">),</span>
+</span><span data-line="5">    <span class="n">base_url</span><span class="o">=</span><span class="s2">&quot;https://example.com/static/uploads&quot;</span><span class="p">,</span>
+</span><span data-line="6"><span class="p">)</span>
+</span></pre></div>
+</div>
+<p><strong>Serving via CDN:</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="c1"># Files in /var/uploads</span>
+</span><span data-line="2"><span class="c1"># CDN pulls from origin, serves at cdn.example.com</span>
+</span><span data-line="3"><span class="n">config</span> <span class="o">=</span> <span class="n">FileSystemConfig</span><span class="p">(</span>
+</span><span data-line="4">    <span class="n">path</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;/var/uploads&quot;</span><span class="p">),</span>
+</span><span data-line="5">    <span class="n">base_url</span><span class="o">=</span><span class="s2">&quot;https://cdn.example.com&quot;</span><span class="p">,</span>
+</span><span data-line="6"><span class="p">)</span>
+</span></pre></div>
+</div>
+<p><strong>Development with Litestar static files:</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.static_files</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_static_files_router</span>
+</span><span data-line="3">
+</span><span data-line="4"><span class="n">config</span> <span class="o">=</span> <span class="n">FileSystemConfig</span><span class="p">(</span>
+</span><span data-line="5">    <span class="n">path</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;./uploads&quot;</span><span class="p">),</span>
+</span><span data-line="6">    <span class="n">base_url</span><span class="o">=</span><span class="s2">&quot;/static/uploads&quot;</span><span class="p">,</span>
+</span><span data-line="7"><span class="p">)</span>
+</span><span data-line="8">
+</span><span data-line="9"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
+</span><span data-line="10">    <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="o">...</span><span class="p">],</span>
+</span><span data-line="11">    <span class="n">plugins</span><span class="o">=</span><span class="p">[</span><span class="n">StoragePlugin</span><span class="p">(</span><span class="n">FileSystemStorage</span><span class="p">(</span><span class="n">config</span><span class="p">))],</span>
+</span><span data-line="12">    <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span>
+</span><span data-line="13">        <span class="n">create_static_files_router</span><span class="p">(</span>
+</span><span data-line="14">            <span class="n">path</span><span class="o">=</span><span class="s2">&quot;/static/uploads&quot;</span><span class="p">,</span>
+</span><span data-line="15">            <span class="n">directories</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;./uploads&quot;</span><span class="p">],</span>
+</span><span data-line="16">        <span class="p">),</span>
+</span><span data-line="17">    <span class="p">],</span>
+</span><span data-line="18"><span class="p">)</span>
+</span></pre></div>
+</div>
+</section>
+</section>
+<section id="usage-examples">
+<h2>Usage Examples<a class="headerlink" href="#usage-examples" title="Link to this heading">¶</a></h2>
+<section id="file-upload-handler">
+<h3>File Upload Handler<a class="headerlink" href="#file-upload-handler" title="Link to this heading">¶</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">post</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.datastructures</span><span class="w"> </span><span class="kn">import</span> <span class="n">UploadFile</span>
+</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_storages</span><span class="w"> </span><span class="kn">import</span> <span class="n">Storage</span><span class="p">,</span> <span class="n">StoredFile</span>
+</span><span data-line="4"><span class="kn">import</span><span class="w"> </span><span class="nn">uuid</span>
+</span><span data-line="5">
+</span><span data-line="6">
+</span><span data-line="7"><span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/upload&quot;</span><span class="p">)</span>
+</span><span data-line="8"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">upload_file</span><span class="p">(</span>
+</span><span data-line="9">    <span class="n">data</span><span class="p">:</span> <span class="n">UploadFile</span><span class="p">,</span>
+</span><span data-line="10">    <span class="n">storage</span><span class="p">:</span> <span class="n">Storage</span><span class="p">,</span>
+</span><span data-line="11"><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">StoredFile</span><span class="p">:</span>
+</span><span data-line="12"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Upload a file with a unique name.&quot;&quot;&quot;</span>
+</span><span data-line="13">    <span class="c1"># Generate unique filename to prevent overwrites</span>
+</span><span data-line="14">    <span class="n">ext</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">filename</span><span class="p">)</span><span class="o">.</span><span class="n">suffix</span>
+</span><span data-line="15">    <span class="n">unique_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">()</span><span class="si">}{</span><span class="n">ext</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span data-line="16">    <span class="n">key</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;uploads/</span><span class="si">{</span><span class="n">unique_name</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span data-line="17">
+</span><span data-line="18">    <span class="n">content</span> <span class="o">=</span> <span class="k">await</span> <span class="n">data</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+</span><span data-line="19">    <span class="k">return</span> <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">put</span><span class="p">(</span>
+</span><span data-line="20">        <span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">,</span>
+</span><span data-line="21">        <span class="n">data</span><span class="o">=</span><span class="n">content</span><span class="p">,</span>
+</span><span data-line="22">        <span class="n">content_type</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">content_type</span><span class="p">,</span>
+</span><span data-line="23">        <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;original_name&quot;</span><span class="p">:</span> <span class="n">data</span><span class="o">.</span><span class="n">filename</span><span class="p">},</span>
+</span><span data-line="24">    <span class="p">)</span>
+</span></pre></div>
+</div>
+</section>
+<section id="organized-file-storage">
+<h3>Organized File Storage<a class="headerlink" href="#organized-file-storage" title="Link to this heading">¶</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span>
+</span><span data-line="2">
+</span><span data-line="3">
+</span><span data-line="4"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">store_user_document</span><span class="p">(</span>
+</span><span data-line="5">    <span class="n">user_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+</span><span data-line="6">    <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+</span><span data-line="7">    <span class="n">content</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">,</span>
+</span><span data-line="8">    <span class="n">storage</span><span class="p">:</span> <span class="n">Storage</span><span class="p">,</span>
+</span><span data-line="9"><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">StoredFile</span><span class="p">:</span>
+</span><span data-line="10"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Store a user document in an organized structure.&quot;&quot;&quot;</span>
+</span><span data-line="11">    <span class="c1"># Organize by user and date</span>
+</span><span data-line="12">    <span class="n">today</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y/%m/</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">)</span>
+</span><span data-line="13">    <span class="n">key</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;users/</span><span class="si">{</span><span class="n">user_id</span><span class="si">}</span><span class="s2">/documents/</span><span class="si">{</span><span class="n">today</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span data-line="14">
+</span><span data-line="15">    <span class="k">return</span> <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">put</span><span class="p">(</span>
+</span><span data-line="16">        <span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">,</span>
+</span><span data-line="17">        <span class="n">data</span><span class="o">=</span><span class="n">content</span><span class="p">,</span>
+</span><span data-line="18">        <span class="n">content_type</span><span class="o">=</span><span class="s2">&quot;application/octet-stream&quot;</span><span class="p">,</span>
+</span><span data-line="19">    <span class="p">)</span>
+</span><span data-line="20">
+</span><span data-line="21">
+</span><span data-line="22"><span class="c1"># Usage</span>
+</span><span data-line="23"><span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">store_user_document</span><span class="p">(</span>
+</span><span data-line="24">    <span class="n">user_id</span><span class="o">=</span><span class="mi">123</span><span class="p">,</span>
+</span><span data-line="25">    <span class="n">filename</span><span class="o">=</span><span class="s2">&quot;contract.pdf&quot;</span><span class="p">,</span>
+</span><span data-line="26">    <span class="n">content</span><span class="o">=</span><span class="n">pdf_bytes</span><span class="p">,</span>
+</span><span data-line="27">    <span class="n">storage</span><span class="o">=</span><span class="n">storage</span><span class="p">,</span>
+</span><span data-line="28"><span class="p">)</span>
+</span><span data-line="29"><span class="c1"># Stored at: users/123/documents/2024/01/15/contract.pdf</span>
+</span></pre></div>
+</div>
+</section>
+<section id="cleanup-old-files">
+<h3>Cleanup Old Files<a class="headerlink" href="#cleanup-old-files" title="Link to this heading">¶</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timedelta</span>
+</span><span data-line="2">
+</span><span data-line="3">
+</span><span data-line="4"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">cleanup_old_temp_files</span><span class="p">(</span>
+</span><span data-line="5">    <span class="n">storage</span><span class="p">:</span> <span class="n">Storage</span><span class="p">,</span>
+</span><span data-line="6">    <span class="n">max_age</span><span class="p">:</span> <span class="n">timedelta</span> <span class="o">=</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">7</span><span class="p">),</span>
+</span><span data-line="7"><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+</span><span data-line="8"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Delete temporary files older than max_age.&quot;&quot;&quot;</span>
+</span><span data-line="9">    <span class="n">deleted</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span data-line="10">    <span class="n">cutoff</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span> <span class="o">-</span> <span class="n">max_age</span>
+</span><span data-line="11">
+</span><span data-line="12">    <span class="k">async</span> <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">storage</span><span class="o">.</span><span class="n">list</span><span class="p">(</span><span class="s2">&quot;temp/&quot;</span><span class="p">):</span>
+</span><span data-line="13">        <span class="k">if</span> <span class="n">file</span><span class="o">.</span><span class="n">last_modified</span> <span class="ow">and</span> <span class="n">file</span><span class="o">.</span><span class="n">last_modified</span> <span class="o">&lt;</span> <span class="n">cutoff</span><span class="p">:</span>
+</span><span data-line="14">            <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">file</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
+</span><span data-line="15">            <span class="n">deleted</span> <span class="o">+=</span> <span class="mi">1</span>
+</span><span data-line="16">
+</span><span data-line="17">    <span class="k">return</span> <span class="n">deleted</span>
+</span></pre></div>
+</div>
+</section>
+</section>
+<section id="limitations">
+<h2>Limitations<a class="headerlink" href="#limitations" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p><strong>No presigned URLs</strong>: Unlike cloud backends, filesystem storage cannot generate time-limited signed URLs. The <code class="docutils literal notranslate"><span class="pre">url()</span></code> method returns static paths.</p></li>
+<li><p><strong>Single server only</strong>: Files are stored locally, so they are only accessible from the server where they are stored. For multi-server deployments, use a shared filesystem (NFS) or a cloud backend.</p></li>
+<li><p><strong>Manual backup required</strong>: Unlike cloud storage, local files are not automatically replicated. Implement your own backup strategy.</p></li>
+<li><p><strong>Limited metadata</strong>: Custom metadata is not persisted to the filesystem (only available in memory during the session). For persistent metadata, use a database or a cloud backend.</p></li>
+</ul>
+</section>
+<section id="next-steps">
+<h2>Next Steps<a class="headerlink" href="#next-steps" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>Learn about <a class="reference internal" href="s3.html"><span class="std std-doc">S3 storage</span></a> for cloud-based file storage with presigned URLs</p></li>
+<li><p>Use <a class="reference internal" href="memory.html"><span class="std std-doc">Memory storage</span></a> for testing without touching the filesystem</p></li>
+</ul>
+</section>
+</section>
+
+        </article><button class="back-to-top" type="button">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+  </svg>
+  <span>Back to top</span>
+</button><div class="navigation flex print:hidden"><div class="navigation-prev">
+    <a href="../examples.html">
+      <i class="i-lucide chevron-left"></i>
+      <div class="page-info">
+        <span>Previous</span><div class="title">Example Applications</div></div>
+    </a>
+  </div><div class="navigation-next">
+    <a href="s3.html">
+      <div class="page-info">
+        <span>Next</span>
+        <div class="title">S3 Storage</div>
+      </div>
+      <i class="i-lucide chevron-right"></i>
+    </a>
+  </div></div></div>
+    </div>
+  </main>
+</div>
+<footer class="sy-foot">
+  <div class="sy-foot-inner sy-container mx-auto">
+    <div class="sy-foot-reserved md:flex justify-between items-center">
+      <div class="sy-foot-copyright"><p>2025, Jacob Coffee</p>
+  
+  <p>
+    Made with
+    
+    <a href="https://www.sphinx-doc.org/">Sphinx</a> and
+    
+    <a href="https://shibuya.lepture.com">Shibuya theme</a>.
+  </p>
+</div>
+      <div class="sy-foot-socials">
+<a href="https://github.com/JacobCoffee/litestar-storages" aria-label="GitHub">
+  <iconify-icon icon="simple-icons:github"></iconify-icon>
+</a></div>
+    </div>
+  </div>
+</footer>
+      <script src="../_static/documentation_options.js?v=000c92bf"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../_static/copybutton.js?v=30646c52"></script>
+      <script src="../_static/design-tabs.js?v=f930bc37"></script>
+      <script src="../_static/shibuya.js?v=c1cf1a6b"></script></body>
+</html>

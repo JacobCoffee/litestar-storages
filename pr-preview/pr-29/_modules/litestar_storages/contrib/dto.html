@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en" data-accent-color="violet" data-content_root="../../../">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>litestar_storages.contrib.dto - litestar-storages</title><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" /><script>
+    function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
+    setColorMode(localStorage._theme||"auto");
+  </script><link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=e1a1ceaf" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/shibuya.css?v=14737038" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link media="print" rel="stylesheet" type="text/css" href="../../../_static/print.css?v=20ff2c19" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=5f8f7e8c" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --sy-f-text: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+  --sy-f-heading: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+}
+</style>
+    <meta property="og:type" content="website"/><meta property="og:title" content="litestar_storages.contrib.dto"/>
+    <meta name="twitter:card" content="summary"/>
+  </head>
+<body><div class="sy-head">
+  <div class="sy-head-blur"></div>
+  <div class="sy-head-inner sy-container mx-auto">
+    <a class="sy-head-brand" href="../../../index.html">
+      
+      
+      <strong>litestar-storages</strong>
+    </a>
+    <div class="sy-head-nav" id="head-nav">
+      <nav class="sy-head-links"><ul><li class="link">
+          <a href="https://litestar.dev/">
+            <span>Litestar</span></a>
+        </li><li class="link">
+          <a href="https://pypi.org/project/litestar-storages/">
+            <span>PyPI</span></a>
+        </li></ul></nav>
+      <div class="sy-head-extra flex items-center print:hidden"><form class="searchbox flex items-center" action="../../../search.html" method="get">
+  <input type="text" name="q" placeholder="Search" />
+  <kbd>/</kbd>
+</form><div class="sy-head-socials">
+  <a href="https://github.com/JacobCoffee/litestar-storages" aria-label="GitHub">
+    <iconify-icon icon="simple-icons:github"></iconify-icon>
+  </a></div></div>
+    </div>
+    <div class="sy-head-actions flex items-center shrink-0 print:hidden"><button class="js-theme theme-switch flex items-center"
+data-aria-auto="Switch to light color mode"
+data-aria-light="Switch to dark color mode"
+data-aria-dark="Switch to auto color mode">
+<i class="i-lucide theme-icon"></i>
+</button><button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="head-nav" aria-expanded="false">
+        <div class="hamburger">
+          <span class="hamburger_1"></span>
+          <span class="hamburger_2"></span>
+          <span class="hamburger_3"></span>
+        </div>
+      </button>
+    </div>
+  </div>
+</div>
+<div class="sy-page sy-container flex mx-auto">
+  <aside id="lside" class="sy-lside md:w-72 md:shrink-0 print:hidden">
+    <div class="sy-lside-inner md:sticky">
+      <div class="sy-scrollbar p-6">
+        <div class="globaltoc" data-expand-depth="0"><p class="caption" role="heading" aria-level="3"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting-started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Example Applications</a></li>
+</ul>
+<p class="caption" role="heading" aria-level="3"><span class="caption-text">Storage Backends</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../backends/filesystem.html">FileSystem Storage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../backends/s3.html">S3 Storage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../backends/gcs.html">GCS Storage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../backends/azure.html">Azure Blob Storage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../backends/memory.html">Memory Storage</a></li>
+</ul>
+<p class="caption" role="heading" aria-level="3"><span class="caption-text">Advanced Topics</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../advanced/retry.html">Retry Utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../advanced/multipart-uploads.html">Multipart Uploads</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../advanced/progress-callbacks.html">Progress Callbacks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../advanced/custom-backends.html">Custom Backends</a></li>
+</ul>
+<p class="caption" role="heading" aria-level="3"><span class="caption-text">Cookbook</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../cookbook/index.html">Cookbook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../cookbook/file-upload-validation.html">File Upload with Validation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../cookbook/image-processing-pipeline.html">Image Processing Pipeline</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../cookbook/multi-backend-config.html">Multi-Backend Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../cookbook/streaming-large-files.html">Streaming Large Files</a></li>
+</ul>
+<p class="caption" role="heading" aria-level="3"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/index.html">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/base.html">Base Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/types.html">Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/exceptions.html">Exceptions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/backends/index.html">Storage Backends</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/backends/memory.html">Memory Storage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/backends/filesystem.html">FileSystem Storage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/backends/s3.html">S3 Storage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/backends/gcs.html">GCS Storage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/backends/azure.html">Azure Storage</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/contrib/index.html">Litestar Integration</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/contrib/plugin.html">Storage Plugin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/contrib/dependencies.html">Dependencies</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/contrib/dto.html">DTOs</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../comparison.html">Comparison with Other Libraries</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../changelog.html">Changelog</a></li>
+</ul>
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="lside-overlay js-menu" role="button" aria-label="Close left sidebar" aria-controls="lside" aria-expanded="false"></div>
+  <aside id="rside" class="sy-rside pb-3 w-64 shrink-0 order-last">
+    <button class="rside-close js-menu xl:hidden" aria-label="Close Table of Contents" type="button" aria-controls="rside" aria-expanded="false">
+      <i class="i-lucide close"></i>
+    </button>
+    <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4"><div id="ethical-ad-placement" data-ea-publisher="readthedocs"></div></div>
+  </aside>
+  <div class="rside-overlay js-menu" role="button" aria-label="Close Table of Contents" aria-controls="rside" aria-expanded="false"></div>
+  <main class="sy-main w-full max-sm:max-w-full print:pt-6">
+<div class="sy-breadcrumbs" role="navigation">
+  <div class="sy-breadcrumbs-inner flex items-center">
+    <div class="md:hidden mr-3">
+      <button class="js-menu" aria-label="Menu" type="button" aria-controls="lside" aria-expanded="false">
+        <i class="i-lucide menu"></i>
+      </button>
+    </div>
+    <ol class="flex-1" itemscope itemtype="https://schema.org/BreadcrumbList"><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="../../../index.html"><span itemprop="name">litestar-storages</span></a>
+        <span>/</span>
+        <meta itemprop="position" content="1" />
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="../../index.html"><span itemprop="name">Module code</span></a>
+        <span>/</span>
+        <meta itemprop="position" content="2" />
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <strong itemprop="name">litestar_storages.contrib.dto</strong>
+        <meta itemprop="position" content="3" />
+      </li></ol>
+    <div class="xl:hidden ml-1">
+      <button class="js-menu" aria-label="Show table of contents" type="button" aria-controls="rside"
+        aria-expanded="false">
+        <i class="i-lucide outdent"></i>
+      </button>
+    </div>
+  </div>
+</div><div class="flex flex-col break-words justify-between">
+      <div class="min-w-0 max-w-6xl px-6 pb-6 pt-8 xl:px-12">
+        <article class="yue" role="main">
+          <h1>Source code for litestar_storages.contrib.dto</h1><div class="highlight"><pre>
+<span></span><span data-line="1"><span class="sd">&quot;&quot;&quot;Data Transfer Objects for storage responses.</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="sd">This module requires Litestar to be installed. Install with:</span>
+</span><span data-line="4">
+</span><span data-line="5"><span class="sd">    pip install litestar-storages[litestar]</span>
+</span><span data-line="6"><span class="sd">&quot;&quot;&quot;</span>
+</span><span data-line="7">
+</span><span data-line="8"><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+</span><span data-line="9">
+</span><span data-line="10"><span class="k">try</span><span class="p">:</span>
+</span><span data-line="11">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.dto</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataclassDTO</span><span class="p">,</span> <span class="n">DTOConfig</span>
+</span><span data-line="12"><span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+</span><span data-line="13">    <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;Litestar is required for the Storage DTOs. Install with: pip install litestar-storages[litestar]&quot;</span>
+</span><span data-line="14">    <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
+</span><span data-line="15">
+</span><span data-line="16"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_storages.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">StoredFile</span>
+</span><span data-line="17">
+</span><span data-line="18"><span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;StoredFileDTO&quot;</span><span class="p">,</span> <span class="s2">&quot;StoredFileReadDTO&quot;</span><span class="p">]</span>
+</span><span data-line="19">
+</span><span data-line="20">
+<div class="viewcode-block" id="StoredFileDTO">
+<a class="viewcode-back" href="../../../api/contrib/dto.html#litestar_storages.contrib.dto.StoredFileDTO">[docs]</a>
+</span><span data-line="21"><span class="k">class</span><span class="w"> </span><span class="nc">StoredFileDTO</span><span class="p">(</span><span class="n">DataclassDTO</span><span class="p">[</span><span class="n">StoredFile</span><span class="p">]):</span>
+</span><span data-line="22"><span class="w">    </span><span class="sd">&quot;&quot;&quot;DTO for StoredFile responses.</span>
+</span><span data-line="23">
+</span><span data-line="24"><span class="sd">    This DTO provides a standard way to serialize StoredFile objects</span>
+</span><span data-line="25"><span class="sd">    in API responses. By default, it excludes the metadata field to</span>
+</span><span data-line="26"><span class="sd">    keep responses clean.</span>
+</span><span data-line="27">
+</span><span data-line="28"><span class="sd">    Example:</span>
+</span><span data-line="29"><span class="sd">        Basic usage::</span>
+</span><span data-line="30">
+</span><span data-line="31"><span class="sd">            from litestar import post</span>
+</span><span data-line="32"><span class="sd">            from litestar.datastructures import UploadFile</span>
+</span><span data-line="33"><span class="sd">            from litestar_storages import Storage, StoredFile</span>
+</span><span data-line="34"><span class="sd">            from litestar_storages.contrib.dto import StoredFileDTO</span>
+</span><span data-line="35">
+</span><span data-line="36">
+</span><span data-line="37"><span class="sd">            @post(&quot;/upload&quot;, return_dto=StoredFileDTO)</span>
+</span><span data-line="38"><span class="sd">            async def upload(</span>
+</span><span data-line="39"><span class="sd">                data: UploadFile,</span>
+</span><span data-line="40"><span class="sd">                storage: Storage,</span>
+</span><span data-line="41"><span class="sd">            ) -&gt; StoredFile:</span>
+</span><span data-line="42"><span class="sd">                return await storage.put(</span>
+</span><span data-line="43"><span class="sd">                    key=f&quot;uploads/{data.filename}&quot;,</span>
+</span><span data-line="44"><span class="sd">                    data=data.file,</span>
+</span><span data-line="45"><span class="sd">                    content_type=data.content_type,</span>
+</span><span data-line="46"><span class="sd">                )</span>
+</span><span data-line="47">
+</span><span data-line="48"><span class="sd">        Response will be::</span>
+</span><span data-line="49">
+</span><span data-line="50"><span class="sd">            {</span>
+</span><span data-line="51"><span class="sd">                &quot;key&quot;: &quot;uploads/example.jpg&quot;,</span>
+</span><span data-line="52"><span class="sd">                &quot;size&quot;: 12345,</span>
+</span><span data-line="53"><span class="sd">                &quot;content_type&quot;: &quot;image/jpeg&quot;,</span>
+</span><span data-line="54"><span class="sd">                &quot;etag&quot;: &quot;abc123&quot;,</span>
+</span><span data-line="55"><span class="sd">                &quot;last_modified&quot;: &quot;2024-01-15T10:30:00Z&quot;,</span>
+</span><span data-line="56"><span class="sd">            }</span>
+</span><span data-line="57"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="58">
+</span><span data-line="59">    <span class="n">config</span> <span class="o">=</span> <span class="n">DTOConfig</span><span class="p">(</span>
+</span><span data-line="60">        <span class="n">exclude</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;metadata&quot;</span><span class="p">},</span>  <span class="c1"># Hide internal metadata by default</span>
+</span><span data-line="61">    <span class="p">)</span></div>
+
+</span><span data-line="62">
+</span><span data-line="63">
+<div class="viewcode-block" id="StoredFileReadDTO">
+<a class="viewcode-back" href="../../../api/contrib/dto.html#litestar_storages.contrib.dto.StoredFileReadDTO">[docs]</a>
+</span><span data-line="64"><span class="k">class</span><span class="w"> </span><span class="nc">StoredFileReadDTO</span><span class="p">(</span><span class="n">DataclassDTO</span><span class="p">[</span><span class="n">StoredFile</span><span class="p">]):</span>
+</span><span data-line="65"><span class="w">    </span><span class="sd">&quot;&quot;&quot;DTO for read-only StoredFile responses.</span>
+</span><span data-line="66">
+</span><span data-line="67"><span class="sd">    This DTO is useful when you want to include all fields from StoredFile,</span>
+</span><span data-line="68"><span class="sd">    including metadata, in read operations.</span>
+</span><span data-line="69">
+</span><span data-line="70"><span class="sd">    Example:</span>
+</span><span data-line="71"><span class="sd">        Include metadata in response::</span>
+</span><span data-line="72">
+</span><span data-line="73"><span class="sd">            from litestar import get</span>
+</span><span data-line="74"><span class="sd">            from litestar_storages import Storage, StoredFile</span>
+</span><span data-line="75"><span class="sd">            from litestar_storages.contrib.dto import StoredFileReadDTO</span>
+</span><span data-line="76">
+</span><span data-line="77">
+</span><span data-line="78"><span class="sd">            @get(&quot;/files/{key:path}/info&quot;, return_dto=StoredFileReadDTO)</span>
+</span><span data-line="79"><span class="sd">            async def get_file_info(</span>
+</span><span data-line="80"><span class="sd">                key: str,</span>
+</span><span data-line="81"><span class="sd">                storage: Storage,</span>
+</span><span data-line="82"><span class="sd">            ) -&gt; StoredFile:</span>
+</span><span data-line="83"><span class="sd">                return await storage.info(key)</span>
+</span><span data-line="84">
+</span><span data-line="85"><span class="sd">        Response will be::</span>
+</span><span data-line="86">
+</span><span data-line="87"><span class="sd">            {</span>
+</span><span data-line="88"><span class="sd">                &quot;key&quot;: &quot;uploads/example.jpg&quot;,</span>
+</span><span data-line="89"><span class="sd">                &quot;size&quot;: 12345,</span>
+</span><span data-line="90"><span class="sd">                &quot;content_type&quot;: &quot;image/jpeg&quot;,</span>
+</span><span data-line="91"><span class="sd">                &quot;etag&quot;: &quot;abc123&quot;,</span>
+</span><span data-line="92"><span class="sd">                &quot;last_modified&quot;: &quot;2024-01-15T10:30:00Z&quot;,</span>
+</span><span data-line="93"><span class="sd">                &quot;metadata&quot;: {&quot;uploaded_by&quot;: &quot;user123&quot;, &quot;original_filename&quot;: &quot;my_photo.jpg&quot;},</span>
+</span><span data-line="94"><span class="sd">            }</span>
+</span><span data-line="95"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="96">
+</span><span data-line="97">    <span class="n">config</span> <span class="o">=</span> <span class="n">DTOConfig</span><span class="p">()</span>  <span class="c1"># Include all fields</span></div>
+
+</span></pre></div>
+        </article><button class="back-to-top" type="button">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+  </svg>
+  <span>Back to top</span>
+</button><div class="navigation flex print:hidden"></div></div>
+    </div>
+  </main>
+</div>
+<footer class="sy-foot">
+  <div class="sy-foot-inner sy-container mx-auto">
+    <div class="sy-foot-reserved md:flex justify-between items-center">
+      <div class="sy-foot-copyright"><p>2025, Jacob Coffee</p>
+  
+  <p>
+    Made with
+    
+    <a href="https://www.sphinx-doc.org/">Sphinx</a> and
+    
+    <a href="https://shibuya.lepture.com">Shibuya theme</a>.
+  </p>
+</div>
+      <div class="sy-foot-socials">
+<a href="https://github.com/JacobCoffee/litestar-storages" aria-label="GitHub">
+  <iconify-icon icon="simple-icons:github"></iconify-icon>
+</a></div>
+    </div>
+  </div>
+</footer>
+      <script src="../../../_static/documentation_options.js?v=000c92bf"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../../_static/copybutton.js?v=30646c52"></script>
+      <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
+      <script src="../../../_static/shibuya.js?v=c1cf1a6b"></script></body>
+</html>
