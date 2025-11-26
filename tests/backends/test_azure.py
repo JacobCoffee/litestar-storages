@@ -1334,6 +1334,7 @@ class TestAzurePrefixHandling:
         self,
         azure_blob_service,
         azure_blob_default_container_name: str,
+        azure_blob_container_client,  # Ensures container is created
         sample_text_data: bytes,
     ) -> None:
         """
@@ -1375,6 +1376,7 @@ class TestAzurePrefixHandling:
         self,
         azure_blob_service,
         azure_blob_default_container_name: str,
+        azure_blob_container_client,  # Ensures container is created
         sample_text_data: bytes,
     ) -> None:
         """
