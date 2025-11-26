@@ -1,10 +1,12 @@
 # litestar-storages
 
-Welcome to litestar-storages, an async-first file storage abstraction library for [Litestar](https://litestar.dev/).
+Welcome to litestar-storages, an async-first file storage abstraction library for Python with optional [Litestar](https://litestar.dev/) integration.
 
 ## What is litestar-storages?
 
 litestar-storages provides a unified, async-native interface for storing and retrieving files across multiple storage backends. Whether you need to store user uploads on the local filesystem, serve media from AWS S3, or use Cloudflare R2 for edge distribution, litestar-storages gives you a consistent API that works the same way everywhere.
+
+**The core library is framework-agnostic** - use it with any async Python application, including FastAPI, Starlette, Quart, or plain asyncio. Litestar integration is provided as an optional plugin.
 
 ```python
 from litestar_storages import S3Storage, S3Config
@@ -20,6 +22,24 @@ url = await storage.url("photos/vacation.jpg", expires_in=timedelta(hours=1))
 
 ## Key Features
 
+### Framework-Agnostic Core
+
+The storage backends work with **any async Python application**. No framework dependencies required for the core functionality - just install and use with plain asyncio:
+
+```python
+import asyncio
+from litestar_storages import FileSystemStorage, FileSystemConfig
+from pathlib import Path
+
+async def main():
+    storage = FileSystemStorage(FileSystemConfig(path=Path("./uploads")))
+    await storage.put("hello.txt", b"Hello, World!")
+    content = await storage.get_bytes("hello.txt")
+    print(content.decode())
+
+asyncio.run(main())
+```
+
 ### Async-Native Design
 
 Built from the ground up for Python's async/await paradigm. Unlike django-storages (sync) or fastapi-storages (sync despite the name), every operation in litestar-storages is truly asynchronous.
@@ -32,9 +52,9 @@ Built from the ground up for Python's async/await paradigm. Unlike django-storag
 - **AzureStorage**: Azure Blob Storage with SAS URLs and managed identity
 - **MemoryStorage**: In-memory storage for testing and development
 
-### First-Class Litestar Integration
+### Optional Litestar Integration
 
-The `StoragePlugin` provides seamless integration with Litestar applications:
+The `StoragePlugin` provides seamless integration with Litestar applications (requires the `litestar` extra):
 
 - **Dependency injection**: Storage instances injected directly into route handlers
 - **Lifespan management**: Automatic connection cleanup on application shutdown
