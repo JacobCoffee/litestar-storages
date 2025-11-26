@@ -163,21 +163,22 @@ Once a release is published, its assets and tag cannot be modified.
 
 To create a new release:
 
-1. Bump the version using uv (0.7.0+)::
+1. Create a release branch and bump version using uv (0.7.0+)::
 
+    git checkout -b release/vX.Y.Z
     uv version --bump patch     # 1.2.3 => 1.2.4
-    uv version --bump minor     # 1.2.3 => 1.3.0
-    uv version --bump major     # 1.2.3 => 2.0.0
+    # or: uv version --bump minor / major
 
-2. Commit and merge to main::
+2. Commit, push, and create a PR::
 
     git add pyproject.toml
     git commit -m "chore: bump version to X.Y.Z"
-    # Create PR, wait for CI, merge
+    git push -u origin release/vX.Y.Z
+    gh pr create --title "chore: bump version to X.Y.Z"
 
-3. Push the tag to trigger the release workflow::
+3. After PR is merged, push the tag to trigger the release workflow::
 
-    git checkout main && git pull
+    git checkout main && git pull origin main
     git tag vX.Y.Z
     git push origin vX.Y.Z
 
