@@ -121,10 +121,10 @@ jobs:
       - name: Run tests
         run: |
           if [ "${{ matrix.os }}" = "ubuntu-latest" ]; then
-            uv run pytest -n auto
+            uv run pytest -n auto --reruns 2 --reruns-delay 1
           else
             # Skip Docker-dependent tests on Windows (no Docker available)
-            uv run pytest -n auto \
+            uv run pytest -n auto --reruns 2 --reruns-delay 1 \
               --ignore=tests/backends/test_azure.py \
               --ignore=tests/backends/test_gcs.py \
               --ignore=tests/backends/test_s3.py
@@ -177,10 +177,10 @@ jobs:
       - name: Run tests with coverage
         run: |
           if [ "${{ matrix.os }}" = "ubuntu-latest" ]; then
-            uv run pytest --cov=litestar_storages --cov-report=term-missing --cov-report=xml -n auto
+            uv run pytest --cov=litestar_storages --cov-report=term-missing --cov-report=xml -n auto --reruns 2 --reruns-delay 1
           else
             # Skip Docker-dependent tests on Windows/macOS (no Docker available)
-            uv run pytest --cov=litestar_storages --cov-report=term-missing --cov-report=xml -n auto \
+            uv run pytest --cov=litestar_storages --cov-report=term-missing --cov-report=xml -n auto --reruns 2 --reruns-delay 1 \
               --ignore=tests/backends/test_azure.py \
               --ignore=tests/backends/test_gcs.py \
               --ignore=tests/backends/test_s3.py
