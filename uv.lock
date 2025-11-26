@@ -1217,6 +1217,7 @@ dev = [
     { name = "pytest-asyncio" },
     { name = "pytest-cov" },
     { name = "pytest-databases" },
+    { name = "pytest-rerunfailures" },
     { name = "pytest-socket" },
     { name = "pytest-sugar" },
     { name = "pytest-timeout" },
@@ -1298,6 +1299,7 @@ dev = [
     { name = "pytest-asyncio", specifier = ">=0.23.0" },
     { name = "pytest-cov", specifier = ">=4.0.0" },
     { name = "pytest-databases", specifier = ">=0.15.0" },
+    { name = "pytest-rerunfailures", specifier = ">=16.1" },
     { name = "pytest-socket", specifier = ">=0.7.0" },
     { name = "pytest-sugar", specifier = ">=1.1.1" },
     { name = "pytest-timeout", specifier = ">=2.2.0" },
@@ -2113,6 +2115,19 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/33/39/25d33c0246ed8f99ba82fb3c998400bbb704a9874f3eb6791b90f361a043/pytest_databases-0.15.0.tar.gz", hash = "sha256:e1b8cda6d1976def17658cc0e9c07ec70aed0126020b724fb3700e2880c15883", size = 215682, upload-time = "2025-10-06T21:30:48.504Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/ef/31/48b9168189cb62bca61eca2f05a323cb44c7e65b04a43cde5732a95b88f8/pytest_databases-0.15.0-py3-none-any.whl", hash = "sha256:a2b01053def11264e18fd405ee68c07ce5accafc0872310539bc0d669bbf922c", size = 28734, upload-time = "2025-10-06T21:30:46.999Z" },
+]
+
+[[package]]
+name = "pytest-rerunfailures"
+version = "16.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "packaging" },
+    { name = "pytest" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/de/04/71e9520551fc8fe2cf5c1a1842e4e600265b0815f2016b7c27ec85688682/pytest_rerunfailures-16.1.tar.gz", hash = "sha256:c38b266db8a808953ebd71ac25c381cb1981a78ff9340a14bcb9f1b9bff1899e", size = 30889, upload-time = "2025-10-10T07:06:01.238Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/77/54/60eabb34445e3db3d3d874dc1dfa72751bfec3265bd611cb13c8b290adea/pytest_rerunfailures-16.1-py3-none-any.whl", hash = "sha256:5d11b12c0ca9a1665b5054052fcc1084f8deadd9328962745ef6b04e26382e86", size = 14093, upload-time = "2025-10-10T07:06:00.019Z" },
 ]
 
 [[package]]
