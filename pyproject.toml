@@ -4,6 +4,7 @@ requires = ["uv_build>=0.9.11,<0.10.0"]
 
 [dependency-groups]
 docs = [
+    "litestar>=2.0.0",  # Required for autodoc to import contrib modules
     "linkify-it-py>=2.0.0",
     "myst-parser>=4.0.0",
     "shibuya>=2024.0.0",

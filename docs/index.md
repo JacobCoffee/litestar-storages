@@ -152,6 +152,17 @@ advanced/custom-backends
 ```
 
 ```{toctree}
+:maxdepth: 2
+:caption: Cookbook
+
+cookbook/index
+cookbook/file-upload-validation
+cookbook/image-processing-pipeline
+cookbook/multi-backend-config
+cookbook/streaming-large-files
+```
+
+```{toctree}
 :maxdepth: 1
 :caption: Reference
 

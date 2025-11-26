@@ -11,8 +11,6 @@ ImportError with installation instructions.
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
 # Check if Litestar is available
 try:
     import litestar  # noqa: F401
@@ -20,11 +18,6 @@ try:
     LITESTAR_AVAILABLE = True
 except ImportError:
     LITESTAR_AVAILABLE = False
-
-if TYPE_CHECKING:
-    from litestar_storages.contrib.dependencies import StorageDependency, provide_storage
-    from litestar_storages.contrib.dto import StoredFileDTO, StoredFileReadDTO
-    from litestar_storages.contrib.plugin import StoragePlugin
 
 
 def _raise_litestar_not_installed() -> None:
