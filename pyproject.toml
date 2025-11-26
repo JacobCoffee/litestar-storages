@@ -3,67 +3,43 @@ build-backend = "uv_build"
 requires = ["uv_build>=0.9.11,<0.10.0"]
 
 [dependency-groups]
-dev = [
-    "prek>=0.2.18",
-    "ruff>=0.9.0",
-    "codespell>=2.2.6",
-    "ty>=0.0.1a7",
-    "pytest>=8.0.0",
-    "pytest-cov>=4.0.0",
-    "pytest-asyncio>=0.23.0",
-    "pytest-xdist>=3.5.0",
-    "pytest-timeout>=2.2.0",
-    "pytest-socket>=0.7.0",
-    "moto[s3,server]>=5.0.0",
-    "aioboto3>=12.0.0",
-    "aiofiles>=23.0.0",
-    "sphinx>=7.0.0",
-    "shibuya>=2024.0.0",
-    "sphinx-copybutton>=0.5.0",
-    "sphinx-design>=0.5.0",
-    "sphinx-autodoc-typehints>=2.0.0",
-    "sphinx-autobuild>=2024.0.0",
-    "myst-parser>=4.0.0",
-    "linkify-it-py>=2.0.0",
-    "pytest-sugar>=1.1.1",
-    # Cloud storage backends for integration tests
-    "gcloud-aio-storage>=9.0.0",
-    "azure-storage-blob>=12.0.0",
-    "requests>=2.25.0",
-    "pytest-databases>=0.15.0",
-    "pytest-rerunfailures>=16.1",
-]
 docs = [
-    "sphinx>=7.0.0",
+    "linkify-it-py>=2.0.0",
+    "myst-parser>=4.0.0",
     "shibuya>=2024.0.0",
+    "sphinx>=7.0.0",
+    "sphinx-autobuild>=2024.0.0",
+    "sphinx-autodoc-typehints>=2.0.0",
     "sphinx-copybutton>=0.5.0",
     "sphinx-design>=0.5.0",
-    "sphinx-autodoc-typehints>=2.0.0",
-    "sphinx-autobuild>=2024.0.0",
-    "myst-parser>=4.0.0",
-    "linkify-it-py>=2.0.0",
 ]
 lint = [
+    "codespell>=2.2.6",
     "prek>=0.2.18",
     "ruff>=0.9.0",
-    "codespell>=2.2.6",
     "ty>=0.0.1a7",
 ]
 test = [
-    "pytest>=8.0.0",
-    "pytest-cov>=4.0.0",
-    "pytest-asyncio>=0.23.0",
-    "pytest-xdist>=3.5.0",
-    "pytest-timeout>=2.2.0",
-    "pytest-socket>=0.7.0",
-    "moto[s3,server]>=5.0.0",
-    "aioboto3>=12.0.0",
     "aiofiles>=23.0.0",
-    # Cloud storage backends for integration tests
-    "gcloud-aio-storage>=9.0.0",
+    "aioboto3>=12.0.0",
     "azure-storage-blob>=12.0.0",
-    "requests>=2.25.0",  # For GCS emulator API calls
+    "gcloud-aio-storage>=9.0.0",
+    "moto[s3,server]>=5.0.0",
+    "pytest>=8.0.0",
+    "pytest-asyncio>=0.23.0",
+    "pytest-cov>=4.0.0",
+    "pytest-databases>=0.15.0",
+    "pytest-rerunfailures>=16.1",
+    "pytest-socket>=0.7.0",
     "pytest-sugar>=1.1.1",
+    "pytest-timeout>=2.2.0",
+    "pytest-xdist>=3.5.0",
+    "requests>=2.25.0",
+]
+dev = [
+    {include-group = "docs"},
+    {include-group = "lint"},
+    {include-group = "test"},
 ]
 
 [project]
