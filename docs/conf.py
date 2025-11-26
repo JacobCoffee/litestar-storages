@@ -1,25 +1,26 @@
-# Configuration file for the Sphinx documentation builder.
+# Configuration file for the Sphinx documentation builder.  # noqa: INP001
 #
 # For the full list of built-in configuration values, see the documentation:
 # https://www.sphinx-doc.org/en/master/usage/configuration.html
 
-import os
 import sys
-from datetime import datetime
+from datetime import UTC, datetime
+from pathlib import Path
 
 # Add project source to path for autodoc
-sys.path.insert(0, os.path.abspath("../src"))
+sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
 project = "litestar-storages"
-copyright = f"{datetime.now().year}, Jacob Coffee"
+copyright = f"{datetime.now(tz=UTC).year}, Jacob Coffee"  # noqa: A001
 author = "Jacob Coffee"
 
 # Get version dynamically
 try:
     from litestar_storages import __version__
+
     release = __version__
     version = __version__
 except ImportError:
