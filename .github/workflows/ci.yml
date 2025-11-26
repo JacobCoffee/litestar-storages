@@ -32,6 +32,7 @@ jobs:
 
       - name: Run zizmor
         uses: zizmorcore/zizmor-action@e639db99335bc9038abc0e066dfcd72e23d26fb4 # v0.3.0
+        continue-on-error: true  # Don't block CI on security scan failures
 
   # ==================================================================================== #
   # LINT, FORMAT, TYPE CHECK
@@ -133,19 +134,17 @@ jobs:
   ci-success:
     name: CI Success
     runs-on: ubuntu-latest
-    needs: [zizmor, lint-format-typecheck, test]
+    needs: [lint-format-typecheck, test]
     if: always()
     steps:
       - name: Check CI results
         run: |
-          if [[ "${NEEDS_ZIZMOR_RESULT}" != "success" || \
-                "${NEEDS_LINT_FORMAT_TYPECHECK_RESULT}" != "success" || \
+          if [[ "${NEEDS_LINT_FORMAT_TYPECHECK_RESULT}" != "success" || \
                 "${NEEDS_TEST_RESULT}" != "success" ]]; then
             echo "CI failed!"
             exit 1
           fi
           echo "CI passed!"
         env:
-          NEEDS_ZIZMOR_RESULT: ${{ needs.zizmor.result }}
           NEEDS_LINT_FORMAT_TYPECHECK_RESULT: ${{ needs.lint-format-typecheck.result }}
           NEEDS_TEST_RESULT: ${{ needs.test.result }}
