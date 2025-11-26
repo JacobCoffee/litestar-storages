@@ -12,7 +12,9 @@ import pytest
 
 if TYPE_CHECKING:
     from litestar_storages import Storage
+    from litestar_storages.backends.azure import AzureStorage
     from litestar_storages.backends.filesystem import FileSystemStorage
+    from litestar_storages.backends.gcs import GCSStorage
     from litestar_storages.backends.memory import MemoryStorage
     from litestar_storages.backends.s3 import S3Storage
 
@@ -126,13 +128,16 @@ def filesystem_storage_with_base_url(tmp_path: Path) -> FileSystemStorage:
 # The decorator-based mock_aws() doesn't work with aiobotocore's async API.
 
 
-@pytest.fixture
+@pytest.fixture(scope="session")
 def moto_server():
     """
-    Start moto server for S3 mocking with aiobotocore.
+    Start moto server for S3 mocking with aiobotocore (session-scoped).
 
     Uses moto's ThreadedMotoServer to run moto in a separate thread,
     which properly handles aiobotocore's async requests.
+
+    Session-scoped for performance - the same server is reused across all tests.
+    This reduces test suite runtime significantly by avoiding server restart overhead.
     """
     from moto.server import ThreadedMotoServer
 
@@ -156,12 +161,13 @@ def moto_server():
     server.stop()
 
 
-@pytest.fixture
-def mock_s3_bucket(moto_server: str):
+@pytest.fixture(scope="session")
+def mock_s3_bucket_setup(moto_server: str):
     """
-    Create mock S3 bucket using moto server.
+    Create mock S3 bucket once per session (session-scoped).
 
-    Creates the bucket before the test and cleans all objects after.
+    Creates the bucket before any tests run. Bucket cleanup is not needed
+    as the moto server is torn down at the end of the session.
 
     Args:
         moto_server: Endpoint URL from moto server fixture
@@ -178,14 +184,31 @@ def mock_s3_bucket(moto_server: str):
     )
     s3_client.create_bucket(Bucket="test-bucket")
 
-    yield {"client": s3_client, "endpoint_url": moto_server}
+    return {"client": s3_client, "endpoint_url": moto_server}
+
+
+@pytest.fixture
+def mock_s3_bucket(mock_s3_bucket_setup: dict):
+    """
+    Provide S3 bucket with per-test cleanup (function-scoped).
+
+    Ensures test isolation by cleaning up all objects after each test,
+    but reuses the session-scoped bucket and server for performance.
+
+    Args:
+        mock_s3_bucket_setup: Session-scoped bucket setup fixture
+    """
+    yield mock_s3_bucket_setup
 
     # Cleanup: delete all objects in the bucket after test
     try:
+        s3_client = mock_s3_bucket_setup["client"]
         response = s3_client.list_objects_v2(Bucket="test-bucket")
         if "Contents" in response:
-            for obj in response["Contents"]:
-                s3_client.delete_object(Bucket="test-bucket", Key=obj["Key"])
+            # Delete all objects in one batch if possible
+            objects_to_delete = [{"Key": obj["Key"]} for obj in response["Contents"]]
+            if objects_to_delete:
+                s3_client.delete_objects(Bucket="test-bucket", Delete={"Objects": objects_to_delete})
     except Exception:
         pass  # Ignore cleanup errors
 
@@ -261,6 +284,282 @@ def s3_storage_custom_endpoint(mock_s3_bucket: dict) -> S3Storage:
             endpoint_url=mock_s3_bucket["endpoint_url"],
             access_key_id="testing",
             secret_access_key="testing",
+            presigned_expiry=timedelta(hours=1),
+        )
+    )
+
+
+# GCSStorage fixtures
+# NOTE: Uses fake-gcs-server emulator for testing with automatic Docker management.
+
+
+@pytest.fixture(scope="session")
+def gcs_server():
+    """
+    GCS emulator endpoint with automatic Docker container management (session-scoped).
+
+    Automatically starts fake-gcs-server container if Docker is available.
+    Falls back to checking for manually-started emulator on localhost:4443.
+
+    The container is shared across all tests in the session for performance,
+    similar to the Azure and S3 fixtures.
+
+    Yields:
+        str: GCS emulator endpoint URL (http://localhost:4443)
+
+    Raises:
+        pytest.skip: If Docker is not available and emulator is not running
+    """
+    import socket
+    import subprocess
+    import time
+
+    # Check if emulator is already running on localhost:4443
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    try:
+        result = sock.connect_ex(("localhost", 4443))
+        if result == 0:
+            # Already running, use it
+            sock.close()
+            yield "http://localhost:4443"
+            return
+    finally:
+        sock.close()
+
+    # Check if Docker is available
+    try:
+        subprocess.run(
+            ["docker", "info"],
+            capture_output=True,
+            check=True,
+            timeout=5,
+        )
+    except (subprocess.CalledProcessError, subprocess.TimeoutExpired, FileNotFoundError):
+        pytest.skip(
+            "GCS emulator not running and Docker not available. "
+            "Start manually with: docker run -d -p 4443:4443 fsouza/fake-gcs-server -scheme http"
+        )
+
+    # Start fake-gcs-server container
+    container_name = "pytest-fake-gcs-server"
+
+    # Clean up any existing container with this name
+    try:
+        subprocess.run(
+            ["docker", "rm", "-f", container_name],
+            capture_output=True,
+            timeout=10,
+        )
+    except Exception:
+        pass  # Ignore errors if container doesn't exist
+
+    # Start the container
+    try:
+        subprocess.run(
+            [
+                "docker",
+                "run",
+                "-d",
+                "--name",
+                container_name,
+                "-p",
+                "4443:4443",
+                "fsouza/fake-gcs-server",
+                "-scheme",
+                "http",
+            ],
+            capture_output=True,
+            check=True,
+            timeout=30,
+        )
+
+        # Wait for server to be ready (max 10 seconds)
+        endpoint_url = "http://localhost:4443"
+        for _ in range(50):  # 50 * 0.2s = 10s max
+            sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            try:
+                if sock.connect_ex(("localhost", 4443)) == 0:
+                    sock.close()
+                    break
+            finally:
+                sock.close()
+            time.sleep(0.2)
+        else:
+            # Server didn't start in time
+            subprocess.run(["docker", "rm", "-f", container_name], capture_output=True)
+            pytest.skip("GCS emulator failed to start within timeout")
+
+        yield endpoint_url
+
+    finally:
+        # Cleanup: stop and remove container
+        try:
+            subprocess.run(
+                ["docker", "rm", "-f", container_name],
+                capture_output=True,
+                timeout=10,
+            )
+        except Exception:
+            pass  # Ignore cleanup errors
+
+
+@pytest.fixture
+def mock_gcs_bucket(gcs_server: str):
+    """
+    Create mock GCS bucket using fake-gcs-server.
+
+    Creates the bucket before the test and cleans all objects after.
+    """
+    import requests
+
+    # Create bucket via fake-gcs-server API
+    bucket_url = f"{gcs_server}/storage/v1/b"
+    requests.post(
+        bucket_url,
+        params={"project": "test-project"},
+        json={"name": "test-bucket"},
+        timeout=5,
+    )
+
+    yield {"endpoint_url": gcs_server, "bucket": "test-bucket"}
+
+    # Cleanup: delete all objects in the bucket after test
+    try:
+        objects_url = f"{gcs_server}/storage/v1/b/test-bucket/o"
+        response = requests.get(objects_url, timeout=5)
+        if response.ok:
+            data = response.json()
+            for item in data.get("items", []):
+                object_url = f"{gcs_server}/storage/v1/b/test-bucket/o/{item['name']}"
+                requests.delete(object_url, timeout=5)
+    except Exception:
+        pass  # Ignore cleanup errors
+
+
+@pytest.fixture
+async def gcs_storage(mock_gcs_bucket: dict) -> GCSStorage:
+    """
+    GCS storage instance with fake-gcs-server backend.
+
+    Uses fake-gcs-server to mock GCS for testing without real GCP credentials.
+    All operations are local and fast.
+    """
+    from datetime import timedelta
+
+    from litestar_storages.backends.gcs import GCSConfig, GCSStorage
+
+    storage = GCSStorage(
+        config=GCSConfig(
+            bucket=mock_gcs_bucket["bucket"],
+            project="test-project",
+            api_root=mock_gcs_bucket["endpoint_url"],
+            presigned_expiry=timedelta(hours=1),
+        )
+    )
+
+    yield storage
+
+    # Cleanup
+    await storage.close()
+
+
+@pytest.fixture
+def gcs_storage_with_prefix(mock_gcs_bucket: dict) -> GCSStorage:
+    """
+    GCS storage with key prefix for namespace isolation.
+    """
+    from datetime import timedelta
+
+    from litestar_storages.backends.gcs import GCSConfig, GCSStorage
+
+    return GCSStorage(
+        config=GCSConfig(
+            bucket=mock_gcs_bucket["bucket"],
+            project="test-project",
+            api_root=mock_gcs_bucket["endpoint_url"],
+            prefix="test-prefix/",
+            presigned_expiry=timedelta(hours=1),
+        )
+    )
+
+
+# AzureStorage fixtures
+# NOTE: Uses pytest-databases for automatic Azurite container management.
+# pytest-databases handles Docker container lifecycle automatically.
+
+
+@pytest.fixture(scope="session")
+def azurite_in_memory() -> bool:
+    """Enable in-memory persistence for faster Azure tests."""
+    return True
+
+
+@pytest.fixture
+async def azure_storage(
+    azure_blob_service,
+    azure_blob_default_container_name: str,
+    azure_blob_container_client,
+) -> AsyncGenerator[AzureStorage, None]:
+    """
+    Azure storage instance with Azurite backend via pytest-databases.
+
+    Uses pytest-databases to automatically manage Azurite container lifecycle.
+    No manual Docker setup required.
+    """
+    from datetime import timedelta
+
+    from litestar_storages.backends.azure import AzureConfig, AzureStorage
+
+    # Create container if it doesn't exist
+    try:
+        azure_blob_container_client.create_container()
+    except Exception:
+        pass  # Container may already exist
+
+    # Clean up any existing blobs from previous tests
+    try:
+        for blob in azure_blob_container_client.list_blobs():
+            azure_blob_container_client.delete_blob(blob.name)
+    except Exception:
+        pass  # Ignore cleanup errors
+
+    storage = AzureStorage(
+        config=AzureConfig(
+            container=azure_blob_default_container_name,
+            connection_string=azure_blob_service.connection_string,
+            presigned_expiry=timedelta(hours=1),
+        )
+    )
+
+    yield storage
+
+    # Cleanup after test
+    try:
+        for blob in azure_blob_container_client.list_blobs():
+            azure_blob_container_client.delete_blob(blob.name)
+    except Exception:
+        pass  # Ignore cleanup errors
+
+    await storage.close()
+
+
+@pytest.fixture
+def azure_storage_with_prefix(
+    azure_blob_service,
+    azure_blob_default_container_name: str,
+) -> AzureStorage:
+    """
+    Azure storage with key prefix for namespace isolation.
+    """
+    from datetime import timedelta
+
+    from litestar_storages.backends.azure import AzureConfig, AzureStorage
+
+    return AzureStorage(
+        config=AzureConfig(
+            container=azure_blob_default_container_name,
+            connection_string=azure_blob_service.connection_string,
+            prefix="test-prefix/",
             presigned_expiry=timedelta(hours=1),
         )
     )
@@ -400,8 +699,8 @@ async def litestar_test_client(litestar_app):
         yield client
 
 
-# Pytest-asyncio configuration
-pytest_plugins = ("pytest_asyncio",)
+# Pytest plugins configuration
+pytest_plugins = ("pytest_asyncio", "pytest_databases.docker.azure_blob")
 
 
 # ==================================================================================== #

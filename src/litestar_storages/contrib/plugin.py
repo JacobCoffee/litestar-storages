@@ -11,6 +11,7 @@ from litestar.plugins import InitPluginProtocol
 from litestar_storages.base import Storage  # noqa: TC001 - needed at runtime for DI
 
 if TYPE_CHECKING:
+    from litestar import Litestar
     from litestar.config.app import AppConfig
 
 __all__ = ["StoragePlugin"]
@@ -29,69 +30,63 @@ class StoragePlugin(InitPluginProtocol):
         - Multiple named storage support
 
     Example:
-        Single storage configuration:
+        Single storage configuration::
 
-        ```python
-        from litestar import Litestar
-        from litestar_storages import S3Storage, S3Config, StoragePlugin
+            from litestar import Litestar
+            from litestar_storages import S3Storage, S3Config, StoragePlugin
 
-        storage = S3Storage(config=S3Config(bucket="uploads"))
+            storage = S3Storage(config=S3Config(bucket="uploads"))
 
-        app = Litestar(
-            route_handlers=[...],
-            plugins=[StoragePlugin(storage)],
-        )
-        ```
+            app = Litestar(
+                route_handlers=[...],
+                plugins=[StoragePlugin(storage)],
+            )
 
-        Multiple named storages:
+        Multiple named storages::
 
-        ```python
-        from litestar import Litestar
-        from litestar_storages import S3Storage, AzureStorage, StoragePlugin
+            from litestar import Litestar
+            from litestar_storages import S3Storage, AzureStorage, StoragePlugin
 
-        app = Litestar(
-            route_handlers=[...],
-            plugins=[
-                StoragePlugin(
-                    default=S3Storage(config=S3Config(bucket="main-uploads")),
-                    images=S3Storage(config=S3Config(bucket="images")),
-                    documents=AzureStorage(config=AzureConfig(container="docs")),
+            app = Litestar(
+                route_handlers=[...],
+                plugins=[
+                    StoragePlugin(
+                        default=S3Storage(config=S3Config(bucket="main-uploads")),
+                        images=S3Storage(config=S3Config(bucket="images")),
+                        documents=AzureStorage(config=AzureConfig(container="docs")),
+                    )
+                ],
+            )
+
+        Using in route handlers::
+
+            from litestar import post
+            from litestar.datastructures import UploadFile
+            from litestar_storages import Storage, StoredFile
+
+
+            @post("/upload")
+            async def upload(
+                data: UploadFile,
+                storage: Storage,  # Injected default storage
+            ) -> StoredFile:
+                return await storage.put(
+                    key=f"uploads/{data.filename}",
+                    data=data.file,
+                    content_type=data.content_type,
                 )
-            ],
-        )
-        ```
-
-        Using in route handlers:
-
-        ```python
-        from litestar import post
-        from litestar.datastructures import UploadFile
-        from litestar_storages import Storage, StoredFile
 
 
-        @post("/upload")
-        async def upload(
-            data: UploadFile,
-            storage: Storage,  # Injected default storage
-        ) -> StoredFile:
-            return await storage.put(
-                key=f"uploads/{data.filename}",
-                data=data.file,
-                content_type=data.content_type,
-            )
-
-
-        @post("/upload-image")
-        async def upload_image(
-            data: UploadFile,
-            images_storage: Storage,  # Injected named storage
-        ) -> StoredFile:
-            return await images_storage.put(
-                key=f"images/{data.filename}",
-                data=data.file,
-                content_type=data.content_type,
-            )
-        ```
+            @post("/upload-image")
+            async def upload_image(
+                data: UploadFile,
+                images_storage: Storage,  # Injected named storage
+            ) -> StoredFile:
+                return await images_storage.put(
+                    key=f"images/{data.filename}",
+                    data=data.file,
+                    content_type=data.content_type,
+                )
     """
 
     __slots__ = ("storages",)
@@ -109,16 +104,15 @@ class StoragePlugin(InitPluginProtocol):
             **named_storages: Named storage instances. Each will be registered
                 as "{name}_storage" dependency.
 
-        Example:
-            ```python
+        Example::
+
             plugin = StoragePlugin(
                 default=S3Storage(...),
                 images=S3Storage(...),
                 documents=AzureStorage(...),
             )
-            ```
 
-            This registers three dependencies:
+        This registers three dependencies:
             - `storage` (from default)
             - `images_storage`
             - `documents_storage`
@@ -157,11 +151,41 @@ class StoragePlugin(InitPluginProtocol):
 
         app_config.dependencies = dependencies
 
-        # TODO: Register lifespan handlers if storages need cleanup
-        # This will be implemented when we add backends that require
-        # connection cleanup (e.g., closing HTTP sessions)
+        # Register shutdown handler for storage cleanup
+        on_shutdown = list(app_config.on_shutdown or [])
+        on_shutdown.append(self._shutdown_storages)
+        app_config.on_shutdown = on_shutdown
 
         return app_config
+
+    async def _shutdown_storages(self, _app: Litestar) -> None:
+        """Shutdown handler that closes all storage backends.
+
+        This method is called by Litestar during application shutdown.
+        It iterates over all registered storages and calls their close()
+        method to release resources.
+
+        Args:
+            _app: The Litestar application instance (unused but required by signature)
+
+        Note:
+            Errors during close() are caught and logged to ensure all storages
+            get a chance to clean up, even if one fails.
+        """
+        import logging
+
+        logger = logging.getLogger(__name__)
+
+        for name, storage in self.storages.items():
+            if hasattr(storage, "close"):
+                try:
+                    await storage.close()
+                except Exception as e:
+                    logger.warning(
+                        "Error closing storage '%s': %s",
+                        name,
+                        e,
+                    )
 
     @staticmethod
     def _make_storage_provider(storage: Storage) -> Callable[[], Storage]:

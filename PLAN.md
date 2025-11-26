@@ -34,8 +34,8 @@
   - [x] StoragePlugin implementation
   - [x] Dependency injection support (`provide_storage`)
   - [x] Response DTOs (`StoredFileDTO`)
-  - [x] Integration tests with real Litestar app (15 tests)
-  - [ ] Lifespan management for connection cleanup
+  - [x] Integration tests with real Litestar app (19 tests)
+  - [x] Lifespan management for connection cleanup
 
 - [x] **Project Infrastructure**
   - [x] CI workflow (lint, format, type-check, test matrix)
@@ -58,21 +58,27 @@
   - [x] Optimized fixture scoping (session for immutable data)
   - [x] norecursedirs configured for faster collection
 
-### In Progress
-
-- [ ] **Phase 4: Additional Backends**
-  - [ ] GCSStorage backend (Google Cloud Storage)
-  - [ ] AzureStorage backend (Azure Blob Storage)
-  - [ ] Backend-specific documentation
+- [x] **Phase 4: Additional Backends**
+  - [x] GCSStorage backend (Google Cloud Storage)
+  - [x] AzureStorage backend (Azure Blob Storage)
+  - [x] Backend-specific documentation
   - [ ] Migration guide between backends
 
-### Not Started
+- [x] **Phase 5: API Documentation & Test Optimization**
+  - [x] API reference generation (autodoc) - comprehensive docs/api/
+  - [x] Test suite optimization (72% faster S3 tests)
+  - [x] Auto-managed Docker fixtures (GCS, Azure via pytest-databases)
+  - [x] Example applications with full test coverage
 
-- [ ] **Phase 5: Polish & Release**
-  - [ ] API reference generation (autodoc)
-  - [ ] Performance benchmarks
-  - [ ] Security audit
-  - [ ] PyPI release (v0.1.0)
+- [x] **Phase 6: Release & Advanced Features**
+  - [x] Multipart upload support for large files (S3, GCS, Azure)
+  - [x] Progress callbacks for uploads/downloads
+  - [x] Retry logic with exponential backoff
+  - [x] zizmor workflow security scanning in CI
+  - [x] Comprehensive test coverage (99% overall)
+  - [x] Performance benchmarking script
+  - [x] Library comparison documentation
+  - [ ] PyPI release (v0.1.0) - pending PR merges
 
 ---
 
@@ -85,8 +91,9 @@ litestar-storages/
 │       ├── __init__.py           # Public API exports
 │       ├── __metadata__.py       # Version from importlib.metadata
 │       ├── base.py               # Storage protocol + BaseStorage ABC
-│       ├── types.py              # StoredFile, UploadResult dataclasses
+│       ├── types.py              # StoredFile, UploadResult, ProgressInfo, etc.
 │       ├── exceptions.py         # StorageError hierarchy (prefixed names)
+│       ├── retry.py              # Retry utilities with exponential backoff
 │       ├── backends/
 │       │   ├── __init__.py       # Backend exports
 │       │   ├── filesystem.py     # Local filesystem (aiofiles)
@@ -184,14 +191,20 @@ Exceptions are prefixed with `Storage` to avoid shadowing Python builtins:
 
 | Test Category | Count | Status |
 |---------------|-------|--------|
-| Unit tests (memory, filesystem) | 97 | ✅ Passing |
-| Skipped (platform-specific) | 3 | ⏭️ Expected |
-| Integration tests (S3, plugin) | 45 | 🔶 Deselected in CI |
+| All tests | 408 | ✅ Passing |
+| Code coverage | 99% | ✅ 1206 statements |
+| Skipped (known limitations) | 8 | ⏭️ Expected |
+| S3 backend | 100% | ✅ via moto server |
+| Azure backend | 99% | ✅ via pytest-databases |
+| GCS backend | 100% | ✅ via fake-gcs-server |
+| Filesystem backend | 97% | ✅ aiofiles |
+| Memory backend | 100% | ✅ In-memory |
+| Retry utilities | 100% | ✅ Full coverage |
 
 **Test Performance:**
-- Collection: ~0.12s (145 tests)
-- Unit tests: ~0.33s (97 tests, sequential)
-- Parallel ready when suite grows to 200+ tests
+- Collection: ~0.12s (408 tests)
+- Full suite: ~12s (with Docker emulators)
+- Parallel mode: `make ci` uses pytest-xdist (~1.8s)
 
 **Run tests:**
 ```bash
@@ -209,56 +222,37 @@ make test-failed      # Re-run only failed tests
 
 ### Immediate (v0.1.0 Release)
 
-1. **Fix remaining integration tests**
-   - S3 tests with moto have Python 3.14 compatibility issues
-   - Plugin tests need Litestar test client setup
-
-2. **Add lifespan management to StoragePlugin**
-   - Cleanup S3 clients on app shutdown
-   - Context manager support for storages
-
-3. **First PyPI release**
+1. ~~**Fix remaining integration tests**~~ ✅
+2. ~~**Add lifespan management to StoragePlugin**~~ ✅
+3. ~~**GCS Backend**~~ ✅ - Implemented with gcloud-aio-storage
+4. ~~**Azure Backend**~~ ✅ - Implemented with azure-storage-blob
+5. ~~**Advanced Features**~~ ✅ - Multipart uploads, progress callbacks, retry logic
+6. ~~**Test Coverage**~~ ✅ - 99% overall coverage
+7. **First PyPI release**
+   - Merge cascading PRs to main
    - Tag v0.1.0
    - Verify trusted publishing works
 
-### Short-term (v0.2.0)
+### Future (v0.2.0+)
 
-4. **GCS Backend**
-   - Implement GCSStorage with gcloud-aio-storage
-   - Add GCS-specific tests
-   - Document authentication options
-
-5. **Azure Backend**
-   - Implement AzureStorage with azure-storage-blob
-   - Support multiple auth methods
-   - Document connection string setup
-
-### Medium-term (v0.3.0+)
-
-6. **Advanced Features**
-   - Multipart uploads for large files
-   - Progress callbacks
-   - Retry logic with exponential backoff
+8. **Production Hardening**
+   - S3-compatible service validation (R2, Spaces, MinIO)
+   - Migration guide between backends
    - Connection pooling configuration
-
-7. **Performance & Production Readiness**
-   - Benchmarks against django-storages
-   - Security audit
    - Production deployment guide
 
 ---
 
+## Resolved Questions
+
+1. ~~**Exception naming**~~ **Resolved: Prefix with `Storage`**
+2. ~~**Retry logic**~~ **Resolved: Built-in with `@with_retry` decorator and configurable backoff**
+3. ~~**Multipart uploads**~~ **Resolved: Automatic for files >5MB, with progress callbacks**
+
 ## Open Questions
 
-1. ~~**Exception naming** - Should we shadow builtins or prefix?~~ **Resolved: Prefix with `Storage`**
-
-2. **Streaming uploads from Litestar's UploadFile** - Need to verify async iteration works correctly with all backends
-
-3. **Connection pooling** - Should backends manage their own pools or accept external clients?
-
-4. **Retry logic** - Built-in retries with backoff, or leave to user?
-
-5. **Multipart uploads** - Automatic multipart for large files, or explicit API?
+1. **Streaming uploads from Litestar's UploadFile** - Need to verify async iteration works correctly with all backends
+2. **Connection pooling** - Should backends manage their own pools or accept external clients?
 
 ---
 
@@ -273,6 +267,6 @@ make test-failed      # Re-run only failed tests
 
 ---
 
-*Plan Version: 2.0.0*
-*Last Updated: 2024-11*
-*Status: Phase 1-3 Complete, Phase 4 In Progress*
+*Plan Version: 4.0.0*
+*Last Updated: 2025-11-25*
+*Status: All Phases Complete (1-6). 99% test coverage. Awaiting PR merges for v0.1.0 release.*

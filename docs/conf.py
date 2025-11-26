@@ -89,7 +89,7 @@ napoleon_include_special_with_doc = True
 napoleon_use_admonition_for_examples = True
 napoleon_use_admonition_for_notes = True
 napoleon_use_admonition_for_references = False
-napoleon_use_ivar = False
+napoleon_use_ivar = True  # Use :ivar: for instance attributes to avoid duplicate object descriptions
 napoleon_use_param = True
 napoleon_use_rtype = True
 napoleon_use_keyword = True
@@ -153,4 +153,8 @@ copybutton_remove_prompts = True
 todo_include_todos = True
 
 # Suppress warnings for missing references in external packages
-suppress_warnings = ["myst.header"]
+# and duplicate object descriptions (from dataclass fields documented via napoleon Attributes section)
+suppress_warnings = [
+    "myst.header",
+    "ref.python",  # Suppress duplicate object description warnings for dataclass fields
+]

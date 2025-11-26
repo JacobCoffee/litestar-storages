@@ -733,6 +733,15 @@ wheels = [
 ]
 
 [[package]]
+name = "filelock"
+version = "3.20.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/58/46/0028a82567109b5ef6e4d2a1f04a583fb513e6cf9527fcdd09afd817deeb/filelock-3.20.0.tar.gz", hash = "sha256:711e943b4ec6be42e1d4e6690b48dc175c822967466bb31c0c293f34334c13f4", size = 18922, upload-time = "2025-10-08T18:03:50.056Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/76/91/7216b27286936c16f5b4d0c530087e4a54eead683e6b0b73dd0c64844af6/filelock-3.20.0-py3-none-any.whl", hash = "sha256:339b4732ffda5cd79b13f4e2711a31b0365ce445d95d243bb996273d072546a2", size = 16054, upload-time = "2025-10-08T18:03:48.35Z" },
+]
+
+[[package]]
 name = "flask"
 version = "3.1.2"
 source = { registry = "https://pypi.org/simple" }
@@ -1195,8 +1204,11 @@ s3 = [
 
 [package.dev-dependencies]
 dev = [
+    { name = "aioboto3" },
     { name = "aiofiles" },
+    { name = "azure-storage-blob" },
     { name = "codespell" },
+    { name = "gcloud-aio-storage" },
     { name = "linkify-it-py" },
     { name = "moto", extra = ["s3", "server"] },
     { name = "myst-parser" },
@@ -1204,10 +1216,12 @@ dev = [
     { name = "pytest" },
     { name = "pytest-asyncio" },
     { name = "pytest-cov" },
+    { name = "pytest-databases" },
     { name = "pytest-socket" },
     { name = "pytest-sugar" },
     { name = "pytest-timeout" },
     { name = "pytest-xdist" },
+    { name = "requests" },
     { name = "ruff" },
     { name = "shibuya" },
     { name = "sphinx", version = "8.1.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11'" },
@@ -1240,14 +1254,19 @@ lint = [
     { name = "ty" },
 ]
 test = [
+    { name = "aioboto3" },
     { name = "aiofiles" },
+    { name = "azure-storage-blob" },
+    { name = "gcloud-aio-storage" },
     { name = "moto", extra = ["s3", "server"] },
     { name = "pytest" },
     { name = "pytest-asyncio" },
     { name = "pytest-cov" },
     { name = "pytest-socket" },
+    { name = "pytest-sugar" },
     { name = "pytest-timeout" },
     { name = "pytest-xdist" },
+    { name = "requests" },
 ]
 
 [package.metadata]
@@ -1266,8 +1285,11 @@ provides-extras = ["all", "azure", "filesystem", "gcs", "s3"]
 
 [package.metadata.requires-dev]
 dev = [
+    { name = "aioboto3", specifier = ">=12.0.0" },
     { name = "aiofiles", specifier = ">=23.0.0" },
+    { name = "azure-storage-blob", specifier = ">=12.0.0" },
     { name = "codespell", specifier = ">=2.2.6" },
+    { name = "gcloud-aio-storage", specifier = ">=9.0.0" },
     { name = "linkify-it-py", specifier = ">=2.0.0" },
     { name = "moto", extras = ["s3", "server"], specifier = ">=5.0.0" },
     { name = "myst-parser", specifier = ">=4.0.0" },
@@ -1275,10 +1297,12 @@ dev = [
     { name = "pytest", specifier = ">=8.0.0" },
     { name = "pytest-asyncio", specifier = ">=0.23.0" },
     { name = "pytest-cov", specifier = ">=4.0.0" },
+    { name = "pytest-databases", specifier = ">=0.15.0" },
     { name = "pytest-socket", specifier = ">=0.7.0" },
     { name = "pytest-sugar", specifier = ">=1.1.1" },
     { name = "pytest-timeout", specifier = ">=2.2.0" },
     { name = "pytest-xdist", specifier = ">=3.5.0" },
+    { name = "requests", specifier = ">=2.25.0" },
     { name = "ruff", specifier = ">=0.9.0" },
     { name = "shibuya", specifier = ">=2024.0.0" },
     { name = "sphinx", specifier = ">=7.0.0" },
@@ -1305,14 +1329,19 @@ lint = [
     { name = "ty", specifier = ">=0.0.1a7" },
 ]
 test = [
+    { name = "aioboto3", specifier = ">=12.0.0" },
     { name = "aiofiles", specifier = ">=23.0.0" },
+    { name = "azure-storage-blob", specifier = ">=12.0.0" },
+    { name = "gcloud-aio-storage", specifier = ">=9.0.0" },
     { name = "moto", extras = ["s3", "server"], specifier = ">=5.0.0" },
     { name = "pytest", specifier = ">=8.0.0" },
     { name = "pytest-asyncio", specifier = ">=0.23.0" },
     { name = "pytest-cov", specifier = ">=4.0.0" },
     { name = "pytest-socket", specifier = ">=0.7.0" },
+    { name = "pytest-sugar", specifier = ">=1.1.1" },
     { name = "pytest-timeout", specifier = ">=2.2.0" },
     { name = "pytest-xdist", specifier = ">=3.5.0" },
+    { name = "requests", specifier = ">=2.25.0" },
 ]
 
 [[package]]
@@ -2070,6 +2099,20 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/5e/f7/c933acc76f5208b3b00089573cf6a2bc26dc80a8aece8f52bb7d6b1855ca/pytest_cov-7.0.0.tar.gz", hash = "sha256:33c97eda2e049a0c5298e91f519302a1334c26ac65c1a483d6206fd458361af1", size = 54328, upload-time = "2025-09-09T10:57:02.113Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/ee/49/1377b49de7d0c1ce41292161ea0f721913fa8722c19fb9c1e3aa0367eecb/pytest_cov-7.0.0-py3-none-any.whl", hash = "sha256:3b8e9558b16cc1479da72058bdecf8073661c7f57f7d3c5f22a1c23507f2d861", size = 22424, upload-time = "2025-09-09T10:57:00.695Z" },
+]
+
+[[package]]
+name = "pytest-databases"
+version = "0.15.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "docker" },
+    { name = "filelock" },
+    { name = "pytest" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/33/39/25d33c0246ed8f99ba82fb3c998400bbb704a9874f3eb6791b90f361a043/pytest_databases-0.15.0.tar.gz", hash = "sha256:e1b8cda6d1976def17658cc0e9c07ec70aed0126020b724fb3700e2880c15883", size = 215682, upload-time = "2025-10-06T21:30:48.504Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/ef/31/48b9168189cb62bca61eca2f05a323cb44c7e65b04a43cde5732a95b88f8/pytest_databases-0.15.0-py3-none-any.whl", hash = "sha256:a2b01053def11264e18fd405ee68c07ce5accafc0872310539bc0d669bbf922c", size = 28734, upload-time = "2025-10-06T21:30:46.999Z" },
 ]
 
 [[package]]

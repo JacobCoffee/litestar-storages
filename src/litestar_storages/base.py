@@ -253,6 +253,21 @@ class Storage(Protocol):
         """
         ...
 
+    async def close(self) -> None:
+        """Close the storage backend and release resources.
+
+        This method should be called when the storage is no longer needed,
+        typically during application shutdown. It allows backends to clean up
+        resources like HTTP sessions, connection pools, or file handles.
+
+        For backends that don't require cleanup, this method is a no-op.
+
+        Note:
+            After calling close(), the storage instance should not be used.
+            Some backends may raise errors if operations are attempted after close().
+        """
+        ...
+
 
 class BaseStorage(ABC):
     """Abstract base class providing common functionality for storage backends.
@@ -397,3 +412,10 @@ class BaseStorage(ABC):
         result = await self.copy(source, destination)
         await self.delete(source)
         return result
+
+    async def close(self) -> None:  # noqa: B027
+        """Default implementation: no-op.
+
+        Subclasses that manage resources (HTTP sessions, connection pools, etc.)
+        should override this method to properly release them.
+        """

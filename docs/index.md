@@ -28,6 +28,8 @@ Built from the ground up for Python's async/await paradigm. Unlike django-storag
 
 - **FileSystemStorage**: Local filesystem storage with optional URL generation
 - **S3Storage**: Amazon S3 and S3-compatible services (Cloudflare R2, DigitalOcean Spaces, MinIO, Backblaze B2)
+- **GCSStorage**: Google Cloud Storage with signed URLs and ADC support
+- **AzureStorage**: Azure Blob Storage with SAS URLs and managed identity
 - **MemoryStorage**: In-memory storage for testing and development
 
 ### First-Class Litestar Integration
@@ -75,7 +77,7 @@ Litestar includes built-in [stores](https://docs.litestar.dev/2/usage/stores.htm
 | **Purpose** | File storage (uploads, media assets) | Key-value data (caching, sessions) |
 | **Data type** | Binary files with metadata | Serialized values with TTL |
 | **Typical use** | User uploads, CDN assets, documents | Sessions, rate limiting, caching |
-| **Backends** | FileSystem, S3, Memory | Memory, File, Redis, Valkey |
+| **Backends** | FileSystem, S3, GCS, Azure, Memory | Memory, File, Redis, Valkey |
 | **TTL support** | No (files are persistent) | Yes (automatic expiration) |
 | **Metadata** | Yes (content-type, size, custom) | No |
 | **Presigned URLs** | Yes (for cloud backends) | No |
@@ -99,6 +101,7 @@ Litestar includes built-in [stores](https://docs.litestar.dev/2/usage/stores.htm
 :caption: Getting Started
 
 getting-started
+examples
 ```
 
 ```{toctree}
@@ -107,6 +110,8 @@ getting-started
 
 backends/filesystem
 backends/s3
+backends/gcs
+backends/azure
 backends/memory
 ```
 
@@ -114,6 +119,9 @@ backends/memory
 :maxdepth: 2
 :caption: Advanced Topics
 
+advanced/retry
+advanced/multipart-uploads
+advanced/progress-callbacks
 advanced/custom-backends
 ```
 
@@ -122,13 +130,21 @@ advanced/custom-backends
 :caption: Reference
 
 API Reference <api/index>
+comparison
 changelog
 ```
 
 ## Quick Links
 
 - [Installation and Setup](getting-started.md)
+- [Example Applications](examples.md)
 - [FileSystem Backend](backends/filesystem.md)
 - [S3 Backend](backends/s3.md) (AWS, R2, Spaces, MinIO)
+- [GCS Backend](backends/gcs.md) (Google Cloud Storage)
+- [Azure Backend](backends/azure.md) (Azure Blob Storage)
+- [Retry Utilities](advanced/retry.md) (Exponential backoff and retry logic)
+- [Multipart Uploads](advanced/multipart-uploads.md) (Large file handling)
+- [Progress Callbacks](advanced/progress-callbacks.md) (Transfer progress tracking)
 - [Creating Custom Backends](advanced/custom-backends.md)
+- [Library Comparison](comparison.rst) (vs django-storages, fastapi-storages)
 - [GitHub Repository](https://github.com/JacobCoffee/litestar-storages)
