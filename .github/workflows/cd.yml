@@ -21,16 +21,12 @@ jobs:
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           fetch-depth: 0
-          persist-credentials: false
 
-      - name: Generate full changelog
-        uses: orhun/git-cliff-action@4a4a951bc43fafe41cd2348d181853f52356bee7 # v4.4.2
-        with:
-          config: pyproject.toml
-          args: -vv
-        env:
-          OUTPUT: docs/changelog.md
-          GITHUB_REPO: ${{ github.repository }}
+      - name: Install git-cliff
+        run: pipx install git-cliff
+
+      - name: Generate changelog on tag
+        run: git-cliff --config pyproject.toml -vv -o docs/changelog.md
 
       - name: Create PR with changelog updates
         run: |
@@ -51,7 +47,7 @@ jobs:
           git checkout -b "$BRANCH_NAME" origin/main
 
           # Re-generate changelog on the new branch
-          git-cliff -vv -o docs/changelog.md
+          git-cliff --config pyproject.toml -vv -o docs/changelog.md
 
           # Commit and push
           git add docs/changelog.md
@@ -68,5 +64,4 @@ jobs:
             --label "automated"
         env:
           GH_TOKEN: ${{ github.token }}
-          GITHUB_REPO: ${{ github.repository }}
           GITHUB_RUN_ID: ${{ github.run_id }}
