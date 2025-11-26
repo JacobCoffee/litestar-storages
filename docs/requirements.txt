@@ -1,0 +1,20 @@
+# Documentation dependencies for litestar-storages
+#
+# Install with: pip install -r docs/requirements.txt
+
+# Sphinx documentation generator
+sphinx>=7.0.0
+
+# Shibuya theme - modern, clean documentation theme
+shibuya>=2024.0.0
+
+# Sphinx extensions
+sphinx-copybutton>=0.5.0
+sphinx-autodoc-typehints>=2.0.0
+
+# Markdown support
+myst-parser>=2.0.0
+
+# Required for autodoc to work (install the package itself)
+# Uncomment when package is ready:
+# -e ../[all]
