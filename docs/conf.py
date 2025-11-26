@@ -20,6 +20,7 @@ author = "Jacob Coffee"
 # Get version dynamically
 try:
     from litestar_storages import __version__
+
     release = __version__
     version = __version__
 except ImportError:

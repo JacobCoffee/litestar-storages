@@ -22,7 +22,7 @@ from litestar_storages.contrib.plugin import StoragePlugin
 from litestar_storages.exceptions import StorageFileNotFoundError
 
 
-def not_found_handler(request: object, exc: StorageFileNotFoundError) -> Response:
+def not_found_handler(_: object, exc: StorageFileNotFoundError) -> Response:
     """Convert StorageFileNotFoundError to 404 response."""
     return Response(
         content={"detail": f"File not found: {exc.key}"},
