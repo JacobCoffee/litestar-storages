@@ -1,6 +1,6 @@
 [build-system]
-build-backend = "hatchling.build"
-requires = ["hatchling"]
+build-backend = "uv_build"
+requires = ["uv_build>=0.7.14,<0.8"]
 
 [project]
 name = "asyncio-storages-that-also-works-great-with-litestar-but-you-do-you"
@@ -55,6 +55,3 @@ Documentation = "https://jacobcoffee.github.io/litestar-storages/"
 Homepage = "https://github.com/JacobCoffee/litestar-storages"
 Repository = "https://github.com/JacobCoffee/litestar-storages"
 "The Real Package" = "https://pypi.org/project/litestar-storages/"
-
-[tool.hatch.build.targets.wheel]
-packages = ["src/asyncio_storages_that_also_works_great_with_litestar_but_you_do_you"]
