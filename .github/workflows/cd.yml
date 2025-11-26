@@ -4,14 +4,17 @@ on:
   push:
     tags:
       - 'v*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag to generate changelog for (e.g., v0.2.2)'
+        required: false
+        type: string
 
 permissions:
   contents: write
 
 jobs:
-  # ==================================================================================== #
-  # GENERATE CHANGELOG AND COMMIT TO MAIN
-  # ==================================================================================== #
   update-changelog:
     name: Update Changelog
     runs-on: ubuntu-latest
@@ -20,29 +23,31 @@ jobs:
         uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
         with:
           fetch-depth: 0
-          ref: main
-          # Use default token for commits - requires ruleset bypass for github-actions[bot]
-          token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Install git-cliff
-        run: pipx install git-cliff
+          token: ${{ secrets.CHANGELOG_PAT }}
 
       - name: Generate changelog
-        run: git-cliff --config pyproject.toml -vv -o docs/changelog.md
+        uses: orhun/git-cliff-action@4a4a951bc43fafe41cd2348d067f62ce5f405afa # v4
+        with:
+          config: pyproject.toml
+          args: --verbose
+        env:
+          OUTPUT: docs/changelog.md
+          GITHUB_REPO: ${{ github.repository }}
 
-      - name: Commit and push to main
+      - name: Commit and push changelog
         run: |
-          git config user.name 'github-actions[bot]'
-          git config user.email 'github-actions[bot]@users.noreply.github.com'
-
           # Check if there are changes
           if git diff --quiet docs/changelog.md; then
             echo "No changes to commit"
             exit 0
           fi
 
+          TAG="${{ inputs.tag || github.ref_name }}"
+
+          git checkout main
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+
           git add docs/changelog.md
-          git commit -m "docs: regenerate changelog for ${{ github.ref_name }}"
+          git commit -m "docs: regenerate changelog for $TAG"
           git push origin main
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
