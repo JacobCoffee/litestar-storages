@@ -706,3 +706,220 @@ class TestFileSystemEdgeCases:
         except OSError:
             # Platform doesn't support symlinks (Windows without admin)
             pytest.skip("Platform doesn't support symlinks")
+
+
+@pytest.mark.unit
+class TestFileSystemErrorHandling:
+    """Test error handling in filesystem backend."""
+
+    async def test_put_without_aiofiles_raises_configuration_error(
+        self,
+        tmp_path: Path,
+        monkeypatch,
+    ) -> None:
+        """
+        Test put() raises ConfigurationError when aiofiles is not available.
+
+        Verifies:
+        - ImportError for aiofiles is caught
+        - ConfigurationError is raised with helpful message
+        """
+        from litestar_storages.backends.filesystem import FileSystemConfig, FileSystemStorage
+        from litestar_storages.exceptions import ConfigurationError
+
+        storage = FileSystemStorage(config=FileSystemConfig(path=tmp_path))
+
+        # Mock aiofiles import to raise ImportError
+        import builtins
+
+        original_import = builtins.__import__
+
+        def mock_import(name, *args, **kwargs):
+            if name == "aiofiles":
+                raise ImportError("No module named 'aiofiles'")
+            return original_import(name, *args, **kwargs)
+
+        monkeypatch.setattr(builtins, "__import__", mock_import)
+
+        # Should raise ConfigurationError
+        with pytest.raises(ConfigurationError, match="aiofiles is required"):
+            await storage.put("test.txt", b"data")
+
+    async def test_get_without_aiofiles_raises_configuration_error(
+        self,
+        tmp_path: Path,
+        monkeypatch,
+    ) -> None:
+        """
+        Test get() raises ConfigurationError when aiofiles is not available.
+
+        Verifies:
+        - ImportError for aiofiles is caught
+        - ConfigurationError is raised with helpful message
+        """
+        from litestar_storages.backends.filesystem import FileSystemConfig, FileSystemStorage
+        from litestar_storages.exceptions import ConfigurationError
+
+        storage = FileSystemStorage(config=FileSystemConfig(path=tmp_path))
+
+        # Mock aiofiles import to raise ImportError
+        import builtins
+
+        original_import = builtins.__import__
+
+        def mock_import(name, *args, **kwargs):
+            if name == "aiofiles":
+                raise ImportError("No module named 'aiofiles'")
+            return original_import(name, *args, **kwargs)
+
+        monkeypatch.setattr(builtins, "__import__", mock_import)
+
+        # Should raise ConfigurationError
+        with pytest.raises(ConfigurationError, match="aiofiles is required"):
+            async for _ in storage.get("test.txt"):
+                pass
+
+    async def test_get_bytes_without_aiofiles_raises_configuration_error(
+        self,
+        tmp_path: Path,
+        monkeypatch,
+    ) -> None:
+        """
+        Test get_bytes() raises ConfigurationError when aiofiles is not available.
+
+        Verifies:
+        - ImportError for aiofiles is caught
+        - ConfigurationError is raised with helpful message
+        """
+        from litestar_storages.backends.filesystem import FileSystemConfig, FileSystemStorage
+        from litestar_storages.exceptions import ConfigurationError
+
+        storage = FileSystemStorage(config=FileSystemConfig(path=tmp_path))
+
+        # Mock aiofiles import to raise ImportError
+        import builtins
+
+        original_import = builtins.__import__
+
+        def mock_import(name, *args, **kwargs):
+            if name == "aiofiles":
+                raise ImportError("No module named 'aiofiles'")
+            return original_import(name, *args, **kwargs)
+
+        monkeypatch.setattr(builtins, "__import__", mock_import)
+
+        # Should raise ConfigurationError
+        with pytest.raises(ConfigurationError, match="aiofiles is required"):
+            await storage.get_bytes("test.txt")
+
+    async def test_delete_with_permission_error(
+        self,
+        filesystem_storage: FileSystemStorage,
+        sample_text_data: bytes,
+        monkeypatch,
+    ) -> None:
+        """
+        Test delete() raises StoragePermissionError on OSError.
+
+        Verifies:
+        - OSError during deletion is caught
+        - StoragePermissionError is raised with context
+        """
+        from litestar_storages.exceptions import StoragePermissionError
+
+        # Create a file
+        await filesystem_storage.put("test.txt", sample_text_data)
+        file_path = filesystem_storage.config.path / "test.txt"
+
+        # Mock unlink to raise OSError
+        from pathlib import Path
+
+        original_unlink = Path.unlink
+
+        def mock_unlink(self, *args, **kwargs):
+            if self == file_path:
+                raise OSError("Permission denied")
+            return original_unlink(self, *args, **kwargs)
+
+        monkeypatch.setattr(Path, "unlink", mock_unlink)
+
+        # Should raise StoragePermissionError
+        with pytest.raises(StoragePermissionError, match="Failed to delete file"):
+            await filesystem_storage.delete("test.txt")
+
+    async def test_copy_with_permission_error(
+        self,
+        filesystem_storage: FileSystemStorage,
+        sample_text_data: bytes,
+        monkeypatch,
+    ) -> None:
+        """
+        Test copy() raises StoragePermissionError on OSError.
+
+        Verifies:
+        - OSError during copy is caught
+        - StoragePermissionError is raised with context
+        """
+        from litestar_storages.exceptions import StoragePermissionError
+
+        # Create a source file
+        await filesystem_storage.put("source.txt", sample_text_data)
+
+        # Mock shutil.copy2 to raise OSError
+        import shutil
+
+        def mock_copy2(*args, **kwargs):
+            raise OSError("Permission denied")
+
+        monkeypatch.setattr(shutil, "copy2", mock_copy2)
+
+        # Should raise StoragePermissionError
+        with pytest.raises(StoragePermissionError, match="Failed to copy file"):
+            await filesystem_storage.copy("source.txt", "destination.txt")
+
+    async def test_move_with_permission_error(
+        self,
+        filesystem_storage: FileSystemStorage,
+        sample_text_data: bytes,
+        monkeypatch,
+    ) -> None:
+        """
+        Test move() raises StoragePermissionError on OSError.
+
+        Verifies:
+        - OSError during move is caught
+        - StoragePermissionError is raised with context
+        """
+        from litestar_storages.exceptions import StoragePermissionError
+
+        # Create a source file
+        await filesystem_storage.put("source.txt", sample_text_data)
+
+        # Mock shutil.move to raise OSError
+        import shutil
+
+        def mock_move(*args, **kwargs):
+            raise OSError("Permission denied")
+
+        monkeypatch.setattr(shutil, "move", mock_move)
+
+        # Should raise StoragePermissionError
+        with pytest.raises(StoragePermissionError, match="Failed to move file"):
+            await filesystem_storage.move("source.txt", "destination.txt")
+
+    async def test_get_nonexistent_file_streaming(
+        self,
+        filesystem_storage: FileSystemStorage,
+    ) -> None:
+        """
+        Test get() (streaming) with non-existent file.
+
+        Verifies:
+        - StorageFileNotFoundError is raised when streaming non-existent file
+        - The async generator properly raises the error
+        """
+        from litestar_storages.exceptions import StorageFileNotFoundError
+
+        with pytest.raises(StorageFileNotFoundError, match="nonexistent"):
+            async for _ in filesystem_storage.get("nonexistent.txt"):
+                pass

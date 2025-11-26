@@ -615,6 +615,168 @@ async def safe_download(key: str, storage: Storage) -> bytes | None:
 | `StorageConnectionError` | Invalid credentials | Verify service account or ADC |
 | `StorageError` | Signed URL failure | Ensure service account has signing permissions |
 
+## Large File Uploads
+
+For files larger than 100MB, use `put_large()` or the manual multipart upload API. Note that GCS multipart uploads in this library use a buffering approach - parts are held in memory until the upload is completed.
+
+### Using put_large()
+
+The simplest way to upload large files with automatic chunking and progress tracking:
+
+```python
+from litestar_storages import GCSStorage, GCSConfig, ProgressInfo
+
+storage = GCSStorage(
+    GCSConfig(
+        bucket="my-bucket",
+        project="my-project",
+    )
+)
+
+# Upload a large file with automatic chunking
+result = await storage.put_large(
+    key="backups/database-dump.sql.gz",
+    data=large_file_bytes,
+    content_type="application/gzip",
+    metadata={"source": "daily-backup"},
+    part_size=10 * 1024 * 1024,  # 10MB parts (default)
+)
+
+print(f"Uploaded {result.size} bytes to {result.key}")
+```
+
+### Progress Tracking
+
+Monitor upload progress with a callback function:
+
+```python
+from litestar_storages import ProgressInfo
+
+
+def show_progress(info: ProgressInfo) -> None:
+    """Display upload progress."""
+    if info.percentage is not None:
+        bar_length = 40
+        filled = int(bar_length * info.percentage / 100)
+        bar = "=" * filled + "-" * (bar_length - filled)
+        print(f"\r[{bar}] {info.percentage:.1f}%", end="", flush=True)
+
+
+async def upload_with_progress(storage: GCSStorage, key: str, data: bytes) -> None:
+    """Upload a large file with progress display."""
+    result = await storage.put_large(
+        key=key,
+        data=data,
+        progress_callback=show_progress,
+    )
+    print(f"\nComplete! Uploaded {result.size} bytes")
+
+
+# Usage
+await upload_with_progress(storage, "videos/presentation.mp4", video_data)
+```
+
+### Manual Multipart Upload
+
+For fine-grained control over the upload process:
+
+```python
+from litestar_storages import GCSStorage, GCSConfig
+
+storage = GCSStorage(
+    GCSConfig(
+        bucket="my-bucket",
+        project="my-project",
+    )
+)
+
+# Step 1: Start the upload
+upload = await storage.start_multipart_upload(
+    key="large-archive.tar.gz",
+    content_type="application/gzip",
+    metadata={"created-by": "backup-service"},
+    part_size=10 * 1024 * 1024,  # 10MB parts
+)
+
+# Step 2: Upload parts (buffered in memory)
+part_size = 10 * 1024 * 1024
+data = load_large_file()
+
+try:
+    part_num = 1
+    for i in range(0, len(data), part_size):
+        part_data = data[i:i + part_size]
+        etag = await storage.upload_part(upload, part_num, part_data)
+        print(f"Buffered part {part_num}: {etag}")
+        part_num += 1
+
+    # Step 3: Complete the upload (all data uploaded at once)
+    result = await storage.complete_multipart_upload(upload)
+    print(f"Upload complete: {result.key}")
+
+except Exception as e:
+    # Clean up buffered data
+    await storage.abort_multipart_upload(upload)
+    raise
+```
+
+### Memory Buffering Approach
+
+Unlike S3 and Azure, GCS multipart uploads in this library buffer all parts in memory before uploading. This has important implications:
+
+**Why buffering?**
+
+The `gcloud-aio-storage` library doesn't expose GCS's native resumable upload API. To provide a consistent multipart interface across all backends, parts are collected in memory and uploaded together.
+
+**Memory considerations:**
+
+```python
+# Memory usage = total file size during upload
+# For a 500MB file:
+# - All 500MB held in memory until complete_multipart_upload()
+# - After upload completes, memory is released
+
+# For very large files, consider:
+# 1. Using smaller files when possible
+# 2. Direct GCS resumable upload API for multi-GB files
+# 3. Streaming with regular put() for moderate sizes
+```
+
+**When to use put_large() vs put():**
+
+| File Size | Recommendation |
+|-----------|----------------|
+| < 100MB | Use `put()` - simpler and sufficient |
+| 100MB - 500MB | Use `put_large()` - progress tracking and chunked processing |
+| 500MB - 2GB | Use `put_large()` with caution - monitor memory usage |
+| > 2GB | Consider GCS resumable upload API directly |
+
+### GCS-Specific Notes
+
+- **No server-side part storage**: Parts exist only in memory until `complete_multipart_upload()`
+- **No resume capability**: If the process restarts, buffered data is lost
+- **Single upload**: The actual upload happens when completing, not during `upload_part()`
+- **Abort is lightweight**: Simply clears the memory buffer
+
+```python
+# GCS multipart is best for:
+# - Files where you want progress tracking
+# - Situations where you're already buffering data
+# - Consistent API across multiple backends
+
+# For true resumable uploads on GCS, use google-cloud-storage directly:
+from google.cloud import storage as gcs_storage
+
+def resumable_upload(bucket_name: str, blob_name: str, file_path: str) -> None:
+    """Use GCS native resumable upload for very large files."""
+    client = gcs_storage.Client()
+    bucket = client.bucket(bucket_name)
+    blob = bucket.blob(blob_name)
+
+    # This automatically handles resumable uploads
+    blob.upload_from_filename(file_path)
+```
+
 ## Comparison with Other Backends
 
 | Feature | GCSStorage | S3Storage | FileSystemStorage |

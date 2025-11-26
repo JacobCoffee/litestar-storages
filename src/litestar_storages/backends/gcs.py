@@ -13,7 +13,7 @@ from litestar_storages.exceptions import (
     StorageConnectionError,
     StorageFileNotFoundError,
 )
-from litestar_storages.types import StoredFile
+from litestar_storages.types import MultipartUpload, ProgressCallback, ProgressInfo, StoredFile
 
 __all__ = ("GCSConfig", "GCSStorage")
 
@@ -537,6 +537,264 @@ class GCSStorage(BaseStorage):
             from litestar_storages.exceptions import StorageError
 
             raise StorageError(f"Failed to get info for {key}: {e}") from e
+
+    # =========================================================================
+    # Multipart Upload Support
+    # =========================================================================
+
+    async def start_multipart_upload(
+        self,
+        key: str,
+        *,
+        content_type: str | None = None,
+        metadata: dict[str, str] | None = None,
+        part_size: int = 5 * 1024 * 1024,
+    ) -> MultipartUpload:
+        """Start a multipart upload.
+
+        Use this for large files (typically > 100MB) to enable:
+        - Chunked uploads with progress tracking
+        - Better handling of network failures
+        - Memory-efficient streaming uploads
+
+        Note:
+            GCS doesn't have native multipart upload like S3. This implementation
+            buffers parts in memory and uploads them when complete_multipart_upload
+            is called. For true resumable uploads, consider using GCS's resumable
+            upload API directly.
+
+        Args:
+            key: Storage path/key for the file
+            content_type: MIME type of the content
+            metadata: Additional metadata to store with the file
+            part_size: Size of each part in bytes (default 5MB)
+
+        Returns:
+            MultipartUpload object to track the upload state
+
+        Raises:
+            StorageError: If initiating the upload fails
+        """
+        # Generate a unique upload ID (we'll store parts in the upload object)
+        import uuid
+
+        upload_id = str(uuid.uuid4())
+
+        # Store metadata for later use in complete_multipart_upload
+        upload = MultipartUpload(
+            upload_id=upload_id,
+            key=key,
+            part_size=part_size,
+        )
+
+        # Store additional metadata in a hidden attribute for later
+        upload._content_type = content_type  # type: ignore[attr-defined]  # noqa: SLF001
+        upload._metadata = metadata or {}  # type: ignore[attr-defined]  # noqa: SLF001
+        upload._part_data = []  # type: ignore[attr-defined]  # noqa: SLF001 - Buffer for part data
+
+        return upload
+
+    async def upload_part(
+        self,
+        upload: MultipartUpload,
+        part_number: int,
+        data: bytes,
+    ) -> str:
+        """Upload a single part of a multipart upload.
+
+        Note:
+            Parts are buffered in memory until complete_multipart_upload is called.
+
+        Args:
+            upload: The MultipartUpload object from start_multipart_upload
+            part_number: Part number (1-indexed, must be sequential)
+            data: The part data to upload
+
+        Returns:
+            ETag (placeholder) of the uploaded part
+
+        Raises:
+            StorageError: If the part upload fails
+        """
+        try:
+            # Buffer the part data for later upload
+            part_data_list: list[tuple[int, bytes]] = getattr(upload, "_part_data", [])
+            part_data_list.append((part_number, data))
+
+            # Generate a placeholder ETag (actual ETag will come from final upload)
+            import hashlib
+
+            etag = hashlib.md5(data).hexdigest()  # noqa: S324
+            upload.add_part(part_number, etag)
+
+            return etag
+
+        except Exception as e:
+            from litestar_storages.exceptions import StorageError
+
+            raise StorageError(f"Failed to buffer part {part_number} for {upload.key}: {e}") from e
+
+    async def complete_multipart_upload(
+        self,
+        upload: MultipartUpload,
+    ) -> StoredFile:
+        """Complete a multipart upload.
+
+        Combines all buffered parts and uploads the complete file to GCS.
+
+        Args:
+            upload: The MultipartUpload object with all parts uploaded
+
+        Returns:
+            StoredFile metadata for the completed upload
+
+        Raises:
+            StorageError: If completing the upload fails
+        """
+        try:
+            # Retrieve buffered parts
+            part_data_list: list[tuple[int, bytes]] = getattr(upload, "_part_data", [])
+
+            # Sort by part number and combine
+            sorted_parts = sorted(part_data_list, key=lambda p: p[0])
+            complete_data = b"".join(part[1] for part in sorted_parts)
+
+            # Retrieve stored metadata
+            content_type: str | None = getattr(upload, "_content_type", None)
+            metadata: dict[str, str] = getattr(upload, "_metadata", {})
+
+            # Upload the complete file
+            result = await self.put(
+                upload.key,
+                complete_data,
+                content_type=content_type,
+                metadata=metadata,
+            )
+
+            # Clean up buffered data
+            delattr(upload, "_part_data")
+            delattr(upload, "_content_type")
+            delattr(upload, "_metadata")
+
+            return result
+
+        except Exception as e:
+            from litestar_storages.exceptions import StorageError
+
+            raise StorageError(f"Failed to complete multipart upload for {upload.key}: {e}") from e
+
+    async def abort_multipart_upload(
+        self,
+        upload: MultipartUpload,
+    ) -> None:
+        """Abort a multipart upload.
+
+        This cancels an in-progress multipart upload and frees buffered data.
+        Use this to clean up failed uploads.
+
+        Args:
+            upload: The MultipartUpload object to abort
+
+        Raises:
+            StorageError: If aborting the upload fails
+        """
+        try:
+            # Clean up buffered data
+            if hasattr(upload, "_part_data"):
+                delattr(upload, "_part_data")
+            if hasattr(upload, "_content_type"):
+                delattr(upload, "_content_type")
+            if hasattr(upload, "_metadata"):
+                delattr(upload, "_metadata")
+
+        except Exception as e:
+            from litestar_storages.exceptions import StorageError
+
+            raise StorageError(f"Failed to abort multipart upload for {upload.key}: {e}") from e
+
+    async def put_large(
+        self,
+        key: str,
+        data: bytes | AsyncIterator[bytes],
+        *,
+        content_type: str | None = None,
+        metadata: dict[str, str] | None = None,
+        part_size: int = 10 * 1024 * 1024,
+        progress_callback: ProgressCallback | None = None,
+    ) -> StoredFile:
+        """Upload a large file using multipart upload.
+
+        This is a convenience method that handles the multipart upload process
+        automatically. It splits the data into parts, uploads them, and
+        completes the upload.
+
+        Args:
+            key: Storage path/key for the file
+            data: File contents as bytes or async byte stream
+            content_type: MIME type of the content
+            metadata: Additional metadata to store with the file
+            part_size: Size of each part in bytes (default 10MB)
+            progress_callback: Optional callback for progress updates
+
+        Returns:
+            StoredFile with metadata about the stored file
+
+        Raises:
+            StorageError: If the upload fails
+        """
+        # Collect data if it's an async iterator
+        if isinstance(data, bytes):
+            file_data = data
+        else:
+            chunks = []
+            async for chunk in data:
+                chunks.append(chunk)
+            file_data = b"".join(chunks)
+
+        total_size = len(file_data)
+
+        # For small files, use regular put
+        if total_size < part_size:
+            return await self.put(key, file_data, content_type=content_type, metadata=metadata)
+
+        # Start multipart upload
+        upload = await self.start_multipart_upload(
+            key,
+            content_type=content_type,
+            metadata=metadata,
+            part_size=part_size,
+        )
+
+        try:
+            bytes_uploaded = 0
+            part_number = 1
+
+            # Upload parts
+            for i in range(0, total_size, part_size):
+                part_data = file_data[i : i + part_size]
+                await self.upload_part(upload, part_number, part_data)
+
+                bytes_uploaded += len(part_data)
+                part_number += 1
+
+                # Report progress
+                if progress_callback:
+                    progress_callback(
+                        ProgressInfo(
+                            bytes_transferred=bytes_uploaded,
+                            total_bytes=total_size,
+                            operation="upload",
+                            key=key,
+                        )
+                    )
+
+            # Complete the upload
+            return await self.complete_multipart_upload(upload)
+
+        except Exception:
+            # Clean up on failure
+            await self.abort_multipart_upload(upload)
+            raise
 
     async def close(self) -> None:
         """Close the GCS storage and release resources.
