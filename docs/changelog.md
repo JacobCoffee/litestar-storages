@@ -1,22 +1,53 @@
 # Changelog
 
 All notable changes to this project will be documented in this file.
-
-
+---
 ## [unreleased]
 
 ### Bug Fixes
 
+- correct git-cliff-action SHA (#32) - ([d1658fa](https://github.com/JacobCoffee/litestar-storages/commit/d1658fa2fdecd21f822fb97c96ed2bcb55b42c24)) - Jacob Coffee
+
+### Ci
+
+- update changelog workflow to commit directly to main (#30) - ([f767142](https://github.com/JacobCoffee/litestar-storages/commit/f767142876918e570b0bf9e658cac50c861e51e4)) - Jacob Coffee
+- add workflow_dispatch and PAT to changelog workflow (#31) - ([cfdc77f](https://github.com/JacobCoffee/litestar-storages/commit/cfdc77fa255d2ed54d11c19a9551762cfa0ec736)) - Jacob Coffee
+- add path filters to skip tests on non-code changes (#33) - ([dc10e92](https://github.com/JacobCoffee/litestar-storages/commit/dc10e92256a9227c033ec4316cf7865fb720a877)) - Jacob Coffee
+
+---
+## [0.2.2](https://github.com/JacobCoffee/litestar-storages/compare/v0.2.1..v0.2.2) - 2025-11-26
+
+### Bug Fixes
+
+- use unsigned dist for PyPI, add release docs (#26) - ([b8fa82d](https://github.com/JacobCoffee/litestar-storages/commit/b8fa82db1a7ee9e0bd3ad48e82b1a1c07dfff9eb)) - Jacob Coffee
+
+### Miscellaneous Chores
+
+- bump version to 0.2.2 (#27) - ([fedb52a](https://github.com/JacobCoffee/litestar-storages/commit/fedb52a0c0dcc6319f8cff9aa730945e3360f2fe)) - Jacob Coffee
+
+---
+## [0.2.1](https://github.com/JacobCoffee/litestar-storages/compare/v0.1.0..v0.2.1) - 2025-11-26
+
+### Bug Fixes
+
 - install git-cliff and use config in changelog workflow (#8) - ([7a54750](https://github.com/JacobCoffee/litestar-storages/commit/7a547501919a438405e1707b482e0c8a68603a0a)) - Jacob Coffee
+- update publish workflow for immutable releases (#24) - ([ab0d460](https://github.com/JacobCoffee/litestar-storages/commit/ab0d4604c7514802f047648978f47f47c5f0c49c)) - Jacob Coffee
 
 ### Features
 
 - Make Litestar optional, add cookbook & example apps (Phase 7-8) (#20) - ([8dc2522](https://github.com/JacobCoffee/litestar-storages/commit/8dc2522d2e7cd658d36f7d57d51a6c50b7d2c5c9)) - Jacob Coffee
 
+### Miscellaneous Chores
+
+- **(deps)** bump the actions group across 1 directory with 10 updates (#22) - ([1e69c3d](https://github.com/JacobCoffee/litestar-storages/commit/1e69c3deb0ef1585416986201d6466df400c36a2)) - dependabot[bot]
+- pre-release cleanup for v0.2.0 (#21) - ([0ab6994](https://github.com/JacobCoffee/litestar-storages/commit/0ab69946bf2e2632278ec2788738c5ac12565fbf)) - Jacob Coffee
+- bump version to 0.2.0 (#23) - ([565281d](https://github.com/JacobCoffee/litestar-storages/commit/565281dd3da9c10312ff542df104799ab002e324)) - Jacob Coffee
+- bump version to 0.2.1 (#25) - ([b8f8fbd](https://github.com/JacobCoffee/litestar-storages/commit/b8f8fbd336b4f711599be4a7217bdb43483fd1f2)) - Jacob Coffee
+
 ### Ci
 
 - add pytest-rerunfailures for flaky emulator tests (#12) - ([ef5dc51](https://github.com/JacobCoffee/litestar-storages/commit/ef5dc516a11381ee770333d4ab1c6e5278490ffa)) - Jacob Coffee
-- group dependabot updates (#14) - ([51ad0b5](https://github.com/JacobCoffee/litestar-storages/commit/51ad0b588755e5e3427c0c3aeb208e4da11dc3a7)) - Jacob Coffee
+- group dependabot updates  (#14) - ([51ad0b5](https://github.com/JacobCoffee/litestar-storages/commit/51ad0b588755e5e3427c0c3aeb208e4da11dc3a7)) - Jacob Coffee
 
 ---
 ## [0.1.0] - 2025-11-26
