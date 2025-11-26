@@ -43,6 +43,7 @@ jobs:
           filters: |
             docs:
               - 'docs/**'
+            src:
               - 'src/**'
 
       - name: Set up uv
