@@ -6,9 +6,8 @@ updates:
       interval: "weekly"
     groups:
       actions:
-        update-types:
-          - "minor"
-          - "patch"
+        patterns:
+          - "*"
 
   - package-ecosystem: "pip"
     directory: "/"
@@ -16,6 +15,5 @@ updates:
       interval: "weekly"
     groups:
       python-dependencies:
-        update-types:
-          - "minor"
-          - "patch"
+        patterns:
+          - "*"
