@@ -25,6 +25,10 @@ dev = [
     "myst-parser>=4.0.0",
     "linkify-it-py>=2.0.0",
     "pytest-sugar>=1.1.1",
+    # Cloud storage backends for integration tests
+    "gcloud-aio-storage>=9.0.0",
+    "azure-storage-blob>=12.0.0",
+    "requests>=2.25.0",
 ]
 docs = [
     "sphinx>=7.0.0",
@@ -51,6 +55,11 @@ test = [
     "pytest-socket>=0.7.0",
     "moto[s3,server]>=5.0.0",
     "aiofiles>=23.0.0",
+    # Cloud storage backends for integration tests
+    "gcloud-aio-storage>=9.0.0",
+    "azure-storage-blob>=12.0.0",
+    "requests>=2.25.0",  # For GCS emulator API calls
+    "pytest-sugar>=1.1.1",
 ]
 
 [project]
@@ -346,7 +355,14 @@ deprecated = "warn"
 not-iterable = "warn"
 
 [tool.ty.src]
-exclude = ["docs/conf.py", "tests/"]
+exclude = [
+    "docs/conf.py",
+    "tests/",
+    # Cloud backends have optional dependencies with lazy imports
+    "src/litestar_storages/backends/s3.py",
+    "src/litestar_storages/backends/azure.py",
+    "src/litestar_storages/backends/gcs.py",
+]
 
 [tool.uv]
 default-groups = ["dev"]
