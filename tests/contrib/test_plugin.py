@@ -2,6 +2,9 @@
 
 Tests for plugin registration, dependency injection, multiple named storages,
 and integration with Litestar application lifecycle.
+
+All tests in this module require Litestar to be installed and are marked
+with @pytest.mark.litestar. They will be skipped if Litestar is not available.
 """
 
 from __future__ import annotations
@@ -10,6 +13,10 @@ from datetime import timedelta
 from typing import TYPE_CHECKING
 
 import pytest
+
+# Guard Litestar imports - these tests will be skipped if Litestar is not installed
+pytest.importorskip("litestar")
+
 from litestar import Controller, Litestar, delete, get, post
 from litestar.datastructures import UploadFile
 from litestar.enums import RequestEncodingType
@@ -22,6 +29,10 @@ from litestar_storages import Storage, StoredFile
 
 if TYPE_CHECKING:
     from litestar_storages.backends.memory import MemoryStorage
+
+
+# Mark all tests in this module as requiring Litestar
+pytestmark = [pytest.mark.litestar, pytest.mark.integration]
 
 
 @pytest.mark.integration
