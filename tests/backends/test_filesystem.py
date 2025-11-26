@@ -256,8 +256,8 @@ class TestFilePermissions:
     """Test file permission handling."""
 
     @pytest.mark.skipif(
-        not hasattr(__import__("os"), "chmod"),
-        reason="Platform doesn't support chmod",
+        __import__("sys").platform == "win32",
+        reason="Windows doesn't support Unix-style file permissions",
     )
     async def test_default_file_permissions(
         self,
@@ -284,8 +284,8 @@ class TestFilePermissions:
         assert file_mode == expected_mode
 
     @pytest.mark.skipif(
-        not hasattr(__import__("os"), "chmod"),
-        reason="Platform doesn't support chmod",
+        __import__("sys").platform == "win32",
+        reason="Windows doesn't support Unix-style file permissions",
     )
     async def test_custom_file_permissions(self, tmp_path: Path) -> None:
         """

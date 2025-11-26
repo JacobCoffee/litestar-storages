@@ -364,10 +364,7 @@ exclude = [
     "docs/conf.py",
     "tests/",
     # Backends have async method override signatures that ty struggles with
-    "src/litestar_storages/backends/filesystem.py",
-    "src/litestar_storages/backends/s3.py",
-    "src/litestar_storages/backends/azure.py",
-    "src/litestar_storages/backends/gcs.py",
+    "src/litestar_storages/backends/",
 ]
 
 [tool.uv]

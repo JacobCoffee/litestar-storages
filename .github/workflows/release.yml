@@ -59,25 +59,3 @@ jobs:
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
 
-  # ==================================================================================== #
-  # PUBLISH TO TEST PYPI
-  # ==================================================================================== #
-  publish-test:
-    name: Publish to TestPyPI
-    runs-on: ubuntu-latest
-    needs: build
-    if: github.event_name == 'workflow_dispatch' && inputs.test-pypi
-    environment:
-      name: testpypi
-      url: https://test.pypi.org/project/litestar-storages/
-    steps:
-      - name: Download distribution artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: dist
-          path: dist/
-
-      - name: Publish to TestPyPI
-        uses: pypa/gh-action-pypi-publish@release/v1
-        with:
-          repository-url: https://test.pypi.org/legacy/
