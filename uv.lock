@@ -1178,9 +1178,6 @@ wheels = [
 name = "litestar-storages"
 version = "0.1.0"
 source = { editable = "." }
-dependencies = [
-    { name = "litestar" },
-]
 
 [package.optional-dependencies]
 all = [
@@ -1188,6 +1185,7 @@ all = [
     { name = "aiofiles" },
     { name = "azure-storage-blob" },
     { name = "gcloud-aio-storage" },
+    { name = "litestar" },
 ]
 azure = [
     { name = "azure-storage-blob" },
@@ -1197,6 +1195,9 @@ filesystem = [
 ]
 gcs = [
     { name = "gcloud-aio-storage" },
+]
+litestar = [
+    { name = "litestar" },
 ]
 s3 = [
     { name = "aioboto3" },
@@ -1282,9 +1283,10 @@ requires-dist = [
     { name = "azure-storage-blob", marker = "extra == 'azure'", specifier = ">=12.0.0" },
     { name = "gcloud-aio-storage", marker = "extra == 'all'", specifier = ">=9.0.0" },
     { name = "gcloud-aio-storage", marker = "extra == 'gcs'", specifier = ">=9.0.0" },
-    { name = "litestar", specifier = ">=2.0.0" },
+    { name = "litestar", marker = "extra == 'all'", specifier = ">=2.0.0" },
+    { name = "litestar", marker = "extra == 'litestar'", specifier = ">=2.0.0" },
 ]
-provides-extras = ["all", "azure", "filesystem", "gcs", "s3"]
+provides-extras = ["all", "azure", "filesystem", "gcs", "litestar", "s3"]
 
 [package.metadata.requires-dev]
 dev = [

@@ -63,10 +63,8 @@ classifiers = [
     "Topic :: Internet :: WWW/HTTP",
     "Typing :: Typed",
 ]
-dependencies = [
-    "litestar>=2.0.0",
-]
-description = "Async file storage abstraction library for Litestar"
+dependencies = []
+description = "Async file storage abstraction library with optional Litestar integration"
 keywords = [
     "litestar",
     "storage",
@@ -85,12 +83,14 @@ version = "0.1.0"
 all = [
     "aiofiles>=23.0.0",
     "aioboto3>=12.0.0",
-    "gcloud-aio-storage>=9.0.0",
     "azure-storage-blob>=12.0.0",
+    "gcloud-aio-storage>=9.0.0",
+    "litestar>=2.0.0",
 ]
 azure = ["azure-storage-blob>=12.0.0"]
 filesystem = ["aiofiles>=23.0.0"]
 gcs = ["gcloud-aio-storage>=9.0.0"]
+litestar = ["litestar>=2.0.0"]
 s3 = ["aioboto3>=12.0.0"]
 
 [project.urls]
