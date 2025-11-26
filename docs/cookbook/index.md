@@ -114,4 +114,4 @@ except StorageError:
 
 ## Contributing
 
-Have a useful pattern that isn't covered? Contributions are welcome! See the [contribution guide](../contributing.md) for details.
+Have a useful pattern that isn't covered? Contributions are welcome! See the [contribution guide](https://github.com/JacobCoffee/litestar-storages/blob/main/CONTRIBUTING.rst) for details.
