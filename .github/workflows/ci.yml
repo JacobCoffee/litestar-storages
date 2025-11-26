@@ -129,7 +129,17 @@ jobs:
         run: uv sync --all-extras --dev
 
       - name: Run tests with coverage
-        run: uv run pytest --cov=litestar_storages --cov-report=term-missing --cov-report=xml -n auto
+        run: |
+          if [ "${{ matrix.os }}" = "ubuntu-latest" ]; then
+            uv run pytest --cov=litestar_storages --cov-report=term-missing --cov-report=xml -n auto
+          else
+            # Skip Docker-dependent tests on Windows/macOS (no Docker available)
+            uv run pytest --cov=litestar_storages --cov-report=term-missing --cov-report=xml -n auto \
+              --ignore=tests/backends/test_azure.py \
+              --ignore=tests/backends/test_gcs.py \
+              --ignore=tests/backends/test_s3.py
+          fi
+        shell: bash
         env:
           PYTHONDONTWRITEBYTECODE: 1
 
