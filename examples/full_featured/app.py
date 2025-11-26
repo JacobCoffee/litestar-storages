@@ -18,17 +18,15 @@ Or from this directory:
 from __future__ import annotations
 
 from datetime import timedelta
-from typing import TYPE_CHECKING, Annotated
+from typing import TYPE_CHECKING, Annotated, ClassVar
 
 from litestar import Controller, Litestar, Response, delete, get, post
-from litestar.datastructures import UploadFile
 from litestar.enums import RequestEncodingType
-from litestar.exceptions import HTTPException, NotFoundException
+from litestar.exceptions import HTTPException
 from litestar.params import Body
 from litestar.response import Stream
 from litestar.status_codes import HTTP_204_NO_CONTENT, HTTP_404_NOT_FOUND, HTTP_409_CONFLICT
 
-from litestar_storages import Storage, StoredFile
 from litestar_storages.backends.memory import MemoryStorage
 from litestar_storages.contrib.dto import StoredFileDTO, StoredFileReadDTO
 from litestar_storages.contrib.plugin import StoragePlugin
@@ -36,6 +34,9 @@ from litestar_storages.exceptions import StorageFileExistsError, StorageFileNotF
 
 if TYPE_CHECKING:
     from litestar.connection import Request
+    from litestar.datastructures import UploadFile
+
+    from litestar_storages import Storage, StoredFile
 
 
 # =============================================================================
@@ -43,7 +44,7 @@ if TYPE_CHECKING:
 # =============================================================================
 
 
-def storage_not_found_handler(request: Request, exc: StorageFileNotFoundError) -> Response:
+def storage_not_found_handler(_: Request, exc: StorageFileNotFoundError) -> Response:
     """Convert StorageFileNotFoundError to 404 response."""
     return Response(
         content={"detail": f"File not found: {exc.key}"},
@@ -51,7 +52,7 @@ def storage_not_found_handler(request: Request, exc: StorageFileNotFoundError) -
     )
 
 
-def storage_exists_handler(request: Request, exc: StorageFileExistsError) -> Response:
+def storage_exists_handler(_: Request, exc: StorageFileExistsError) -> Response:
     """Convert StorageFileExistsError to 409 response."""
     return Response(
         content={"detail": f"File already exists: {exc.key}"},
@@ -71,7 +72,7 @@ class ImageController(Controller):
     """
 
     path = "/api/images"
-    tags = ["Images"]
+    tags: ClassVar[list[str]] = ["Images"]
 
     @post("/", return_dto=StoredFileDTO)
     async def upload_image(
@@ -138,7 +139,7 @@ class DocumentController(Controller):
     """
 
     path = "/api/documents"
-    tags = ["Documents"]
+    tags: ClassVar[list[str]] = ["Documents"]
 
     @post("/", return_dto=StoredFileDTO)
     async def upload_document(
