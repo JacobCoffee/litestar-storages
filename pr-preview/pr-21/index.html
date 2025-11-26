@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en" data-accent-color="violet" data-content_root="./">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>litestar-storages</title><link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Getting Started" href="getting-started.html" /><script>
+    function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
+    setColorMode(localStorage._theme||"auto");
+  </script><link rel="stylesheet" type="text/css" href="_static/pygments.css?v=e1a1ceaf" />
+    <link rel="stylesheet" type="text/css" href="_static/shibuya.css?v=14737038" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+    <link media="print" rel="stylesheet" type="text/css" href="_static/print.css?v=20ff2c19" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=5f8f7e8c" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --sy-f-text: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+  --sy-f-heading: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+}
+</style>
+    <meta property="og:type" content="website"/><meta property="og:title" content="litestar-storages"/>
+    <meta name="twitter:card" content="summary"/>
+  </head>
+<body><div class="sy-head">
+  <div class="sy-head-blur"></div>
+  <div class="sy-head-inner sy-container mx-auto">
+    <a class="sy-head-brand" href="#">
+      
+      
+      <strong>litestar-storages</strong>
+    </a>
+    <div class="sy-head-nav" id="head-nav">
+      <nav class="sy-head-links"><ul><li class="link">
+          <a href="https://litestar.dev/">
+            <span>Litestar</span></a>
+        </li><li class="link">
+          <a href="https://pypi.org/project/litestar-storages/">
+            <span>PyPI</span></a>
+        </li></ul></nav>
+      <div class="sy-head-extra flex items-center print:hidden"><form class="searchbox flex items-center" action="search.html" method="get">
+  <input type="text" name="q" placeholder="Search" />
+  <kbd>/</kbd>
+</form><div class="sy-head-socials">
+  <a href="https://github.com/JacobCoffee/litestar-storages" aria-label="GitHub">
+    <iconify-icon icon="simple-icons:github"></iconify-icon>
+  </a></div></div>
+    </div>
+    <div class="sy-head-actions flex items-center shrink-0 print:hidden"><button class="js-theme theme-switch flex items-center"
+data-aria-auto="Switch to light color mode"
+data-aria-light="Switch to dark color mode"
+data-aria-dark="Switch to auto color mode">
+<i class="i-lucide theme-icon"></i>
+</button><button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="head-nav" aria-expanded="false">
+        <div class="hamburger">
+          <span class="hamburger_1"></span>
+          <span class="hamburger_2"></span>
+          <span class="hamburger_3"></span>
+        </div>
+      </button>
+    </div>
+  </div>
+</div>
+<div class="sy-page sy-container flex mx-auto">
+  <aside id="lside" class="sy-lside md:w-72 md:shrink-0 print:hidden">
+    <div class="sy-lside-inner md:sticky">
+      <div class="sy-scrollbar p-6">
+        <div class="globaltoc" data-expand-depth="0"><p class="caption" role="heading" aria-level="3"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="getting-started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Example Applications</a></li>
+</ul>
+<p class="caption" role="heading" aria-level="3"><span class="caption-text">Storage Backends</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="backends/filesystem.html">FileSystem Storage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="backends/s3.html">S3 Storage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="backends/gcs.html">GCS Storage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="backends/azure.html">Azure Blob Storage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="backends/memory.html">Memory Storage</a></li>
+</ul>
+<p class="caption" role="heading" aria-level="3"><span class="caption-text">Advanced Topics</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="advanced/retry.html">Retry Utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="advanced/multipart-uploads.html">Multipart Uploads</a></li>
+<li class="toctree-l1"><a class="reference internal" href="advanced/progress-callbacks.html">Progress Callbacks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="advanced/custom-backends.html">Custom Backends</a></li>
+</ul>
+<p class="caption" role="heading" aria-level="3"><span class="caption-text">Cookbook</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="cookbook/index.html">Cookbook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cookbook/file-upload-validation.html">File Upload with Validation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cookbook/image-processing-pipeline.html">Image Processing Pipeline</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cookbook/multi-backend-config.html">Multi-Backend Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cookbook/streaming-large-files.html">Streaming Large Files</a></li>
+</ul>
+<p class="caption" role="heading" aria-level="3"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api/index.html">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/base.html">Base Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/types.html">Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/exceptions.html">Exceptions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/backends/index.html">Storage Backends</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api/backends/memory.html">Memory Storage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/backends/filesystem.html">FileSystem Storage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/backends/s3.html">S3 Storage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/backends/gcs.html">GCS Storage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/backends/azure.html">Azure Storage</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="api/contrib/index.html">Litestar Integration</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api/contrib/plugin.html">Storage Plugin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/contrib/dependencies.html">Dependencies</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/contrib/dto.html">DTOs</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="comparison.html">Comparison with Other Libraries</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a></li>
+</ul>
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="lside-overlay js-menu" role="button" aria-label="Close left sidebar" aria-controls="lside" aria-expanded="false"></div>
+  <aside id="rside" class="sy-rside pb-3 w-64 shrink-0 order-last">
+    <button class="rside-close js-menu xl:hidden" aria-label="Close Table of Contents" type="button" aria-controls="rside" aria-expanded="false">
+      <i class="i-lucide close"></i>
+    </button>
+    <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4"><div class="localtoc"><h3>On this page</h3><ul>
+<li><a class="reference internal" href="#what-is-litestar-storages">What is litestar-storages?</a></li>
+<li><a class="reference internal" href="#key-features">Key Features</a><ul>
+<li><a class="reference internal" href="#framework-agnostic-core">Framework-Agnostic Core</a></li>
+<li><a class="reference internal" href="#async-native-design">Async-Native Design</a></li>
+<li><a class="reference internal" href="#multiple-storage-backends">Multiple Storage Backends</a></li>
+<li><a class="reference internal" href="#optional-litestar-integration">Optional Litestar Integration</a></li>
+<li><a class="reference internal" href="#type-safe-protocol-design">Type-Safe Protocol Design</a></li>
+<li><a class="reference internal" href="#streaming-support">Streaming Support</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#comparison-with-litestar-stores">Comparison with Litestar Stores</a></li>
+<li><a class="reference internal" href="#documentation-contents">Documentation Contents</a><ul>
+</ul>
+</li>
+<li><a class="reference internal" href="#quick-links">Quick Links</a></li>
+</ul>
+</div><div id="ethical-ad-placement" data-ea-publisher="readthedocs"></div></div>
+  </aside>
+  <div class="rside-overlay js-menu" role="button" aria-label="Close Table of Contents" aria-controls="rside" aria-expanded="false"></div>
+  <main class="sy-main w-full max-sm:max-w-full print:pt-6">
+<div class="sy-breadcrumbs" role="navigation">
+  <div class="sy-breadcrumbs-inner flex items-center">
+    <div class="md:hidden mr-3">
+      <button class="js-menu" aria-label="Menu" type="button" aria-controls="lside" aria-expanded="false">
+        <i class="i-lucide menu"></i>
+      </button>
+    </div>
+    <ol class="flex-1" itemscope itemtype="https://schema.org/BreadcrumbList"><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="#"><span itemprop="name">litestar-storages</span></a>
+        <meta itemprop="position" content="1" />
+      </li></ol>
+    <div class="xl:hidden ml-1">
+      <button class="js-menu" aria-label="Show table of contents" type="button" aria-controls="rside"
+        aria-expanded="false">
+        <i class="i-lucide outdent"></i>
+      </button>
+    </div>
+  </div>
+</div><div class="flex flex-col break-words justify-between">
+      <div class="min-w-0 max-w-6xl px-6 pb-6 pt-8 xl:px-12">
+        <article class="yue" role="main">
+          <section id="litestar-storages">
+<h1>litestar-storages<a class="headerlink" href="#litestar-storages" title="Link to this heading">¶</a></h1>
+<p>Welcome to litestar-storages, an async-first file storage abstraction library for Python with optional <a class="reference external" href="https://litestar.dev/">Litestar</a> integration.</p>
+<section id="what-is-litestar-storages">
+<h2>What is litestar-storages?<a class="headerlink" href="#what-is-litestar-storages" title="Link to this heading">¶</a></h2>
+<p>litestar-storages provides a unified, async-native interface for storing and retrieving files across multiple storage backends. Whether you need to store user uploads on the local filesystem, serve media from AWS S3, or use Cloudflare R2 for edge distribution, litestar-storages gives you a consistent API that works the same way everywhere.</p>
+<p><strong>The core library is framework-agnostic</strong> - use it with any async Python application, including FastAPI, Starlette, Quart, or plain asyncio. Litestar integration is provided as an optional plugin.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_storages</span><span class="w"> </span><span class="kn">import</span> <span class="n">S3Storage</span><span class="p">,</span> <span class="n">S3Config</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="n">storage</span> <span class="o">=</span> <span class="n">S3Storage</span><span class="p">(</span><span class="n">S3Config</span><span class="p">(</span><span class="n">bucket</span><span class="o">=</span><span class="s2">&quot;my-uploads&quot;</span><span class="p">))</span>
+</span><span data-line="4">
+</span><span data-line="5"><span class="c1"># Store a file</span>
+</span><span data-line="6"><span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="s2">&quot;photos/vacation.jpg&quot;</span><span class="p">,</span> <span class="n">image_data</span><span class="p">)</span>
+</span><span data-line="7">
+</span><span data-line="8"><span class="c1"># Get a presigned URL</span>
+</span><span data-line="9"><span class="n">url</span> <span class="o">=</span> <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">url</span><span class="p">(</span><span class="s2">&quot;photos/vacation.jpg&quot;</span><span class="p">,</span> <span class="n">expires_in</span><span class="o">=</span><span class="n">timedelta</span><span class="p">(</span><span class="n">hours</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+</span></pre></div>
+</div>
+</section>
+<section id="key-features">
+<h2>Key Features<a class="headerlink" href="#key-features" title="Link to this heading">¶</a></h2>
+<section id="framework-agnostic-core">
+<h3>Framework-Agnostic Core<a class="headerlink" href="#framework-agnostic-core" title="Link to this heading">¶</a></h3>
+<p>The storage backends work with <strong>any async Python application</strong>. No framework dependencies required for the core functionality - just install and use with plain asyncio:</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Yes, we know. A library called “litestar-storages” that doesn’t require Litestar.
+We considered renaming it to “asyncio-storages-that-also-works-great-with-litestar-but-you-do-you”
+but that didn’t fit on the PyPI page. The name is a tribute to our roots, not a requirement for your imports.</p>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_storages</span><span class="w"> </span><span class="kn">import</span> <span class="n">FileSystemStorage</span><span class="p">,</span> <span class="n">FileSystemConfig</span>
+</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+</span><span data-line="4">
+</span><span data-line="5"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
+</span><span data-line="6">    <span class="n">storage</span> <span class="o">=</span> <span class="n">FileSystemStorage</span><span class="p">(</span><span class="n">FileSystemConfig</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;./uploads&quot;</span><span class="p">)))</span>
+</span><span data-line="7">    <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="s2">&quot;hello.txt&quot;</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot;Hello, World!&quot;</span><span class="p">)</span>
+</span><span data-line="8">    <span class="n">content</span> <span class="o">=</span> <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">get_bytes</span><span class="p">(</span><span class="s2">&quot;hello.txt&quot;</span><span class="p">)</span>
+</span><span data-line="9">    <span class="nb">print</span><span class="p">(</span><span class="n">content</span><span class="o">.</span><span class="n">decode</span><span class="p">())</span>
+</span><span data-line="10">
+</span><span data-line="11"><span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">main</span><span class="p">())</span>
+</span></pre></div>
+</div>
+</section>
+<section id="async-native-design">
+<h3>Async-Native Design<a class="headerlink" href="#async-native-design" title="Link to this heading">¶</a></h3>
+<p>Built from the ground up for Python’s async/await paradigm. Unlike django-storages (sync) or fastapi-storages (sync despite the name), every operation in litestar-storages is truly asynchronous.</p>
+</section>
+<section id="multiple-storage-backends">
+<h3>Multiple Storage Backends<a class="headerlink" href="#multiple-storage-backends" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p><strong>FileSystemStorage</strong>: Local filesystem storage with optional URL generation</p></li>
+<li><p><strong>S3Storage</strong>: Amazon S3 and S3-compatible services (Cloudflare R2, DigitalOcean Spaces, MinIO, Backblaze B2)</p></li>
+<li><p><strong>GCSStorage</strong>: Google Cloud Storage with signed URLs and ADC support</p></li>
+<li><p><strong>AzureStorage</strong>: Azure Blob Storage with SAS URLs and managed identity</p></li>
+<li><p><strong>MemoryStorage</strong>: In-memory storage for testing and development</p></li>
+</ul>
+</section>
+<section id="optional-litestar-integration">
+<h3>Optional Litestar Integration<a class="headerlink" href="#optional-litestar-integration" title="Link to this heading">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">StoragePlugin</span></code> provides seamless integration with Litestar applications (requires the <code class="docutils literal notranslate"><span class="pre">litestar</span></code> extra):</p>
+<ul class="simple">
+<li><p><strong>Dependency injection</strong>: Storage instances injected directly into route handlers</p></li>
+<li><p><strong>Lifespan management</strong>: Automatic connection cleanup on application shutdown</p></li>
+<li><p><strong>Multiple storages</strong>: Named storages for different use cases (uploads, images, documents)</p></li>
+</ul>
+</section>
+<section id="type-safe-protocol-design">
+<h3>Type-Safe Protocol Design<a class="headerlink" href="#type-safe-protocol-design" title="Link to this heading">¶</a></h3>
+<p>A well-defined <code class="docutils literal notranslate"><span class="pre">Storage</span></code> protocol ensures all backends behave consistently:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="nd">@runtime_checkable</span>
+</span><span data-line="2"><span class="k">class</span><span class="w"> </span><span class="nc">Storage</span><span class="p">(</span><span class="n">Protocol</span><span class="p">):</span>
+</span><span data-line="3">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">put</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">StoredFile</span><span class="p">:</span> <span class="o">...</span>
+</span><span data-line="4">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncIterator</span><span class="p">[</span><span class="nb">bytes</span><span class="p">]:</span> <span class="o">...</span>
+</span><span data-line="5">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
+</span><span data-line="6">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">exists</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span> <span class="o">...</span>
+</span><span data-line="7">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prefix</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncIterator</span><span class="p">[</span><span class="n">StoredFile</span><span class="p">]:</span> <span class="o">...</span>
+</span><span data-line="8">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">url</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">expires_in</span><span class="p">:</span> <span class="n">timedelta</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span> <span class="o">...</span>
+</span></pre></div>
+</div>
+</section>
+<section id="streaming-support">
+<h3>Streaming Support<a class="headerlink" href="#streaming-support" title="Link to this heading">¶</a></h3>
+<p>Handle large files efficiently without loading them entirely into memory:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="c1"># Stream download</span>
+</span><span data-line="2"><span class="k">async</span> <span class="k">for</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="n">storage</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;large-file.zip&quot;</span><span class="p">):</span>
+</span><span data-line="3">    <span class="k">await</span> <span class="n">response</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">chunk</span><span class="p">)</span>
+</span><span data-line="4">
+</span><span data-line="5"><span class="c1"># Stream upload from async iterator</span>
+</span><span data-line="6"><span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="s2">&quot;large-file.zip&quot;</span><span class="p">,</span> <span class="n">async_chunk_generator</span><span class="p">())</span>
+</span></pre></div>
+</div>
+</section>
+</section>
+<section id="comparison-with-litestar-stores">
+<h2>Comparison with Litestar Stores<a class="headerlink" href="#comparison-with-litestar-stores" title="Link to this heading">¶</a></h2>
+<p>Litestar includes built-in <a class="reference external" href="https://docs.litestar.dev/2/usage/stores.html">stores</a> for key-value data. These serve a <strong>different purpose</strong> than litestar-storages:</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Aspect</p></th>
+<th class="head"><p>litestar-storages</p></th>
+<th class="head"><p>Litestar Stores</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>Purpose</strong></p></td>
+<td><p>File storage (uploads, media assets)</p></td>
+<td><p>Key-value data (caching, sessions)</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Data type</strong></p></td>
+<td><p>Binary files with metadata</p></td>
+<td><p>Serialized values with TTL</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Typical use</strong></p></td>
+<td><p>User uploads, CDN assets, documents</p></td>
+<td><p>Sessions, rate limiting, caching</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Backends</strong></p></td>
+<td><p>FileSystem, S3, GCS, Azure, Memory</p></td>
+<td><p>Memory, File, Redis, Valkey</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>TTL support</strong></p></td>
+<td><p>No (files are persistent)</p></td>
+<td><p>Yes (automatic expiration)</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Metadata</strong></p></td>
+<td><p>Yes (content-type, size, custom)</p></td>
+<td><p>No</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Presigned URLs</strong></p></td>
+<td><p>Yes (for cloud backends)</p></td>
+<td><p>No</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Use litestar-storages when you need to:</strong></p>
+<ul class="simple">
+<li><p>Accept file uploads from users</p></li>
+<li><p>Store and serve media assets (images, videos, documents)</p></li>
+<li><p>Generate secure download URLs</p></li>
+<li><p>Manage files across cloud providers</p></li>
+</ul>
+<p><strong>Use Litestar Stores when you need to:</strong></p>
+<ul class="simple">
+<li><p>Cache computed values</p></li>
+<li><p>Store session data</p></li>
+<li><p>Implement rate limiting</p></li>
+<li><p>Store ephemeral data with automatic expiration</p></li>
+</ul>
+</section>
+<section id="documentation-contents">
+<h2>Documentation Contents<a class="headerlink" href="#documentation-contents" title="Link to this heading">¶</a></h2>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="getting-started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Example Applications</a></li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Storage Backends</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="backends/filesystem.html">FileSystem Storage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="backends/s3.html">S3 Storage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="backends/gcs.html">GCS Storage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="backends/azure.html">Azure Blob Storage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="backends/memory.html">Memory Storage</a></li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Advanced Topics</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="advanced/retry.html">Retry Utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="advanced/multipart-uploads.html">Multipart Uploads</a></li>
+<li class="toctree-l1"><a class="reference internal" href="advanced/progress-callbacks.html">Progress Callbacks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="advanced/custom-backends.html">Custom Backends</a></li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Cookbook</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="cookbook/index.html">Cookbook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cookbook/file-upload-validation.html">File Upload with Validation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cookbook/image-processing-pipeline.html">Image Processing Pipeline</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cookbook/multi-backend-config.html">Multi-Backend Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cookbook/streaming-large-files.html">Streaming Large Files</a></li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api/index.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="comparison.html">Comparison with Other Libraries</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a></li>
+</ul>
+</div>
+</section>
+<section id="quick-links">
+<h2>Quick Links<a class="headerlink" href="#quick-links" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="getting-started.html"><span class="std std-doc">Installation and Setup</span></a></p></li>
+<li><p><a class="reference internal" href="examples.html"><span class="std std-doc">Example Applications</span></a></p></li>
+<li><p><a class="reference internal" href="backends/filesystem.html"><span class="std std-doc">FileSystem Backend</span></a></p></li>
+<li><p><a class="reference internal" href="backends/s3.html"><span class="std std-doc">S3 Backend</span></a> (AWS, R2, Spaces, MinIO)</p></li>
+<li><p><a class="reference internal" href="backends/gcs.html"><span class="std std-doc">GCS Backend</span></a> (Google Cloud Storage)</p></li>
+<li><p><a class="reference internal" href="backends/azure.html"><span class="std std-doc">Azure Backend</span></a> (Azure Blob Storage)</p></li>
+<li><p><a class="reference internal" href="advanced/retry.html"><span class="std std-doc">Retry Utilities</span></a> (Exponential backoff and retry logic)</p></li>
+<li><p><a class="reference internal" href="advanced/multipart-uploads.html"><span class="std std-doc">Multipart Uploads</span></a> (Large file handling)</p></li>
+<li><p><a class="reference internal" href="advanced/progress-callbacks.html"><span class="std std-doc">Progress Callbacks</span></a> (Transfer progress tracking)</p></li>
+<li><p><a class="reference internal" href="advanced/custom-backends.html"><span class="std std-doc">Creating Custom Backends</span></a></p></li>
+<li><p><a class="reference internal" href="comparison.html"><span class="std std-doc">Library Comparison</span></a> (vs django-storages, fastapi-storages)</p></li>
+<li><p><a class="reference external" href="https://github.com/JacobCoffee/litestar-storages">GitHub Repository</a></p></li>
+</ul>
+</section>
+</section>
+
+        </article><button class="back-to-top" type="button">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+  </svg>
+  <span>Back to top</span>
+</button><div class="navigation flex print:hidden"><div class="navigation-next">
+    <a href="getting-started.html">
+      <div class="page-info">
+        <span>Next</span>
+        <div class="title">Getting Started</div>
+      </div>
+      <i class="i-lucide chevron-right"></i>
+    </a>
+  </div></div></div>
+    </div>
+  </main>
+</div>
+<footer class="sy-foot">
+  <div class="sy-foot-inner sy-container mx-auto">
+    <div class="sy-foot-reserved md:flex justify-between items-center">
+      <div class="sy-foot-copyright"><p>2025, Jacob Coffee</p>
+  
+  <p>
+    Made with
+    
+    <a href="https://www.sphinx-doc.org/">Sphinx</a> and
+    
+    <a href="https://shibuya.lepture.com">Shibuya theme</a>.
+  </p>
+</div>
+      <div class="sy-foot-socials">
+<a href="https://github.com/JacobCoffee/litestar-storages" aria-label="GitHub">
+  <iconify-icon icon="simple-icons:github"></iconify-icon>
+</a></div>
+    </div>
+  </div>
+</footer>
+      <script src="_static/documentation_options.js?v=01f34227"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="_static/copybutton.js?v=30646c52"></script>
+      <script src="_static/design-tabs.js?v=f930bc37"></script>
+      <script src="_static/shibuya.js?v=c1cf1a6b"></script></body>
+</html>

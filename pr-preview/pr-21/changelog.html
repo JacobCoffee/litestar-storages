@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en" data-accent-color="violet" data-content_root="./">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Changelog - litestar-storages</title><link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="prev" title="Comparison with Other Libraries" href="comparison.html" /><script>
+    function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
+    setColorMode(localStorage._theme||"auto");
+  </script><link rel="stylesheet" type="text/css" href="_static/pygments.css?v=e1a1ceaf" />
+    <link rel="stylesheet" type="text/css" href="_static/shibuya.css?v=14737038" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+    <link media="print" rel="stylesheet" type="text/css" href="_static/print.css?v=20ff2c19" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=5f8f7e8c" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --sy-f-text: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+  --sy-f-heading: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+}
+</style>
+    <meta property="og:type" content="website"/><meta property="og:title" content="Changelog"/>
+    <meta name="twitter:card" content="summary"/>
+  </head>
+<body><div class="sy-head">
+  <div class="sy-head-blur"></div>
+  <div class="sy-head-inner sy-container mx-auto">
+    <a class="sy-head-brand" href="index.html">
+      
+      
+      <strong>litestar-storages</strong>
+    </a>
+    <div class="sy-head-nav" id="head-nav">
+      <nav class="sy-head-links"><ul><li class="link">
+          <a href="https://litestar.dev/">
+            <span>Litestar</span></a>
+        </li><li class="link">
+          <a href="https://pypi.org/project/litestar-storages/">
+            <span>PyPI</span></a>
+        </li></ul></nav>
+      <div class="sy-head-extra flex items-center print:hidden"><form class="searchbox flex items-center" action="search.html" method="get">
+  <input type="text" name="q" placeholder="Search" />
+  <kbd>/</kbd>
+</form><div class="sy-head-socials">
+  <a href="https://github.com/JacobCoffee/litestar-storages" aria-label="GitHub">
+    <iconify-icon icon="simple-icons:github"></iconify-icon>
+  </a></div></div>
+    </div>
+    <div class="sy-head-actions flex items-center shrink-0 print:hidden"><button class="js-theme theme-switch flex items-center"
+data-aria-auto="Switch to light color mode"
+data-aria-light="Switch to dark color mode"
+data-aria-dark="Switch to auto color mode">
+<i class="i-lucide theme-icon"></i>
+</button><button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="head-nav" aria-expanded="false">
+        <div class="hamburger">
+          <span class="hamburger_1"></span>
+          <span class="hamburger_2"></span>
+          <span class="hamburger_3"></span>
+        </div>
+      </button>
+    </div>
+  </div>
+</div>
+<div class="sy-page sy-container flex mx-auto">
+  <aside id="lside" class="sy-lside md:w-72 md:shrink-0 print:hidden">
+    <div class="sy-lside-inner md:sticky">
+      <div class="sy-scrollbar p-6">
+        <div class="globaltoc" data-expand-depth="0"><p class="caption" role="heading" aria-level="3"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="getting-started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Example Applications</a></li>
+</ul>
+<p class="caption" role="heading" aria-level="3"><span class="caption-text">Storage Backends</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="backends/filesystem.html">FileSystem Storage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="backends/s3.html">S3 Storage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="backends/gcs.html">GCS Storage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="backends/azure.html">Azure Blob Storage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="backends/memory.html">Memory Storage</a></li>
+</ul>
+<p class="caption" role="heading" aria-level="3"><span class="caption-text">Advanced Topics</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="advanced/retry.html">Retry Utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="advanced/multipart-uploads.html">Multipart Uploads</a></li>
+<li class="toctree-l1"><a class="reference internal" href="advanced/progress-callbacks.html">Progress Callbacks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="advanced/custom-backends.html">Custom Backends</a></li>
+</ul>
+<p class="caption" role="heading" aria-level="3"><span class="caption-text">Cookbook</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="cookbook/index.html">Cookbook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cookbook/file-upload-validation.html">File Upload with Validation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cookbook/image-processing-pipeline.html">Image Processing Pipeline</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cookbook/multi-backend-config.html">Multi-Backend Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cookbook/streaming-large-files.html">Streaming Large Files</a></li>
+</ul>
+<p class="caption" role="heading" aria-level="3"><span class="caption-text">Reference</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="api/index.html">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/base.html">Base Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/types.html">Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/exceptions.html">Exceptions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/backends/index.html">Storage Backends</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api/backends/memory.html">Memory Storage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/backends/filesystem.html">FileSystem Storage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/backends/s3.html">S3 Storage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/backends/gcs.html">GCS Storage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/backends/azure.html">Azure Storage</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="api/contrib/index.html">Litestar Integration</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api/contrib/plugin.html">Storage Plugin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/contrib/dependencies.html">Dependencies</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/contrib/dto.html">DTOs</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="comparison.html">Comparison with Other Libraries</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Changelog</a></li>
+</ul>
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="lside-overlay js-menu" role="button" aria-label="Close left sidebar" aria-controls="lside" aria-expanded="false"></div>
+  <aside id="rside" class="sy-rside pb-3 w-64 shrink-0 order-last">
+    <button class="rside-close js-menu xl:hidden" aria-label="Close Table of Contents" type="button" aria-controls="rside" aria-expanded="false">
+      <i class="i-lucide close"></i>
+    </button>
+    <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4"><div class="localtoc"><h3>On this page</h3><ul>
+<li><a class="reference internal" href="#unreleased">[unreleased]</a><ul>
+<li><a class="reference internal" href="#bug-fixes">Bug Fixes</a></li>
+<li><a class="reference internal" href="#features">Features</a></li>
+<li><a class="reference internal" href="#ci">Ci</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id1">[0.1.0] - 2025-11-26</a><ul>
+<li><a class="reference internal" href="#id2">Bug Fixes</a></li>
+<li><a class="reference internal" href="#documentation">Documentation</a></li>
+<li><a class="reference internal" href="#id3">Features</a></li>
+<li><a class="reference internal" href="#miscellaneous-chores">Miscellaneous Chores</a></li>
+<li><a class="reference internal" href="#performance">Performance</a></li>
+<li><a class="reference internal" href="#security">Security</a></li>
+<li><a class="reference internal" href="#tests">Tests</a></li>
+</ul>
+</li>
+</ul>
+</div><div id="ethical-ad-placement" data-ea-publisher="readthedocs"></div></div>
+  </aside>
+  <div class="rside-overlay js-menu" role="button" aria-label="Close Table of Contents" aria-controls="rside" aria-expanded="false"></div>
+  <main class="sy-main w-full max-sm:max-w-full print:pt-6">
+<div class="sy-breadcrumbs" role="navigation">
+  <div class="sy-breadcrumbs-inner flex items-center">
+    <div class="md:hidden mr-3">
+      <button class="js-menu" aria-label="Menu" type="button" aria-controls="lside" aria-expanded="false">
+        <i class="i-lucide menu"></i>
+      </button>
+    </div>
+    <ol class="flex-1" itemscope itemtype="https://schema.org/BreadcrumbList"><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="index.html"><span itemprop="name">litestar-storages</span></a>
+        <span>/</span>
+        <meta itemprop="position" content="1" />
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <strong itemprop="name">Changelog</strong>
+        <meta itemprop="position" content="2" />
+      </li></ol>
+    <div class="xl:hidden ml-1">
+      <button class="js-menu" aria-label="Show table of contents" type="button" aria-controls="rside"
+        aria-expanded="false">
+        <i class="i-lucide outdent"></i>
+      </button>
+    </div>
+  </div>
+</div><div class="flex flex-col break-words justify-between">
+      <div class="min-w-0 max-w-6xl px-6 pb-6 pt-8 xl:px-12">
+        <article class="yue" role="main">
+          <section id="changelog">
+<h1>Changelog<a class="headerlink" href="#changelog" title="Link to this heading">¶</a></h1>
+<p>All notable changes to this project will be documented in this file.</p>
+<hr class="docutils" />
+<section id="unreleased">
+<h2>[unreleased]<a class="headerlink" href="#unreleased" title="Link to this heading">¶</a></h2>
+<section id="bug-fixes">
+<h3>Bug Fixes<a class="headerlink" href="#bug-fixes" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p>install git-cliff and use config in changelog workflow (#8) - (<a class="reference external" href="https://github.com/JacobCoffee/litestar-storages/commit/7a547501919a438405e1707b482e0c8a68603a0a">7a54750</a>) - Jacob Coffee</p></li>
+</ul>
+</section>
+<section id="features">
+<h3>Features<a class="headerlink" href="#features" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p>Make Litestar optional, add cookbook &amp; example apps (Phase 7-8) (#20) - (<a class="reference external" href="https://github.com/JacobCoffee/litestar-storages/commit/8dc2522d2e7cd658d36f7d57d51a6c50b7d2c5c9">8dc2522</a>) - Jacob Coffee</p></li>
+</ul>
+</section>
+<section id="ci">
+<h3>Ci<a class="headerlink" href="#ci" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p>add pytest-rerunfailures for flaky emulator tests (#12) - (<a class="reference external" href="https://github.com/JacobCoffee/litestar-storages/commit/ef5dc516a11381ee770333d4ab1c6e5278490ffa">ef5dc51</a>) - Jacob Coffee</p></li>
+<li><p>group dependabot updates  (#14) - (<a class="reference external" href="https://github.com/JacobCoffee/litestar-storages/commit/51ad0b588755e5e3427c0c3aeb208e4da11dc3a7">51ad0b5</a>) - Jacob Coffee</p></li>
+</ul>
+</section>
+</section>
+<hr class="docutils" />
+<section id="id1">
+<h2>[0.1.0] - 2025-11-26<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h2>
+<section id="id2">
+<h3>Bug Fixes<a class="headerlink" href="#id2" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p>convert markdown code blocks to RST in docstrings - (<a class="reference external" href="https://github.com/JacobCoffee/litestar-storages/commit/678ba5260170d3ac41e89302756756c4f19ba7b7">678ba52</a>) - Jacob Coffee</p></li>
+<li><p>correct path parameter handling in example apps - (<a class="reference external" href="https://github.com/JacobCoffee/litestar-storages/commit/0558df14d72f35dd091c200d4835187e38ee0f9e">0558df1</a>) - Jacob Coffee</p></li>
+<li><p>resolve CI workflow issues (#7) - (<a class="reference external" href="https://github.com/JacobCoffee/litestar-storages/commit/77a2e82225557a7e32508c6f3a2ea5b37b7bc837">77a2e82</a>) - Jacob Coffee</p></li>
+</ul>
+</section>
+<section id="documentation">
+<h3>Documentation<a class="headerlink" href="#documentation" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p>update <a class="reference external" href="http://PLAN.md">PLAN.md</a> to mark lifespan management complete - (<a class="reference external" href="https://github.com/JacobCoffee/litestar-storages/commit/d52f77c754240c0b2c4803c37d0b70f46084f10f">d52f77c</a>) - Jacob Coffee</p></li>
+<li><p>add comprehensive API reference documentation - (<a class="reference external" href="https://github.com/JacobCoffee/litestar-storages/commit/68c12284316843b18c678a9253d02f33e9e2a174">68c1228</a>) - Jacob Coffee</p></li>
+<li><p>update <a class="reference external" href="http://PLAN.md">PLAN.md</a> to mark Phase 5 complete - (<a class="reference external" href="https://github.com/JacobCoffee/litestar-storages/commit/e1d4caabe3ebf970cea05a438b632c0caa1cab5a">e1d4caa</a>) - Jacob Coffee</p></li>
+<li><p>update <a class="reference external" href="http://PLAN.md">PLAN.md</a> with Phase 6 progress - (<a class="reference external" href="https://github.com/JacobCoffee/litestar-storages/commit/66fa2319f9d3bc48c75a3ae1e47b37252af374c8">66fa231</a>) - Jacob Coffee</p></li>
+<li><p>add comprehensive documentation for advanced features - (<a class="reference external" href="https://github.com/JacobCoffee/litestar-storages/commit/a68567bea1ef1c6c1221ae6f5d03636b08e4fcc1">a68567b</a>) - Jacob Coffee</p></li>
+<li><p>add comprehensive library comparison documentation - (<a class="reference external" href="https://github.com/JacobCoffee/litestar-storages/commit/5316db50e6ad52891be697f83f384bb74b1109a8">5316db5</a>) - Jacob Coffee</p></li>
+<li><p>fix DTO inheritance rendering in Sphinx - (<a class="reference external" href="https://github.com/JacobCoffee/litestar-storages/commit/ed349bba51dadc15f552d69f6e6b6e9f15413c3d">ed349bb</a>) - Jacob Coffee</p></li>
+<li><p>update <a class="reference external" href="http://PLAN.md">PLAN.md</a> - all phases complete, 99% coverage - (<a class="reference external" href="https://github.com/JacobCoffee/litestar-storages/commit/c773f4c5e3a57f10e36fea730c6b494ec9735142">c773f4c</a>) - Jacob Coffee</p></li>
+</ul>
+</section>
+<section id="id3">
+<h3>Features<a class="headerlink" href="#id3" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p><strong>(azure)</strong> add multipart upload and progress callback support - (<a class="reference external" href="https://github.com/JacobCoffee/litestar-storages/commit/677dd78841f7e56cd09ba11f6651bd92d101b751">677dd78</a>) - Jacob Coffee</p></li>
+<li><p><strong>(gcs)</strong> add multipart upload and progress callback support - (<a class="reference external" href="https://github.com/JacobCoffee/litestar-storages/commit/a4667a5544ee2d5772c88cba7db258b9030077fd">a4667a5</a>) - Jacob Coffee</p></li>
+<li><p>v0.1.0 foundation - async storage library for Litestar - (<a class="reference external" href="https://github.com/JacobCoffee/litestar-storages/commit/cfebeefd66e59bf5b804724160c67f840fd9d539">cfebeef</a>) - Jacob Coffee</p></li>
+<li><p>add lifespan management for storage backends - (<a class="reference external" href="https://github.com/JacobCoffee/litestar-storages/commit/6e0f3c7a6570fe17c863d6be1bef886e90b46537">6e0f3c7</a>) - Jacob Coffee</p></li>
+<li><p>add Azure Blob Storage and Google Cloud Storage backends - (<a class="reference external" href="https://github.com/JacobCoffee/litestar-storages/commit/fddb2f16e935bb84c26d9aecdef0c4e0e806a823">fddb2f1</a>) - Jacob Coffee</p></li>
+<li><p>add advanced features - retry, multipart uploads, progress callbacks - (<a class="reference external" href="https://github.com/JacobCoffee/litestar-storages/commit/abf61ab63c80f2bb59d8a4f9eb471b785d4c81fd">abf61ab</a>) - Jacob Coffee</p></li>
+<li><p>add performance benchmarking script - (<a class="reference external" href="https://github.com/JacobCoffee/litestar-storages/commit/0b6b37e48487dc48fa73ecb36d114a7ed11b8987">0b6b37e</a>) - Jacob Coffee</p></li>
+</ul>
+</section>
+<section id="miscellaneous-chores">
+<h3>Miscellaneous Chores<a class="headerlink" href="#miscellaneous-chores" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p><strong>(azure)</strong> add pragma no cover for untestable paths - (<a class="reference external" href="https://github.com/JacobCoffee/litestar-storages/commit/29b6804e6022d8601f24c741061632de03bf085b">29b6804</a>) - Jacob Coffee</p></li>
+<li><p><strong>(retry)</strong> add pragma no cover for unreachable code - (<a class="reference external" href="https://github.com/JacobCoffee/litestar-storages/commit/83d5c7aba8f09a3a893ceeafb1e6f7693e23e4f7">83d5c7a</a>) - Jacob Coffee</p></li>
+<li><p><strong>(s3)</strong> add pragma no cover for SDK error handlers - (<a class="reference external" href="https://github.com/JacobCoffee/litestar-storages/commit/52b3539a4090ec903fdef433695219783b5bb639">52b3539</a>) - Jacob Coffee</p></li>
+</ul>
+</section>
+<section id="performance">
+<h3>Performance<a class="headerlink" href="#performance" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p>optimize test suite with session-scoped fixtures - (<a class="reference external" href="https://github.com/JacobCoffee/litestar-storages/commit/612f1676af555aa10be0899d77ebceff33e2127e">612f167</a>) - Jacob Coffee</p></li>
+</ul>
+</section>
+<section id="security">
+<h3>Security<a class="headerlink" href="#security" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p>add zizmor workflow security scanning - (<a class="reference external" href="https://github.com/JacobCoffee/litestar-storages/commit/7e0291745dd7115645796e3cbefd44edc54b929c">7e02917</a>) - Jacob Coffee</p></li>
+</ul>
+</section>
+<section id="tests">
+<h3>Tests<a class="headerlink" href="#tests" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p><strong>(azure)</strong> improve coverage from 52% to 95% - (<a class="reference external" href="https://github.com/JacobCoffee/litestar-storages/commit/4d40d6220820c8070ce8d8901b60d00c19caef08">4d40d62</a>) - Jacob Coffee</p></li>
+<li><p><strong>(base)</strong> achieve 100% coverage with MinimalStorage - (<a class="reference external" href="https://github.com/JacobCoffee/litestar-storages/commit/5ec87ba12e0cfab08054e45b62ff52d3d28f4f70">5ec87ba</a>) - Jacob Coffee</p></li>
+<li><p><strong>(filesystem)</strong> improve coverage to 97% - (<a class="reference external" href="https://github.com/JacobCoffee/litestar-storages/commit/5e933d0dee18246f39facb0498de04d0ec4e110c">5e933d0</a>) - Jacob Coffee</p></li>
+<li><p><strong>(gcs)</strong> improve coverage from 73% to 100% - (<a class="reference external" href="https://github.com/JacobCoffee/litestar-storages/commit/eb4e1fed3d35dd679c9a8b3664a71c69446edc30">eb4e1fe</a>) - Jacob Coffee</p></li>
+<li><p><strong>(memory)</strong> achieve 100% coverage - (<a class="reference external" href="https://github.com/JacobCoffee/litestar-storages/commit/b692a99e09c7c70fffa7bf2b7cd20777f28e2439">b692a99</a>) - Jacob Coffee</p></li>
+<li><p><strong>(retry)</strong> improve coverage to 95% - (<a class="reference external" href="https://github.com/JacobCoffee/litestar-storages/commit/8827a1436810260fee5890849057a5f7dcc88f74">8827a14</a>) - Jacob Coffee</p></li>
+<li><p><strong>(s3)</strong> improve coverage from 57% to 89% - (<a class="reference external" href="https://github.com/JacobCoffee/litestar-storages/commit/2f571a3dcb236b12fba7aa7b0d7ac7cdb0521503">2f571a3</a>) - Jacob Coffee</p></li>
+<li><p>fix unused import in retry tests - (<a class="reference external" href="https://github.com/JacobCoffee/litestar-storages/commit/576d5bc791c32c53c3d3cfb7b9140e7168306540">576d5bc</a>) - Jacob Coffee</p></li>
+<li><p>add comprehensive tests for core modules - (<a class="reference external" href="https://github.com/JacobCoffee/litestar-storages/commit/ff2305c6cbff54955b7b3086e8ff95f5906cd8a8">ff2305c</a>) - Jacob Coffee</p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">litestar-storages</span></code> Changelog</p>
+</section>
+</section>
+</section>
+
+        </article><button class="back-to-top" type="button">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+  </svg>
+  <span>Back to top</span>
+</button><div class="navigation flex print:hidden"><div class="navigation-prev">
+    <a href="comparison.html">
+      <i class="i-lucide chevron-left"></i>
+      <div class="page-info">
+        <span>Previous</span><div class="title">Comparison with Other Libraries</div></div>
+    </a>
+  </div></div></div>
+    </div>
+  </main>
+</div>
+<footer class="sy-foot">
+  <div class="sy-foot-inner sy-container mx-auto">
+    <div class="sy-foot-reserved md:flex justify-between items-center">
+      <div class="sy-foot-copyright"><p>2025, Jacob Coffee</p>
+  
+  <p>
+    Made with
+    
+    <a href="https://www.sphinx-doc.org/">Sphinx</a> and
+    
+    <a href="https://shibuya.lepture.com">Shibuya theme</a>.
+  </p>
+</div>
+      <div class="sy-foot-socials">
+<a href="https://github.com/JacobCoffee/litestar-storages" aria-label="GitHub">
+  <iconify-icon icon="simple-icons:github"></iconify-icon>
+</a></div>
+    </div>
+  </div>
+</footer>
+      <script src="_static/documentation_options.js?v=01f34227"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="_static/copybutton.js?v=30646c52"></script>
+      <script src="_static/design-tabs.js?v=f930bc37"></script>
+      <script src="_static/shibuya.js?v=c1cf1a6b"></script></body>
+</html>
