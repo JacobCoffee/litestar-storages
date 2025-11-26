@@ -1,14 +1,41 @@
 # litestar-storages Implementation Plan
 
+## Current Status
+
+*Plan Version: 6.0.0*
+*Last Updated: 2025-11-26*
+*Status: Phases 1-8 complete (99% coverage). Library is now framework-agnostic with optional Litestar integration.*
+
 ## Executive Summary
 
-**litestar-storages** is an async-first file storage abstraction library for Litestar, providing a unified interface for storing and retrieving files across multiple cloud and local backends.
+**litestar-storages** is an async-first file storage abstraction library that provides a unified interface for storing and retrieving files across multiple cloud and local backends. While it includes first-class Litestar integration, the core library is **framework-agnostic** and works with any async Python application.
 
 ### Key Differentiators
 
 - **Async-native**: Built from the ground up for async/await, unlike django-storages (sync) or fastapi-storages (sync despite the name)
-- **Litestar Integration**: First-class plugin support with dependency injection, lifespan management, and DTO integration
+- **Framework-agnostic core**: Works with Litestar, FastAPI, Starlette, or plain asyncio
+- **Litestar Integration**: Optional plugin support with dependency injection, lifespan management, and DTO integration
 - **Modern Python**: Type-safe with full typing support, dataclass-based configuration, protocol-driven design
+
+---
+
+## Framework Analysis (2025-11-26)
+
+Code review revealed the library is **92% framework-agnostic**:
+
+| Category | Lines | Litestar Dependency |
+|----------|-------|---------------------|
+| Core (base, types, exceptions, retry) | ~910 | None |
+| Backends (S3, Azure, GCS, filesystem, memory) | ~3,278 | None |
+| Contrib (plugin, dto, dependencies) | ~375 | **Yes** |
+| **Total** | ~4,563 | **~8% Litestar-specific** |
+
+**Resolved**: Litestar is now an **optional** dependency. Install with `pip install litestar-storages[litestar]`.
+
+**Litestar-specific imports** (only 3 total):
+- `litestar.di.Provide`
+- `litestar.plugins.InitPluginProtocol`
+- `litestar.dto.DataclassDTO`, `DTOConfig`
 
 ---
 
@@ -80,6 +107,50 @@
   - [x] Library comparison documentation
   - [ ] PyPI release (v0.1.0) - pending PR merges
 
+- [x] **Phase 7: Framework Agnostic Refactor** ✅ COMPLETE
+  - [x] Make Litestar an optional dependency
+    - [x] Update pyproject.toml: `dependencies = []`
+    - [x] Add `[project.optional-dependencies] litestar = ["litestar>=2.0.0"]`
+    - [x] Guard `contrib/` imports with try/except ImportError
+    - [x] Update `__init__.py` exports to handle missing Litestar
+  - [x] Add conditional imports in `contrib/__init__.py`
+  - [x] Update tests to skip Litestar tests when not installed (`@pytest.mark.litestar`)
+  - [x] Update documentation to clarify framework-agnostic usage
+  - [x] Add FastAPI integration example in docs/getting-started.md
+  - [x] Add plain asyncio example in docs/getting-started.md
+
+- [x] **Phase 8: Documentation & Examples** ✅ COMPLETE
+  - [x] Create `docs/cookbook/` directory with end-to-end recipes:
+    - [x] `file-upload-validation.md` - MIME type, extension, size validation
+    - [x] `image-processing-pipeline.md` - Pillow integration for resizing/compression
+    - [x] `multi-backend-config.md` - Dev/Prod environment configuration
+    - [x] `streaming-large-files.md` - Chunked uploads, S3 multipart, progress
+  - [x] **Book Library Example** (`examples/book-library/`)
+    - [x] Book model with cover_image field (19 tests passing)
+    - [x] Author model with author_photo field
+    - [x] Multiple named storages (covers_storage, photos_storage)
+    - [x] File upload, download, delete operations
+  - [x] **Todo with Attachments Example** (`examples/todo-attachments/`)
+    - [x] Todo model with file attachments (20 tests passing)
+    - [x] Cascade deletion (todo -> attachments)
+    - [x] File lifecycle management
+
+---
+
+## Litestar Example App Candidates
+
+Found in `/Users/coffee/git/public/litestar-org/litestar/docs/examples/`:
+
+| Example | Path | Enhancement Opportunity |
+|---------|------|-------------------------|
+| **SQLAlchemy Repository** | `sqla/sqlalchemy_async_repository.py` | Book covers, author photos |
+| **File Uploads** | `request_data/request_data_5-10.py` | Add persistence (currently none!) |
+| **Todo App** | `todo_app/full_app.py` | File attachments |
+| **JWT Auth** | `security/jwt/using_jwt_auth.py` | User avatars |
+| **File Responses** | `responses/file_response_fs.py` | Replace fsspec with litestar-storages |
+
+**Key Gap**: Litestar's file upload examples read files into memory but **don't persist them** anywhere.
+
 ---
 
 ## Current Project Structure
@@ -146,9 +217,13 @@ litestar-storages/
 
 ## Dependency Configuration
 
-### Core Dependencies
+### Current (v0.2.0) - Framework Agnostic ✅
 ```toml
-dependencies = ["litestar>=2.0.0"]
+dependencies = []  # No required framework dependencies
+
+[project.optional-dependencies]
+litestar = ["litestar>=2.0.0"]  # Optional Litestar integration
+all = ["aiofiles>=23.0.0", "aioboto3>=12.0.0", "azure-storage-blob>=12.0.0", "gcloud-aio-storage>=9.0.0", "litestar>=2.0.0"]
 ```
 
 ### Optional Backend Extras
@@ -156,9 +231,9 @@ dependencies = ["litestar>=2.0.0"]
 [project.optional-dependencies]
 filesystem = ["aiofiles>=23.0.0"]
 s3 = ["aioboto3>=12.0.0"]
-gcs = ["gcloud-aio-storage>=9.0.0"]      # Not yet implemented
-azure = ["azure-storage-blob>=12.0.0"]   # Not yet implemented
-all = [...]
+gcs = ["gcloud-aio-storage>=9.0.0"]
+azure = ["azure-storage-blob>=12.0.0"]
+all = [...]  # All backends + litestar
 ```
 
 ### Development Groups
@@ -233,13 +308,13 @@ make test-failed      # Re-run only failed tests
    - Tag v0.1.0
    - Verify trusted publishing works
 
-### Future (v0.2.0+)
+### Future (v0.3.0+)
 
 8. **Production Hardening**
-   - S3-compatible service validation (R2, Spaces, MinIO)
-   - Migration guide between backends
-   - Connection pooling configuration
-   - Production deployment guide
+    - S3-compatible service validation (R2, Spaces, MinIO)
+    - Migration guide between backends
+    - Connection pooling configuration
+    - Production deployment guide
 
 ---
 
@@ -264,9 +339,3 @@ make test-failed      # Re-run only failed tests
 - [aioboto3 Documentation](https://aioboto3.readthedocs.io/)
 - [gcloud-aio-storage](https://github.com/talkiq/gcloud-aio)
 - [Azure Storage Blob (async)](https://learn.microsoft.com/en-us/python/api/azure-storage-blob/)
-
----
-
-*Plan Version: 4.0.0*
-*Last Updated: 2025-11-25*
-*Status: All Phases Complete (1-6). 99% test coverage. Awaiting PR merges for v0.1.0 release.*
