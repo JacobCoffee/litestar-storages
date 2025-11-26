@@ -1,12 +1,21 @@
-"""Litestar plugin for storage integration."""
+"""Litestar plugin for storage integration.
+
+This module requires Litestar to be installed. Install with:
+
+    pip install litestar-storages[litestar]
+"""
 
 from __future__ import annotations
 
 from collections.abc import Callable
 from typing import TYPE_CHECKING
 
-from litestar.di import Provide
-from litestar.plugins import InitPluginProtocol
+try:
+    from litestar.di import Provide
+    from litestar.plugins import InitPluginProtocol
+except ImportError as e:
+    msg = "Litestar is required for the StoragePlugin. Install with: pip install litestar-storages[litestar]"
+    raise ImportError(msg) from e
 
 from litestar_storages.base import Storage  # noqa: TC001 - needed at runtime for DI
 

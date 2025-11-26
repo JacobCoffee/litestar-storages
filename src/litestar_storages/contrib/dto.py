@@ -1,8 +1,17 @@
-"""Data Transfer Objects for storage responses."""
+"""Data Transfer Objects for storage responses.
+
+This module requires Litestar to be installed. Install with:
+
+    pip install litestar-storages[litestar]
+"""
 
 from __future__ import annotations
 
-from litestar.dto import DataclassDTO, DTOConfig
+try:
+    from litestar.dto import DataclassDTO, DTOConfig
+except ImportError as e:
+    msg = "Litestar is required for the Storage DTOs. Install with: pip install litestar-storages[litestar]"
+    raise ImportError(msg) from e
 
 from litestar_storages.types import StoredFile
 

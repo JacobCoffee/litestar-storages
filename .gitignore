@@ -131,6 +131,10 @@ local/
 tmp/
 temp/
 
+# Claude Code / AI agent artifacts
+.claude-flow/
+.hive-mind/
+
 # Database files
 *.db
 *.sqlite

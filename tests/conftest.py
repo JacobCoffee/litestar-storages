@@ -20,6 +20,18 @@ if TYPE_CHECKING:
 
 
 # ==================================================================================== #
+# LITESTAR AVAILABILITY CHECK
+# ==================================================================================== #
+
+try:
+    import litestar  # noqa: F401
+
+    HAS_LITESTAR = True
+except ImportError:
+    HAS_LITESTAR = False
+
+
+# ==================================================================================== #
 # PYTEST CONFIGURATION
 # ==================================================================================== #
 
@@ -31,9 +43,22 @@ def pytest_configure(config):
     config.addinivalue_line("markers", "integration: Integration tests")
     config.addinivalue_line("markers", "slow: Tests that take more than 1 second")
     config.addinivalue_line("markers", "requires_network: Tests requiring network access")
+    config.addinivalue_line("markers", "litestar: Tests requiring Litestar framework")
 
     # Set environment variables for test optimization
     os.environ["PYTHONDONTWRITEBYTECODE"] = "1"
+
+
+def pytest_collection_modifyitems(config, items):
+    """Modify collected test items - skip Litestar tests when Litestar is not installed."""
+    if HAS_LITESTAR:
+        # Litestar is installed, run all tests
+        return
+
+    skip_litestar = pytest.mark.skip(reason="Litestar is not installed")
+    for item in items:
+        if "litestar" in item.keywords:
+            item.add_marker(skip_litestar)
 
 
 def pytest_runtest_setup(item):
@@ -669,34 +694,35 @@ def async_data_chunks():
     return _create_async_chunks
 
 
-# Litestar test fixtures
-@pytest.fixture
-def litestar_app():
-    """
-    Basic Litestar application for plugin integration tests.
+# Litestar test fixtures (only available when Litestar is installed)
+if HAS_LITESTAR:
 
-    Creates a minimal Litestar app instance for testing
-    plugin registration and dependency injection.
+    @pytest.fixture
+    def litestar_app():
+        """
+        Basic Litestar application for plugin integration tests.
 
-    Function-scoped to ensure each test has a clean app instance.
-    """
-    from litestar import Litestar
+        Creates a minimal Litestar app instance for testing
+        plugin registration and dependency injection.
 
-    return Litestar(route_handlers=[])
+        Function-scoped to ensure each test has a clean app instance.
+        """
+        from litestar import Litestar
 
+        return Litestar(route_handlers=[])
 
-@pytest.fixture
-async def litestar_test_client(litestar_app):
-    """
-    Async test client for Litestar application.
+    @pytest.fixture
+    async def litestar_test_client(litestar_app):
+        """
+        Async test client for Litestar application.
 
-    Provides an async HTTP client for testing Litestar endpoints
-    with storage integration.
-    """
-    from litestar.testing import AsyncTestClient
+        Provides an async HTTP client for testing Litestar endpoints
+        with storage integration.
+        """
+        from litestar.testing import AsyncTestClient
 
-    async with AsyncTestClient(app=litestar_app) as client:
-        yield client
+        async with AsyncTestClient(app=litestar_app) as client:
+            yield client
 
 
 # Pytest plugins configuration

@@ -6,11 +6,13 @@ This guide covers installation, basic concepts, and your first steps with litest
 
 ### Base Package
 
-The base package includes FileSystem and Memory backends:
+The base package includes FileSystem and Memory backends. **No framework dependencies required**:
 
 ```bash
 pip install litestar-storages
 ```
+
+This gives you a fully functional async storage library that works with any Python async application.
 
 ### With Cloud Backends
 
@@ -26,7 +28,22 @@ pip install litestar-storages[gcs]
 # Azure Blob Storage
 pip install litestar-storages[azure]
 
-# All backends
+# All cloud backends (no framework)
+pip install litestar-storages[s3,gcs,azure]
+```
+
+### With Litestar Integration
+
+For Litestar applications with dependency injection and plugin support:
+
+```bash
+# Base + Litestar integration
+pip install litestar-storages[litestar]
+
+# With specific cloud backend + Litestar
+pip install litestar-storages[s3,litestar]
+
+# Everything (all backends + Litestar)
 pip install litestar-storages[all]
 ```
 
@@ -107,9 +124,11 @@ Keys are normalized for security:
 - Leading slashes are removed
 - Path traversal attempts (`..`) are blocked
 
-## First Example: FileSystem Storage
+## Plain Python Usage
 
-Let's store and retrieve files on the local filesystem:
+litestar-storages works with any async Python code. No framework required.
+
+### Basic Example
 
 ```python
 import asyncio
@@ -155,6 +174,107 @@ async def main():
     print("\nFile deleted")
 
 asyncio.run(main())
+```
+
+### Using with FastAPI
+
+```python
+from contextlib import asynccontextmanager
+from pathlib import Path
+
+from fastapi import FastAPI, UploadFile, Depends
+from litestar_storages import FileSystemStorage, FileSystemConfig, Storage
+
+# Create storage instance
+storage = FileSystemStorage(
+    FileSystemConfig(path=Path("./uploads"), create_dirs=True)
+)
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Startup: nothing needed for filesystem
+    yield
+    # Shutdown: close any connections (important for cloud backends)
+    await storage.close()
+
+
+app = FastAPI(lifespan=lifespan)
+
+
+def get_storage() -> Storage:
+    """Dependency that provides the storage instance."""
+    return storage
+
+
+@app.post("/upload")
+async def upload_file(
+    file: UploadFile,
+    storage: Storage = Depends(get_storage),
+):
+    """Upload a file."""
+    content = await file.read()
+    result = await storage.put(
+        file.filename,
+        content,
+        content_type=file.content_type,
+    )
+    return {"key": result.key, "size": result.size}
+
+
+@app.get("/files/{filename}")
+async def get_file_info(
+    filename: str,
+    storage: Storage = Depends(get_storage),
+):
+    """Get file metadata."""
+    info = await storage.info(filename)
+    return {
+        "key": info.key,
+        "size": info.size,
+        "content_type": info.content_type,
+    }
+```
+
+### Using with Starlette
+
+```python
+from pathlib import Path
+
+from starlette.applications import Starlette
+from starlette.requests import Request
+from starlette.responses import JSONResponse
+from starlette.routing import Route
+
+from litestar_storages import FileSystemStorage, FileSystemConfig
+
+storage = FileSystemStorage(
+    FileSystemConfig(path=Path("./uploads"), create_dirs=True)
+)
+
+
+async def upload(request: Request) -> JSONResponse:
+    """Handle file upload."""
+    form = await request.form()
+    upload_file = form["file"]
+    content = await upload_file.read()
+
+    result = await storage.put(
+        upload_file.filename,
+        content,
+        content_type=upload_file.content_type,
+    )
+    return JSONResponse({"key": result.key, "size": result.size})
+
+
+async def on_shutdown():
+    await storage.close()
+
+
+app = Starlette(
+    routes=[Route("/upload", upload, methods=["POST"])],
+    on_shutdown=[on_shutdown],
+)
 ```
 
 ## Using with Litestar

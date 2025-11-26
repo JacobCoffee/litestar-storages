@@ -1,6 +1,10 @@
 """Tests for dependency injection utilities.
 
 This module tests the provide_storage() function and StorageDependency type alias.
+
+Tests that require Litestar are marked with @pytest.mark.litestar and will be
+skipped if Litestar is not available. Unit tests for framework-agnostic
+functionality run without Litestar.
 """
 
 from __future__ import annotations
@@ -97,6 +101,7 @@ class TestProvideStorage:
         assert provider2() is storage2
         assert provider1() is not provider2()
 
+    @pytest.mark.litestar
     async def test_provide_storage_with_litestar_di(self) -> None:
         """
         Test provide_storage integration with Litestar DI.
@@ -107,6 +112,7 @@ class TestProvideStorage:
         """
         from typing import Any
 
+        pytest.importorskip("litestar")
         from litestar import Litestar, get
         from litestar.di import Provide
         from litestar.testing import AsyncTestClient
@@ -138,6 +144,7 @@ class TestProvideStorage:
             # Verify file was actually stored
             assert await storage.exists("test.txt")
 
+    @pytest.mark.litestar
     async def test_provide_storage_multiple_di_instances(self) -> None:
         """
         Test multiple storage instances in DI.
@@ -149,6 +156,7 @@ class TestProvideStorage:
         """
         from typing import Any
 
+        pytest.importorskip("litestar")
         from litestar import Litestar, get
         from litestar.di import Provide
         from litestar.testing import AsyncTestClient
