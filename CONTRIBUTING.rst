@@ -155,6 +155,47 @@ Example test::
             result = await any_storage.put("test.txt", b"data")
             assert result.key == "test.txt"
 
+Release Process (Maintainers)
+-----------------------------
+
+This project uses GitHub's **immutable releases** feature for supply chain security.
+Once a release is published, its assets and tag cannot be modified.
+
+To create a new release:
+
+1. Bump the version using uv (0.7.0+)::
+
+    uv version --bump patch     # 1.2.3 => 1.2.4
+    uv version --bump minor     # 1.2.3 => 1.3.0
+    uv version --bump major     # 1.2.3 => 2.0.0
+
+2. Commit and merge to main::
+
+    git add pyproject.toml
+    git commit -m "chore: bump version to X.Y.Z"
+    # Create PR, wait for CI, merge
+
+3. Push the tag to trigger the release workflow::
+
+    git checkout main && git pull
+    git tag vX.Y.Z
+    git push origin vX.Y.Z
+
+The CD workflow automatically:
+
+1. Builds the distribution
+2. Signs with Sigstore
+3. Creates a **draft** GitHub release with assets attached
+4. Publishes to PyPI (trusted publishing)
+5. Publishes the release (removes draft status)
+6. Creates a PR to update the changelog
+
+.. note::
+
+    With immutable releases enabled, tags cannot be reused. If a release
+    fails after the tag is pushed, bump to the next patch version instead
+    of attempting to recreate the same tag.
+
 Questions?
 ----------
 
