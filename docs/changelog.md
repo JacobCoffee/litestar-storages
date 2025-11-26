@@ -17,7 +17,7 @@ All notable changes to this project will be documented in this file.
 ### Ci
 
 - add pytest-rerunfailures for flaky emulator tests (#12) - ([ef5dc51](https://github.com/JacobCoffee/litestar-storages/commit/ef5dc516a11381ee770333d4ab1c6e5278490ffa)) - Jacob Coffee
-- group dependabot updates  (#14) - ([51ad0b5](https://github.com/JacobCoffee/litestar-storages/commit/51ad0b588755e5e3427c0c3aeb208e4da11dc3a7)) - Jacob Coffee
+- group dependabot updates (#14) - ([51ad0b5](https://github.com/JacobCoffee/litestar-storages/commit/51ad0b588755e5e3427c0c3aeb208e4da11dc3a7)) - Jacob Coffee
 
 ---
 ## [0.1.0] - 2025-11-26
