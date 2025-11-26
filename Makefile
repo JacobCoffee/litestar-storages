@@ -154,7 +154,7 @@ worktree-prune: ## Clean up stale git worktrees
 
 ##@ CI Helpers
 
-ci: lint fmt type-check test-parallel-fast ## Run all CI checks locally (excludes integration tests, runs in parallel)
+ci: lint fmt type-check test-parallel-fast docs ## Run all CI checks locally (excludes integration tests, runs in parallel)
 
 ci-install: ## Install for CI (frozen dependencies)
 	uv sync --all-extras --frozen
@@ -163,7 +163,7 @@ act: ## Run GitHub Actions locally with act
 	act -l
 
 act-ci: ## Run CI workflow locally with act
-	act push -j lint -j format -j type-check
+	act push -j lint -j format -j type-check -j test-parallel-fast -j docs
 
 act-test: ## Run test job locally with act
 	act push -j test --matrix python-version:3.12 --matrix os:ubuntu-latest

@@ -130,6 +130,11 @@ parallel = true
 source = ["litestar_storages"]
 
 [tool.git-cliff.changelog]
+header = """
+# Changelog
+
+All notable changes to this project will be documented in this file.
+"""
 body = """
 ---
 {% if version %}\
