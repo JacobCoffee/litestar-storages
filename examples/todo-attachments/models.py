@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import UTC, datetime
 from typing import ClassVar
 from uuid import UUID, uuid4
 
@@ -16,7 +16,7 @@ class Todo:
     description: str | None = None
     completed: bool = False
     id: UUID = field(default_factory=uuid4)
-    created_at: datetime = field(default_factory=datetime.utcnow)
+    created_at: datetime = field(default_factory=lambda: datetime.now(UTC))
 
     # Class-level storage for demo purposes (in production, use a database)
     _todos: ClassVar[dict[UUID, Todo]] = {}
@@ -72,7 +72,7 @@ class Attachment:
     size: int
     storage_path: str
     id: UUID = field(default_factory=uuid4)
-    created_at: datetime = field(default_factory=datetime.utcnow)
+    created_at: datetime = field(default_factory=lambda: datetime.now(UTC))
 
     # Class-level storage for demo purposes
     _attachments: ClassVar[dict[UUID, Attachment]] = {}

@@ -21,7 +21,7 @@ from litestar.enums import RequestEncodingType
 from litestar.exceptions import NotFoundException
 from litestar.params import Body
 from litestar.response import Stream
-from litestar.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CONTENT
+from litestar.status_codes import HTTP_201_CREATED, HTTP_204_NO_CONTENT
 
 from litestar_storages import MemoryStorage, Storage
 from litestar_storages.contrib import StoragePlugin
