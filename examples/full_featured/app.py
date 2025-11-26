@@ -21,12 +21,14 @@ from datetime import timedelta
 from typing import TYPE_CHECKING, Annotated, ClassVar
 
 from litestar import Controller, Litestar, Response, delete, get, post
+from litestar.datastructures import UploadFile  # noqa: TC002 - needed at runtime for Litestar DI
 from litestar.enums import RequestEncodingType
 from litestar.exceptions import HTTPException
 from litestar.params import Body
 from litestar.response import Stream
 from litestar.status_codes import HTTP_204_NO_CONTENT, HTTP_404_NOT_FOUND, HTTP_409_CONFLICT
 
+from litestar_storages import Storage, StoredFile  # noqa: TC001 - needed at runtime for Litestar DI
 from litestar_storages.backends.memory import MemoryStorage
 from litestar_storages.contrib.dto import StoredFileDTO, StoredFileReadDTO
 from litestar_storages.contrib.plugin import StoragePlugin
@@ -34,9 +36,6 @@ from litestar_storages.exceptions import StorageFileExistsError, StorageFileNotF
 
 if TYPE_CHECKING:
     from litestar.connection import Request
-    from litestar.datastructures import UploadFile
-
-    from litestar_storages import Storage, StoredFile
 
 
 # =============================================================================
