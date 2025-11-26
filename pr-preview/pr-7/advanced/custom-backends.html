@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="en" data-accent-color="violet" data-content_root="../">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Custom Backends - litestar-storages</title><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="API Reference" href="../api/index.html" /><link rel="prev" title="Progress Callbacks" href="progress-callbacks.html" /><script>
+    function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
+    setColorMode(localStorage._theme||"auto");
+  </script><link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=e1a1ceaf" />
+    <link rel="stylesheet" type="text/css" href="../_static/shibuya.css?v=14737038" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link media="print" rel="stylesheet" type="text/css" href="../_static/print.css?v=20ff2c19" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=5f8f7e8c" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --sy-f-text: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+  --sy-f-heading: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+}
+</style>
+    <meta property="og:type" content="website"/><meta property="og:title" content="Custom Backends"/>
+    <meta name="twitter:card" content="summary"/>
+  </head>
+<body><div class="sy-head">
+  <div class="sy-head-blur"></div>
+  <div class="sy-head-inner sy-container mx-auto">
+    <a class="sy-head-brand" href="../index.html">
+      
+      
+      <strong>litestar-storages</strong>
+    </a>
+    <div class="sy-head-nav" id="head-nav">
+      <nav class="sy-head-links"><ul><li class="link">
+          <a href="https://litestar.dev/">
+            <span>Litestar</span></a>
+        </li><li class="link">
+          <a href="https://pypi.org/project/litestar-storages/">
+            <span>PyPI</span></a>
+        </li></ul></nav>
+      <div class="sy-head-extra flex items-center print:hidden"><form class="searchbox flex items-center" action="../search.html" method="get">
+  <input type="text" name="q" placeholder="Search" />
+  <kbd>/</kbd>
+</form><div class="sy-head-socials">
+  <a href="https://github.com/JacobCoffee/litestar-storages" aria-label="GitHub">
+    <iconify-icon icon="simple-icons:github"></iconify-icon>
+  </a></div></div>
+    </div>
+    <div class="sy-head-actions flex items-center shrink-0 print:hidden"><button class="js-theme theme-switch flex items-center"
+data-aria-auto="Switch to light color mode"
+data-aria-light="Switch to dark color mode"
+data-aria-dark="Switch to auto color mode">
+<i class="i-lucide theme-icon"></i>
+</button><button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="head-nav" aria-expanded="false">
+        <div class="hamburger">
+          <span class="hamburger_1"></span>
+          <span class="hamburger_2"></span>
+          <span class="hamburger_3"></span>
+        </div>
+      </button>
+    </div>
+  </div>
+</div>
+<div class="sy-page sy-container flex mx-auto">
+  <aside id="lside" class="sy-lside md:w-72 md:shrink-0 print:hidden">
+    <div class="sy-lside-inner md:sticky">
+      <div class="sy-scrollbar p-6">
+        <div class="globaltoc" data-expand-depth="0"><p class="caption" role="heading" aria-level="3"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../getting-started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Example Applications</a></li>
+</ul>
+<p class="caption" role="heading" aria-level="3"><span class="caption-text">Storage Backends</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../backends/filesystem.html">FileSystem Storage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../backends/s3.html">S3 Storage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../backends/gcs.html">GCS Storage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../backends/azure.html">Azure Blob Storage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../backends/memory.html">Memory Storage</a></li>
+</ul>
+<p class="caption" role="heading" aria-level="3"><span class="caption-text">Advanced Topics</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="retry.html">Retry Utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="multipart-uploads.html">Multipart Uploads</a></li>
+<li class="toctree-l1"><a class="reference internal" href="progress-callbacks.html">Progress Callbacks</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Custom Backends</a></li>
+</ul>
+<p class="caption" role="heading" aria-level="3"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/index.html">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../api/base.html">Base Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/types.html">Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/exceptions.html">Exceptions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/backends/index.html">Storage Backends</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../api/backends/memory.html">Memory Storage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/backends/filesystem.html">FileSystem Storage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/backends/s3.html">S3 Storage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/backends/gcs.html">GCS Storage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/backends/azure.html">Azure Storage</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../api/contrib/index.html">Litestar Integration</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../api/contrib/plugin.html">Storage Plugin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/contrib/dependencies.html">Dependencies</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/contrib/dto.html">DTOs</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../comparison.html">Comparison with Other Libraries</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
+</ul>
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="lside-overlay js-menu" role="button" aria-label="Close left sidebar" aria-controls="lside" aria-expanded="false"></div>
+  <aside id="rside" class="sy-rside pb-3 w-64 shrink-0 order-last">
+    <button class="rside-close js-menu xl:hidden" aria-label="Close Table of Contents" type="button" aria-controls="rside" aria-expanded="false">
+      <i class="i-lucide close"></i>
+    </button>
+    <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4"><div class="localtoc"><h3>On this page</h3><ul>
+<li><a class="reference internal" href="#the-storage-protocol">The Storage Protocol</a></li>
+<li><a class="reference internal" href="#extending-basestorage">Extending BaseStorage</a></li>
+<li><a class="reference internal" href="#required-vs-optional-methods">Required vs Optional Methods</a><ul>
+<li><a class="reference internal" href="#required-methods-abstract">Required Methods (Abstract)</a></li>
+<li><a class="reference internal" href="#optional-methods-have-defaults">Optional Methods (Have Defaults)</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#example-custom-backend-implementation">Example: Custom Backend Implementation</a></li>
+<li><a class="reference internal" href="#testing-custom-backends">Testing Custom Backends</a></li>
+<li><a class="reference internal" href="#best-practices">Best Practices</a><ul>
+<li><a class="reference internal" href="#error-handling">Error Handling</a></li>
+<li><a class="reference internal" href="#key-sanitization">Key Sanitization</a></li>
+<li><a class="reference internal" href="#async-context-managers">Async Context Managers</a></li>
+<li><a class="reference internal" href="#configuration-dataclasses">Configuration Dataclasses</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#next-steps">Next Steps</a></li>
+</ul>
+</div><div id="ethical-ad-placement" data-ea-publisher="readthedocs"></div></div>
+  </aside>
+  <div class="rside-overlay js-menu" role="button" aria-label="Close Table of Contents" aria-controls="rside" aria-expanded="false"></div>
+  <main class="sy-main w-full max-sm:max-w-full print:pt-6">
+<div class="sy-breadcrumbs" role="navigation">
+  <div class="sy-breadcrumbs-inner flex items-center">
+    <div class="md:hidden mr-3">
+      <button class="js-menu" aria-label="Menu" type="button" aria-controls="lside" aria-expanded="false">
+        <i class="i-lucide menu"></i>
+      </button>
+    </div>
+    <ol class="flex-1" itemscope itemtype="https://schema.org/BreadcrumbList"><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="../index.html"><span itemprop="name">litestar-storages</span></a>
+        <span>/</span>
+        <meta itemprop="position" content="1" />
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <strong itemprop="name">Custom Backends</strong>
+        <meta itemprop="position" content="2" />
+      </li></ol>
+    <div class="xl:hidden ml-1">
+      <button class="js-menu" aria-label="Show table of contents" type="button" aria-controls="rside"
+        aria-expanded="false">
+        <i class="i-lucide outdent"></i>
+      </button>
+    </div>
+  </div>
+</div><div class="flex flex-col break-words justify-between">
+      <div class="min-w-0 max-w-6xl px-6 pb-6 pt-8 xl:px-12">
+        <article class="yue" role="main">
+          <section id="custom-backends">
+<h1>Custom Backends<a class="headerlink" href="#custom-backends" title="Link to this heading">¶</a></h1>
+<p>This guide explains how to implement custom storage backends for litestar-storages. Whether you need to integrate with a proprietary storage system, add features to existing backends, or create a completely new implementation, this guide covers the patterns and requirements.</p>
+<section id="the-storage-protocol">
+<h2>The Storage Protocol<a class="headerlink" href="#the-storage-protocol" title="Link to this heading">¶</a></h2>
+<p>All storage backends must implement the <code class="docutils literal notranslate"><span class="pre">Storage</span></code> protocol:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Protocol</span><span class="p">,</span> <span class="n">AsyncIterator</span><span class="p">,</span> <span class="n">runtime_checkable</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">timedelta</span>
+</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_storages</span><span class="w"> </span><span class="kn">import</span> <span class="n">StoredFile</span>
+</span><span data-line="4">
+</span><span data-line="5">
+</span><span data-line="6"><span class="nd">@runtime_checkable</span>
+</span><span data-line="7"><span class="k">class</span><span class="w"> </span><span class="nc">Storage</span><span class="p">(</span><span class="n">Protocol</span><span class="p">):</span>
+</span><span data-line="8"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Async storage protocol that all backends must implement.&quot;&quot;&quot;</span>
+</span><span data-line="9">
+</span><span data-line="10">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">put</span><span class="p">(</span>
+</span><span data-line="11">        <span class="bp">self</span><span class="p">,</span>
+</span><span data-line="12">        <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+</span><span data-line="13">        <span class="n">data</span><span class="p">:</span> <span class="nb">bytes</span> <span class="o">|</span> <span class="n">AsyncIterator</span><span class="p">[</span><span class="nb">bytes</span><span class="p">],</span>
+</span><span data-line="14">        <span class="o">*</span><span class="p">,</span>
+</span><span data-line="15">        <span class="n">content_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="16">        <span class="n">metadata</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="17">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">StoredFile</span><span class="p">:</span>
+</span><span data-line="18"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Store data at the given key.&quot;&quot;&quot;</span>
+</span><span data-line="19">        <span class="o">...</span>
+</span><span data-line="20">
+</span><span data-line="21">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncIterator</span><span class="p">[</span><span class="nb">bytes</span><span class="p">]:</span>
+</span><span data-line="22"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Retrieve file contents as an async byte stream.&quot;&quot;&quot;</span>
+</span><span data-line="23">        <span class="o">...</span>
+</span><span data-line="24">
+</span><span data-line="25">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_bytes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
+</span><span data-line="26"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Retrieve entire file contents as bytes.&quot;&quot;&quot;</span>
+</span><span data-line="27">        <span class="o">...</span>
+</span><span data-line="28">
+</span><span data-line="29">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="30"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Delete a file.&quot;&quot;&quot;</span>
+</span><span data-line="31">        <span class="o">...</span>
+</span><span data-line="32">
+</span><span data-line="33">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">exists</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span data-line="34"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Check if a file exists.&quot;&quot;&quot;</span>
+</span><span data-line="35">        <span class="o">...</span>
+</span><span data-line="36">
+</span><span data-line="37">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">list</span><span class="p">(</span>
+</span><span data-line="38">        <span class="bp">self</span><span class="p">,</span>
+</span><span data-line="39">        <span class="n">prefix</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+</span><span data-line="40">        <span class="o">*</span><span class="p">,</span>
+</span><span data-line="41">        <span class="n">limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="42">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncIterator</span><span class="p">[</span><span class="n">StoredFile</span><span class="p">]:</span>
+</span><span data-line="43"><span class="w">        </span><span class="sd">&quot;&quot;&quot;List files with optional prefix filter.&quot;&quot;&quot;</span>
+</span><span data-line="44">        <span class="o">...</span>
+</span><span data-line="45">
+</span><span data-line="46">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">url</span><span class="p">(</span>
+</span><span data-line="47">        <span class="bp">self</span><span class="p">,</span>
+</span><span data-line="48">        <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+</span><span data-line="49">        <span class="o">*</span><span class="p">,</span>
+</span><span data-line="50">        <span class="n">expires_in</span><span class="p">:</span> <span class="n">timedelta</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="51">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span data-line="52"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate a URL for accessing the file.&quot;&quot;&quot;</span>
+</span><span data-line="53">        <span class="o">...</span>
+</span><span data-line="54">
+</span><span data-line="55">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">copy</span><span class="p">(</span>
+</span><span data-line="56">        <span class="bp">self</span><span class="p">,</span>
+</span><span data-line="57">        <span class="n">source</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+</span><span data-line="58">        <span class="n">destination</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+</span><span data-line="59">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">StoredFile</span><span class="p">:</span>
+</span><span data-line="60"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Copy a file within the storage backend.&quot;&quot;&quot;</span>
+</span><span data-line="61">        <span class="o">...</span>
+</span><span data-line="62">
+</span><span data-line="63">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">move</span><span class="p">(</span>
+</span><span data-line="64">        <span class="bp">self</span><span class="p">,</span>
+</span><span data-line="65">        <span class="n">source</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+</span><span data-line="66">        <span class="n">destination</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+</span><span data-line="67">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">StoredFile</span><span class="p">:</span>
+</span><span data-line="68"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Move/rename a file within the storage backend.&quot;&quot;&quot;</span>
+</span><span data-line="69">        <span class="o">...</span>
+</span><span data-line="70">
+</span><span data-line="71">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">StoredFile</span><span class="p">:</span>
+</span><span data-line="72"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Get metadata about a file without downloading it.&quot;&quot;&quot;</span>
+</span><span data-line="73">        <span class="o">...</span>
+</span></pre></div>
+</div>
+</section>
+<section id="extending-basestorage">
+<h2>Extending BaseStorage<a class="headerlink" href="#extending-basestorage" title="Link to this heading">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">BaseStorage</span></code> abstract base class provides default implementations for convenience methods, reducing the amount of code you need to write:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncIterator</span>
+</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">timedelta</span>
+</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_storages</span><span class="w"> </span><span class="kn">import</span> <span class="n">StoredFile</span>
+</span><span data-line="5">
+</span><span data-line="6">
+</span><span data-line="7"><span class="k">class</span><span class="w"> </span><span class="nc">BaseStorage</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+</span><span data-line="8"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Abstract base class with default implementations.&quot;&quot;&quot;</span>
+</span><span data-line="9">
+</span><span data-line="10">    <span class="c1"># These methods MUST be implemented by subclasses</span>
+</span><span data-line="11">    <span class="nd">@abstractmethod</span>
+</span><span data-line="12">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">put</span><span class="p">(</span>
+</span><span data-line="13">        <span class="bp">self</span><span class="p">,</span>
+</span><span data-line="14">        <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+</span><span data-line="15">        <span class="n">data</span><span class="p">:</span> <span class="nb">bytes</span> <span class="o">|</span> <span class="n">AsyncIterator</span><span class="p">[</span><span class="nb">bytes</span><span class="p">],</span>
+</span><span data-line="16">        <span class="o">*</span><span class="p">,</span>
+</span><span data-line="17">        <span class="n">content_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="18">        <span class="n">metadata</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="19">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">StoredFile</span><span class="p">:</span>
+</span><span data-line="20">        <span class="o">...</span>
+</span><span data-line="21">
+</span><span data-line="22">    <span class="nd">@abstractmethod</span>
+</span><span data-line="23">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncIterator</span><span class="p">[</span><span class="nb">bytes</span><span class="p">]:</span>
+</span><span data-line="24">        <span class="o">...</span>
+</span><span data-line="25">
+</span><span data-line="26">    <span class="nd">@abstractmethod</span>
+</span><span data-line="27">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="28">        <span class="o">...</span>
+</span><span data-line="29">
+</span><span data-line="30">    <span class="nd">@abstractmethod</span>
+</span><span data-line="31">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">exists</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span data-line="32">        <span class="o">...</span>
+</span><span data-line="33">
+</span><span data-line="34">    <span class="nd">@abstractmethod</span>
+</span><span data-line="35">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">list</span><span class="p">(</span>
+</span><span data-line="36">        <span class="bp">self</span><span class="p">,</span>
+</span><span data-line="37">        <span class="n">prefix</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+</span><span data-line="38">        <span class="o">*</span><span class="p">,</span>
+</span><span data-line="39">        <span class="n">limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="40">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncIterator</span><span class="p">[</span><span class="n">StoredFile</span><span class="p">]:</span>
+</span><span data-line="41">        <span class="o">...</span>
+</span><span data-line="42">
+</span><span data-line="43">    <span class="nd">@abstractmethod</span>
+</span><span data-line="44">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">url</span><span class="p">(</span>
+</span><span data-line="45">        <span class="bp">self</span><span class="p">,</span>
+</span><span data-line="46">        <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+</span><span data-line="47">        <span class="o">*</span><span class="p">,</span>
+</span><span data-line="48">        <span class="n">expires_in</span><span class="p">:</span> <span class="n">timedelta</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="49">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span data-line="50">        <span class="o">...</span>
+</span><span data-line="51">
+</span><span data-line="52">    <span class="nd">@abstractmethod</span>
+</span><span data-line="53">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">StoredFile</span><span class="p">:</span>
+</span><span data-line="54">        <span class="o">...</span>
+</span><span data-line="55">
+</span><span data-line="56">    <span class="c1"># These methods have default implementations</span>
+</span><span data-line="57">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_bytes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
+</span><span data-line="58"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Default: collect stream into bytes.&quot;&quot;&quot;</span>
+</span><span data-line="59">        <span class="n">chunks</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span data-line="60">        <span class="k">async</span> <span class="k">for</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>
+</span><span data-line="61">            <span class="n">chunks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">chunk</span><span class="p">)</span>
+</span><span data-line="62">        <span class="k">return</span> <span class="sa">b</span><span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">chunks</span><span class="p">)</span>
+</span><span data-line="63">
+</span><span data-line="64">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">destination</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">StoredFile</span><span class="p">:</span>
+</span><span data-line="65"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Default: download and re-upload.&quot;&quot;&quot;</span>
+</span><span data-line="66">        <span class="n">info</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
+</span><span data-line="67">        <span class="n">data</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_bytes</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
+</span><span data-line="68">        <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">put</span><span class="p">(</span>
+</span><span data-line="69">            <span class="n">destination</span><span class="p">,</span>
+</span><span data-line="70">            <span class="n">data</span><span class="p">,</span>
+</span><span data-line="71">            <span class="n">content_type</span><span class="o">=</span><span class="n">info</span><span class="o">.</span><span class="n">content_type</span><span class="p">,</span>
+</span><span data-line="72">            <span class="n">metadata</span><span class="o">=</span><span class="n">info</span><span class="o">.</span><span class="n">metadata</span><span class="p">,</span>
+</span><span data-line="73">        <span class="p">)</span>
+</span><span data-line="74">
+</span><span data-line="75">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">move</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">destination</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">StoredFile</span><span class="p">:</span>
+</span><span data-line="76"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Default: copy then delete.&quot;&quot;&quot;</span>
+</span><span data-line="77">        <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">destination</span><span class="p">)</span>
+</span><span data-line="78">        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
+</span><span data-line="79">        <span class="k">return</span> <span class="n">result</span>
+</span></pre></div>
+</div>
+</section>
+<section id="required-vs-optional-methods">
+<h2>Required vs Optional Methods<a class="headerlink" href="#required-vs-optional-methods" title="Link to this heading">¶</a></h2>
+<section id="required-methods-abstract">
+<h3>Required Methods (Abstract)<a class="headerlink" href="#required-methods-abstract" title="Link to this heading">¶</a></h3>
+<p>These methods must be implemented in every backend:</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Method</p></th>
+<th class="head"><p>Purpose</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">put()</span></code></p></td>
+<td><p>Store file data</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">get()</span></code></p></td>
+<td><p>Stream file contents</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">delete()</span></code></p></td>
+<td><p>Remove a file</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">exists()</span></code></p></td>
+<td><p>Check file existence</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">list()</span></code></p></td>
+<td><p>Enumerate files</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">url()</span></code></p></td>
+<td><p>Generate access URL</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">info()</span></code></p></td>
+<td><p>Get file metadata</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="optional-methods-have-defaults">
+<h3>Optional Methods (Have Defaults)<a class="headerlink" href="#optional-methods-have-defaults" title="Link to this heading">¶</a></h3>
+<p>These methods have default implementations in <code class="docutils literal notranslate"><span class="pre">BaseStorage</span></code>:</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Method</p></th>
+<th class="head"><p>Default Behavior</p></th>
+<th class="head"><p>When to Override</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">get_bytes()</span></code></p></td>
+<td><p>Collects <code class="docutils literal notranslate"><span class="pre">get()</span></code> stream</p></td>
+<td><p>If backend has optimized single-read</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">copy()</span></code></p></td>
+<td><p>Download + re-upload</p></td>
+<td><p>If backend supports server-side copy</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">move()</span></code></p></td>
+<td><p>Copy + delete</p></td>
+<td><p>If backend supports atomic move/rename</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</section>
+<section id="example-custom-backend-implementation">
+<h2>Example: Custom Backend Implementation<a class="headerlink" href="#example-custom-backend-implementation" title="Link to this heading">¶</a></h2>
+<p>Here’s a complete example of a custom backend that stores files in a SQLite database:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">import</span><span class="w"> </span><span class="nn">sqlite3</span>
+</span><span data-line="2"><span class="kn">import</span><span class="w"> </span><span class="nn">hashlib</span>
+</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
+</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timedelta</span>
+</span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncIterator</span>
+</span><span data-line="6"><span class="kn">from</span><span class="w"> </span><span class="nn">contextlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">asynccontextmanager</span>
+</span><span data-line="7">
+</span><span data-line="8"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_storages</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseStorage</span><span class="p">,</span> <span class="n">StoredFile</span><span class="p">,</span> <span class="ne">FileNotFoundError</span>
+</span><span data-line="9">
+</span><span data-line="10">
+</span><span data-line="11"><span class="nd">@dataclass</span>
+</span><span data-line="12"><span class="k">class</span><span class="w"> </span><span class="nc">SQLiteConfig</span><span class="p">:</span>
+</span><span data-line="13"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Configuration for SQLite storage.&quot;&quot;&quot;</span>
+</span><span data-line="14">    <span class="n">database_path</span><span class="p">:</span> <span class="nb">str</span>
+</span><span data-line="15">    <span class="n">table_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;files&quot;</span>
+</span><span data-line="16">    <span class="n">chunk_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">64</span> <span class="o">*</span> <span class="mi">1024</span>  <span class="c1"># 64KB chunks for streaming</span>
+</span><span data-line="17">
+</span><span data-line="18">
+</span><span data-line="19"><span class="k">class</span><span class="w"> </span><span class="nc">SQLiteStorage</span><span class="p">(</span><span class="n">BaseStorage</span><span class="p">):</span>
+</span><span data-line="20"><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span data-line="21"><span class="sd">    SQLite-based storage backend.</span>
+</span><span data-line="22">
+</span><span data-line="23"><span class="sd">    Stores files as BLOBs in a SQLite database. Useful for:</span>
+</span><span data-line="24"><span class="sd">    - Embedded applications</span>
+</span><span data-line="25"><span class="sd">    - Single-file deployments</span>
+</span><span data-line="26"><span class="sd">    - Transactional file operations</span>
+</span><span data-line="27">
+</span><span data-line="28"><span class="sd">    Example:</span>
+</span><span data-line="29"><span class="sd">        storage = SQLiteStorage(</span>
+</span><span data-line="30"><span class="sd">            config=SQLiteConfig(database_path=&quot;files.db&quot;)</span>
+</span><span data-line="31"><span class="sd">        )</span>
+</span><span data-line="32"><span class="sd">        await storage.put(&quot;doc.pdf&quot;, pdf_bytes)</span>
+</span><span data-line="33"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="34">
+</span><span data-line="35">    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">SQLiteConfig</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="36">        <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">config</span>
+</span><span data-line="37">        <span class="bp">self</span><span class="o">.</span><span class="n">_init_database</span><span class="p">()</span>
+</span><span data-line="38">
+</span><span data-line="39">    <span class="k">def</span><span class="w"> </span><span class="nf">_init_database</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="40"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Create the files table if it doesn&#39;t exist.&quot;&quot;&quot;</span>
+</span><span data-line="41">        <span class="k">with</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">database_path</span><span class="p">)</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
+</span><span data-line="42">            <span class="n">conn</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+</span><span data-line="43"><span class="s2">                CREATE TABLE IF NOT EXISTS </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">table_name</span><span class="si">}</span><span class="s2"> (</span>
+</span><span data-line="44"><span class="s2">                    key TEXT PRIMARY KEY,</span>
+</span><span data-line="45"><span class="s2">                    data BLOB NOT NULL,</span>
+</span><span data-line="46"><span class="s2">                    size INTEGER NOT NULL,</span>
+</span><span data-line="47"><span class="s2">                    content_type TEXT,</span>
+</span><span data-line="48"><span class="s2">                    etag TEXT,</span>
+</span><span data-line="49"><span class="s2">                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,</span>
+</span><span data-line="50"><span class="s2">                    metadata TEXT</span>
+</span><span data-line="51"><span class="s2">                )</span>
+</span><span data-line="52"><span class="s2">            &quot;&quot;&quot;</span><span class="p">)</span>
+</span><span data-line="53">
+</span><span data-line="54">    <span class="k">def</span><span class="w"> </span><span class="nf">_get_connection</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">Connection</span><span class="p">:</span>
+</span><span data-line="55"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Get a database connection.&quot;&quot;&quot;</span>
+</span><span data-line="56">        <span class="k">return</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">database_path</span><span class="p">)</span>
+</span><span data-line="57">
+</span><span data-line="58">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">put</span><span class="p">(</span>
+</span><span data-line="59">        <span class="bp">self</span><span class="p">,</span>
+</span><span data-line="60">        <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+</span><span data-line="61">        <span class="n">data</span><span class="p">:</span> <span class="nb">bytes</span> <span class="o">|</span> <span class="n">AsyncIterator</span><span class="p">[</span><span class="nb">bytes</span><span class="p">],</span>
+</span><span data-line="62">        <span class="o">*</span><span class="p">,</span>
+</span><span data-line="63">        <span class="n">content_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="64">        <span class="n">metadata</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="65">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">StoredFile</span><span class="p">:</span>
+</span><span data-line="66"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Store data in the database.&quot;&quot;&quot;</span>
+</span><span data-line="67">        <span class="c1"># Collect data if it&#39;s a stream</span>
+</span><span data-line="68">        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">):</span>
+</span><span data-line="69">            <span class="n">chunks</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span data-line="70">            <span class="k">async</span> <span class="k">for</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+</span><span data-line="71">                <span class="n">chunks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">chunk</span><span class="p">)</span>
+</span><span data-line="72">            <span class="n">data</span> <span class="o">=</span> <span class="sa">b</span><span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">chunks</span><span class="p">)</span>
+</span><span data-line="73">
+</span><span data-line="74">        <span class="n">etag</span> <span class="o">=</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">md5</span><span class="p">(</span><span class="n">data</span><span class="p">)</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span>
+</span><span data-line="75">        <span class="n">now</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">utcnow</span><span class="p">()</span>
+</span><span data-line="76">        <span class="n">metadata_json</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">metadata</span><span class="p">)</span> <span class="k">if</span> <span class="n">metadata</span> <span class="k">else</span> <span class="kc">None</span>
+</span><span data-line="77">
+</span><span data-line="78">        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_connection</span><span class="p">()</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
+</span><span data-line="79">            <span class="n">conn</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+</span><span data-line="80">                <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+</span><span data-line="81"><span class="s2">                INSERT OR REPLACE INTO </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">table_name</span><span class="si">}</span>
+</span><span data-line="82"><span class="s2">                (key, data, size, content_type, etag, created_at, metadata)</span>
+</span><span data-line="83"><span class="s2">                VALUES (?, ?, ?, ?, ?, ?, ?)</span>
+</span><span data-line="84"><span class="s2">                &quot;&quot;&quot;</span><span class="p">,</span>
+</span><span data-line="85">                <span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="n">content_type</span><span class="p">,</span> <span class="n">etag</span><span class="p">,</span> <span class="n">now</span><span class="p">,</span> <span class="n">metadata_json</span><span class="p">),</span>
+</span><span data-line="86">            <span class="p">)</span>
+</span><span data-line="87">
+</span><span data-line="88">        <span class="k">return</span> <span class="n">StoredFile</span><span class="p">(</span>
+</span><span data-line="89">            <span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">,</span>
+</span><span data-line="90">            <span class="n">size</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">),</span>
+</span><span data-line="91">            <span class="n">content_type</span><span class="o">=</span><span class="n">content_type</span><span class="p">,</span>
+</span><span data-line="92">            <span class="n">etag</span><span class="o">=</span><span class="n">etag</span><span class="p">,</span>
+</span><span data-line="93">            <span class="n">last_modified</span><span class="o">=</span><span class="n">now</span><span class="p">,</span>
+</span><span data-line="94">            <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span> <span class="ow">or</span> <span class="p">{},</span>
+</span><span data-line="95">        <span class="p">)</span>
+</span><span data-line="96">
+</span><span data-line="97">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncIterator</span><span class="p">[</span><span class="nb">bytes</span><span class="p">]:</span>
+</span><span data-line="98"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Stream file contents from the database.&quot;&quot;&quot;</span>
+</span><span data-line="99">        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_connection</span><span class="p">()</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
+</span><span data-line="100">            <span class="n">row</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+</span><span data-line="101">                <span class="sa">f</span><span class="s2">&quot;SELECT data FROM </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">table_name</span><span class="si">}</span><span class="s2"> WHERE key = ?&quot;</span><span class="p">,</span>
+</span><span data-line="102">                <span class="p">(</span><span class="n">key</span><span class="p">,),</span>
+</span><span data-line="103">            <span class="p">)</span><span class="o">.</span><span class="n">fetchone</span><span class="p">()</span>
+</span><span data-line="104">
+</span><span data-line="105">        <span class="k">if</span> <span class="n">row</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="106">            <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+</span><span data-line="107">
+</span><span data-line="108">        <span class="n">data</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</span><span data-line="109">        <span class="n">chunk_size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">chunk_size</span>
+</span><span data-line="110">
+</span><span data-line="111">        <span class="c1"># Yield in chunks for streaming compatibility</span>
+</span><span data-line="112">        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="n">chunk_size</span><span class="p">):</span>
+</span><span data-line="113">            <span class="k">yield</span> <span class="n">data</span><span class="p">[</span><span class="n">i</span> <span class="p">:</span> <span class="n">i</span> <span class="o">+</span> <span class="n">chunk_size</span><span class="p">]</span>
+</span><span data-line="114">
+</span><span data-line="115">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="116"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Delete a file from the database.&quot;&quot;&quot;</span>
+</span><span data-line="117">        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_connection</span><span class="p">()</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
+</span><span data-line="118">            <span class="n">cursor</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+</span><span data-line="119">                <span class="sa">f</span><span class="s2">&quot;DELETE FROM </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">table_name</span><span class="si">}</span><span class="s2"> WHERE key = ?&quot;</span><span class="p">,</span>
+</span><span data-line="120">                <span class="p">(</span><span class="n">key</span><span class="p">,),</span>
+</span><span data-line="121">            <span class="p">)</span>
+</span><span data-line="122">            <span class="k">if</span> <span class="n">cursor</span><span class="o">.</span><span class="n">rowcount</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+</span><span data-line="123">                <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+</span><span data-line="124">
+</span><span data-line="125">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">exists</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span data-line="126"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Check if a file exists in the database.&quot;&quot;&quot;</span>
+</span><span data-line="127">        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_connection</span><span class="p">()</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
+</span><span data-line="128">            <span class="n">row</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+</span><span data-line="129">                <span class="sa">f</span><span class="s2">&quot;SELECT 1 FROM </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">table_name</span><span class="si">}</span><span class="s2"> WHERE key = ?&quot;</span><span class="p">,</span>
+</span><span data-line="130">                <span class="p">(</span><span class="n">key</span><span class="p">,),</span>
+</span><span data-line="131">            <span class="p">)</span><span class="o">.</span><span class="n">fetchone</span><span class="p">()</span>
+</span><span data-line="132">        <span class="k">return</span> <span class="n">row</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+</span><span data-line="133">
+</span><span data-line="134">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">list</span><span class="p">(</span>
+</span><span data-line="135">        <span class="bp">self</span><span class="p">,</span>
+</span><span data-line="136">        <span class="n">prefix</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+</span><span data-line="137">        <span class="o">*</span><span class="p">,</span>
+</span><span data-line="138">        <span class="n">limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="139">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncIterator</span><span class="p">[</span><span class="n">StoredFile</span><span class="p">]:</span>
+</span><span data-line="140"><span class="w">        </span><span class="sd">&quot;&quot;&quot;List files matching the prefix.&quot;&quot;&quot;</span>
+</span><span data-line="141">        <span class="n">query</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+</span><span data-line="142"><span class="s2">            SELECT key, size, content_type, etag, created_at</span>
+</span><span data-line="143"><span class="s2">            FROM </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">table_name</span><span class="si">}</span>
+</span><span data-line="144"><span class="s2">            WHERE key LIKE ?</span>
+</span><span data-line="145"><span class="s2">        &quot;&quot;&quot;</span>
+</span><span data-line="146">        <span class="n">params</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">prefix</span><span class="si">}</span><span class="s2">%&quot;</span><span class="p">]</span>
+</span><span data-line="147">
+</span><span data-line="148">        <span class="k">if</span> <span class="n">limit</span><span class="p">:</span>
+</span><span data-line="149">            <span class="n">query</span> <span class="o">+=</span> <span class="s2">&quot; LIMIT ?&quot;</span>
+</span><span data-line="150">            <span class="n">params</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">limit</span><span class="p">)</span>
+</span><span data-line="151">
+</span><span data-line="152">        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_connection</span><span class="p">()</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
+</span><span data-line="153">            <span class="n">rows</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+</span><span data-line="154">
+</span><span data-line="155">        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">rows</span><span class="p">:</span>
+</span><span data-line="156">            <span class="k">yield</span> <span class="n">StoredFile</span><span class="p">(</span>
+</span><span data-line="157">                <span class="n">key</span><span class="o">=</span><span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+</span><span data-line="158">                <span class="n">size</span><span class="o">=</span><span class="n">row</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+</span><span data-line="159">                <span class="n">content_type</span><span class="o">=</span><span class="n">row</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
+</span><span data-line="160">                <span class="n">etag</span><span class="o">=</span><span class="n">row</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span>
+</span><span data-line="161">                <span class="n">last_modified</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">fromisoformat</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="mi">4</span><span class="p">])</span> <span class="k">if</span> <span class="n">row</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="162">            <span class="p">)</span>
+</span><span data-line="163">
+</span><span data-line="164">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">url</span><span class="p">(</span>
+</span><span data-line="165">        <span class="bp">self</span><span class="p">,</span>
+</span><span data-line="166">        <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+</span><span data-line="167">        <span class="o">*</span><span class="p">,</span>
+</span><span data-line="168">        <span class="n">expires_in</span><span class="p">:</span> <span class="n">timedelta</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="169">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span data-line="170"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate a pseudo-URL (SQLite doesn&#39;t support real URLs).&quot;&quot;&quot;</span>
+</span><span data-line="171">        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;sqlite://</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">database_path</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span data-line="172">
+</span><span data-line="173">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">StoredFile</span><span class="p">:</span>
+</span><span data-line="174"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Get file metadata without downloading.&quot;&quot;&quot;</span>
+</span><span data-line="175">        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_connection</span><span class="p">()</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
+</span><span data-line="176">            <span class="n">row</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+</span><span data-line="177">                <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+</span><span data-line="178"><span class="s2">                SELECT key, size, content_type, etag, created_at</span>
+</span><span data-line="179"><span class="s2">                FROM </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">table_name</span><span class="si">}</span>
+</span><span data-line="180"><span class="s2">                WHERE key = ?</span>
+</span><span data-line="181"><span class="s2">                &quot;&quot;&quot;</span><span class="p">,</span>
+</span><span data-line="182">                <span class="p">(</span><span class="n">key</span><span class="p">,),</span>
+</span><span data-line="183">            <span class="p">)</span><span class="o">.</span><span class="n">fetchone</span><span class="p">()</span>
+</span><span data-line="184">
+</span><span data-line="185">        <span class="k">if</span> <span class="n">row</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="186">            <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+</span><span data-line="187">
+</span><span data-line="188">        <span class="k">return</span> <span class="n">StoredFile</span><span class="p">(</span>
+</span><span data-line="189">            <span class="n">key</span><span class="o">=</span><span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+</span><span data-line="190">            <span class="n">size</span><span class="o">=</span><span class="n">row</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+</span><span data-line="191">            <span class="n">content_type</span><span class="o">=</span><span class="n">row</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
+</span><span data-line="192">            <span class="n">etag</span><span class="o">=</span><span class="n">row</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span>
+</span><span data-line="193">            <span class="n">last_modified</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">fromisoformat</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="mi">4</span><span class="p">])</span> <span class="k">if</span> <span class="n">row</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="194">        <span class="p">)</span>
+</span><span data-line="195">
+</span><span data-line="196">    <span class="c1"># Override get_bytes for efficiency - no need to chunk</span>
+</span><span data-line="197">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_bytes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
+</span><span data-line="198"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Get entire file contents directly.&quot;&quot;&quot;</span>
+</span><span data-line="199">        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_connection</span><span class="p">()</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
+</span><span data-line="200">            <span class="n">row</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+</span><span data-line="201">                <span class="sa">f</span><span class="s2">&quot;SELECT data FROM </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">table_name</span><span class="si">}</span><span class="s2"> WHERE key = ?&quot;</span><span class="p">,</span>
+</span><span data-line="202">                <span class="p">(</span><span class="n">key</span><span class="p">,),</span>
+</span><span data-line="203">            <span class="p">)</span><span class="o">.</span><span class="n">fetchone</span><span class="p">()</span>
+</span><span data-line="204">
+</span><span data-line="205">        <span class="k">if</span> <span class="n">row</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="206">            <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+</span><span data-line="207">
+</span><span data-line="208">        <span class="k">return</span> <span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</span></pre></div>
+</div>
+</section>
+<section id="testing-custom-backends">
+<h2>Testing Custom Backends<a class="headerlink" href="#testing-custom-backends" title="Link to this heading">¶</a></h2>
+<p>Use the protocol compliance test suite to verify your implementation:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">import</span><span class="w"> </span><span class="nn">pytest</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_storages</span><span class="w"> </span><span class="kn">import</span> <span class="n">Storage</span>
+</span><span data-line="3">
+</span><span data-line="4"><span class="c1"># Import your custom backend</span>
+</span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">mypackage</span><span class="w"> </span><span class="kn">import</span> <span class="n">SQLiteStorage</span><span class="p">,</span> <span class="n">SQLiteConfig</span>
+</span><span data-line="6">
+</span><span data-line="7">
+</span><span data-line="8"><span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span>
+</span><span data-line="9"><span class="k">def</span><span class="w"> </span><span class="nf">storage</span><span class="p">(</span><span class="n">tmp_path</span><span class="p">):</span>
+</span><span data-line="10"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a SQLite storage instance for testing.&quot;&quot;&quot;</span>
+</span><span data-line="11">    <span class="k">return</span> <span class="n">SQLiteStorage</span><span class="p">(</span>
+</span><span data-line="12">        <span class="n">config</span><span class="o">=</span><span class="n">SQLiteConfig</span><span class="p">(</span><span class="n">database_path</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">tmp_path</span> <span class="o">/</span> <span class="s2">&quot;test.db&quot;</span><span class="p">))</span>
+</span><span data-line="13">    <span class="p">)</span>
+</span><span data-line="14">
+</span><span data-line="15">
+</span><span data-line="16"><span class="k">class</span><span class="w"> </span><span class="nc">TestProtocolCompliance</span><span class="p">:</span>
+</span><span data-line="17"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Verify the backend implements the Storage protocol correctly.&quot;&quot;&quot;</span>
+</span><span data-line="18">
+</span><span data-line="19">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">test_implements_protocol</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">storage</span><span class="p">):</span>
+</span><span data-line="20"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Backend should be a valid Storage implementation.&quot;&quot;&quot;</span>
+</span><span data-line="21">        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">storage</span><span class="p">,</span> <span class="n">Storage</span><span class="p">)</span>
+</span><span data-line="22">
+</span><span data-line="23">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">test_put_and_get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">storage</span><span class="p">):</span>
+</span><span data-line="24"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Basic put/get cycle should work.&quot;&quot;&quot;</span>
+</span><span data-line="25">        <span class="n">data</span> <span class="o">=</span> <span class="sa">b</span><span class="s2">&quot;Hello, World!&quot;</span>
+</span><span data-line="26">        <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="s2">&quot;test.txt&quot;</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+</span><span data-line="27">
+</span><span data-line="28">        <span class="k">assert</span> <span class="n">result</span><span class="o">.</span><span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;test.txt&quot;</span>
+</span><span data-line="29">        <span class="k">assert</span> <span class="n">result</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+</span><span data-line="30">
+</span><span data-line="31">        <span class="n">retrieved</span> <span class="o">=</span> <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">get_bytes</span><span class="p">(</span><span class="s2">&quot;test.txt&quot;</span><span class="p">)</span>
+</span><span data-line="32">        <span class="k">assert</span> <span class="n">retrieved</span> <span class="o">==</span> <span class="n">data</span>
+</span><span data-line="33">
+</span><span data-line="34">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">test_put_with_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">storage</span><span class="p">):</span>
+</span><span data-line="35"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Put should accept content_type and metadata.&quot;&quot;&quot;</span>
+</span><span data-line="36">        <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">put</span><span class="p">(</span>
+</span><span data-line="37">            <span class="s2">&quot;doc.pdf&quot;</span><span class="p">,</span>
+</span><span data-line="38">            <span class="sa">b</span><span class="s2">&quot;PDF content&quot;</span><span class="p">,</span>
+</span><span data-line="39">            <span class="n">content_type</span><span class="o">=</span><span class="s2">&quot;application/pdf&quot;</span><span class="p">,</span>
+</span><span data-line="40">            <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;author&quot;</span><span class="p">:</span> <span class="s2">&quot;Test&quot;</span><span class="p">},</span>
+</span><span data-line="41">        <span class="p">)</span>
+</span><span data-line="42">
+</span><span data-line="43">        <span class="k">assert</span> <span class="n">result</span><span class="o">.</span><span class="n">content_type</span> <span class="o">==</span> <span class="s2">&quot;application/pdf&quot;</span>
+</span><span data-line="44">
+</span><span data-line="45">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">test_get_streaming</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">storage</span><span class="p">):</span>
+</span><span data-line="46"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Get should return an async iterator.&quot;&quot;&quot;</span>
+</span><span data-line="47">        <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="s2">&quot;stream.txt&quot;</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot;chunk1chunk2chunk3&quot;</span><span class="p">)</span>
+</span><span data-line="48">
+</span><span data-line="49">        <span class="n">chunks</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span data-line="50">        <span class="k">async</span> <span class="k">for</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="n">storage</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;stream.txt&quot;</span><span class="p">):</span>
+</span><span data-line="51">            <span class="n">chunks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">chunk</span><span class="p">)</span>
+</span><span data-line="52">
+</span><span data-line="53">        <span class="k">assert</span> <span class="sa">b</span><span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">chunks</span><span class="p">)</span> <span class="o">==</span> <span class="sa">b</span><span class="s2">&quot;chunk1chunk2chunk3&quot;</span>
+</span><span data-line="54">
+</span><span data-line="55">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">test_delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">storage</span><span class="p">):</span>
+</span><span data-line="56"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Delete should remove files.&quot;&quot;&quot;</span>
+</span><span data-line="57">        <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="s2">&quot;to-delete.txt&quot;</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot;data&quot;</span><span class="p">)</span>
+</span><span data-line="58">        <span class="k">assert</span> <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="s2">&quot;to-delete.txt&quot;</span><span class="p">)</span>
+</span><span data-line="59">
+</span><span data-line="60">        <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="s2">&quot;to-delete.txt&quot;</span><span class="p">)</span>
+</span><span data-line="61">        <span class="k">assert</span> <span class="ow">not</span> <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="s2">&quot;to-delete.txt&quot;</span><span class="p">)</span>
+</span><span data-line="62">
+</span><span data-line="63">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">test_delete_nonexistent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">storage</span><span class="p">):</span>
+</span><span data-line="64"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Delete of nonexistent file should raise FileNotFoundError.&quot;&quot;&quot;</span>
+</span><span data-line="65">        <span class="kn">from</span><span class="w"> </span><span class="nn">litestar_storages</span><span class="w"> </span><span class="kn">import</span> <span class="ne">FileNotFoundError</span>
+</span><span data-line="66">
+</span><span data-line="67">        <span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">raises</span><span class="p">(</span><span class="ne">FileNotFoundError</span><span class="p">):</span>
+</span><span data-line="68">            <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="s2">&quot;nonexistent.txt&quot;</span><span class="p">)</span>
+</span><span data-line="69">
+</span><span data-line="70">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">test_exists</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">storage</span><span class="p">):</span>
+</span><span data-line="71"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Exists should return correct boolean.&quot;&quot;&quot;</span>
+</span><span data-line="72">        <span class="k">assert</span> <span class="ow">not</span> <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="s2">&quot;new.txt&quot;</span><span class="p">)</span>
+</span><span data-line="73">
+</span><span data-line="74">        <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="s2">&quot;new.txt&quot;</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot;data&quot;</span><span class="p">)</span>
+</span><span data-line="75">        <span class="k">assert</span> <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="s2">&quot;new.txt&quot;</span><span class="p">)</span>
+</span><span data-line="76">
+</span><span data-line="77">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">test_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">storage</span><span class="p">):</span>
+</span><span data-line="78"><span class="w">        </span><span class="sd">&quot;&quot;&quot;List should return matching files.&quot;&quot;&quot;</span>
+</span><span data-line="79">        <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="s2">&quot;a/1.txt&quot;</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot;1&quot;</span><span class="p">)</span>
+</span><span data-line="80">        <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="s2">&quot;a/2.txt&quot;</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot;2&quot;</span><span class="p">)</span>
+</span><span data-line="81">        <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="s2">&quot;b/3.txt&quot;</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot;3&quot;</span><span class="p">)</span>
+</span><span data-line="82">
+</span><span data-line="83">        <span class="n">a_files</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span> <span class="k">async</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">storage</span><span class="o">.</span><span class="n">list</span><span class="p">(</span><span class="s2">&quot;a/&quot;</span><span class="p">)]</span>
+</span><span data-line="84">        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">a_files</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span>
+</span><span data-line="85">        <span class="k">assert</span> <span class="nb">all</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;a/&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">a_files</span><span class="p">)</span>
+</span><span data-line="86">
+</span><span data-line="87">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">test_list_with_limit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">storage</span><span class="p">):</span>
+</span><span data-line="88"><span class="w">        </span><span class="sd">&quot;&quot;&quot;List should respect limit parameter.&quot;&quot;&quot;</span>
+</span><span data-line="89">        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
+</span><span data-line="90">            <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;file</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">.txt&quot;</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot;data&quot;</span><span class="p">)</span>
+</span><span data-line="91">
+</span><span data-line="92">        <span class="n">files</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span> <span class="k">async</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">storage</span><span class="o">.</span><span class="n">list</span><span class="p">(</span><span class="n">limit</span><span class="o">=</span><span class="mi">5</span><span class="p">)]</span>
+</span><span data-line="93">        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">files</span><span class="p">)</span> <span class="o">==</span> <span class="mi">5</span>
+</span><span data-line="94">
+</span><span data-line="95">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">test_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">storage</span><span class="p">):</span>
+</span><span data-line="96"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Info should return file metadata.&quot;&quot;&quot;</span>
+</span><span data-line="97">        <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="s2">&quot;info.txt&quot;</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot;content&quot;</span><span class="p">,</span> <span class="n">content_type</span><span class="o">=</span><span class="s2">&quot;text/plain&quot;</span><span class="p">)</span>
+</span><span data-line="98">
+</span><span data-line="99">        <span class="n">info</span> <span class="o">=</span> <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;info.txt&quot;</span><span class="p">)</span>
+</span><span data-line="100">        <span class="k">assert</span> <span class="n">info</span><span class="o">.</span><span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;info.txt&quot;</span>
+</span><span data-line="101">        <span class="k">assert</span> <span class="n">info</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">7</span>
+</span><span data-line="102">        <span class="k">assert</span> <span class="n">info</span><span class="o">.</span><span class="n">content_type</span> <span class="o">==</span> <span class="s2">&quot;text/plain&quot;</span>
+</span><span data-line="103">
+</span><span data-line="104">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">test_info_nonexistent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">storage</span><span class="p">):</span>
+</span><span data-line="105"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Info on nonexistent file should raise FileNotFoundError.&quot;&quot;&quot;</span>
+</span><span data-line="106">        <span class="kn">from</span><span class="w"> </span><span class="nn">litestar_storages</span><span class="w"> </span><span class="kn">import</span> <span class="ne">FileNotFoundError</span>
+</span><span data-line="107">
+</span><span data-line="108">        <span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">raises</span><span class="p">(</span><span class="ne">FileNotFoundError</span><span class="p">):</span>
+</span><span data-line="109">            <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;nonexistent.txt&quot;</span><span class="p">)</span>
+</span><span data-line="110">
+</span><span data-line="111">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">test_url</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">storage</span><span class="p">):</span>
+</span><span data-line="112"><span class="w">        </span><span class="sd">&quot;&quot;&quot;URL should return a string.&quot;&quot;&quot;</span>
+</span><span data-line="113">        <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="s2">&quot;url.txt&quot;</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot;data&quot;</span><span class="p">)</span>
+</span><span data-line="114">        <span class="n">url</span> <span class="o">=</span> <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">url</span><span class="p">(</span><span class="s2">&quot;url.txt&quot;</span><span class="p">)</span>
+</span><span data-line="115">
+</span><span data-line="116">        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
+</span><span data-line="117">        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">url</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>
+</span><span data-line="118">
+</span><span data-line="119">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">test_copy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">storage</span><span class="p">):</span>
+</span><span data-line="120"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Copy should duplicate a file.&quot;&quot;&quot;</span>
+</span><span data-line="121">        <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="s2">&quot;original.txt&quot;</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot;data&quot;</span><span class="p">)</span>
+</span><span data-line="122">
+</span><span data-line="123">        <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="s2">&quot;original.txt&quot;</span><span class="p">,</span> <span class="s2">&quot;copy.txt&quot;</span><span class="p">)</span>
+</span><span data-line="124">
+</span><span data-line="125">        <span class="k">assert</span> <span class="n">result</span><span class="o">.</span><span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;copy.txt&quot;</span>
+</span><span data-line="126">        <span class="k">assert</span> <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="s2">&quot;original.txt&quot;</span><span class="p">)</span>  <span class="c1"># Original still exists</span>
+</span><span data-line="127">        <span class="k">assert</span> <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="s2">&quot;copy.txt&quot;</span><span class="p">)</span>
+</span><span data-line="128">
+</span><span data-line="129">        <span class="n">original</span> <span class="o">=</span> <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">get_bytes</span><span class="p">(</span><span class="s2">&quot;original.txt&quot;</span><span class="p">)</span>
+</span><span data-line="130">        <span class="n">copy</span> <span class="o">=</span> <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">get_bytes</span><span class="p">(</span><span class="s2">&quot;copy.txt&quot;</span><span class="p">)</span>
+</span><span data-line="131">        <span class="k">assert</span> <span class="n">original</span> <span class="o">==</span> <span class="n">copy</span>
+</span><span data-line="132">
+</span><span data-line="133">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">test_move</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">storage</span><span class="p">):</span>
+</span><span data-line="134"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Move should relocate a file.&quot;&quot;&quot;</span>
+</span><span data-line="135">        <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="s2">&quot;source.txt&quot;</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot;data&quot;</span><span class="p">)</span>
+</span><span data-line="136">
+</span><span data-line="137">        <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="s2">&quot;source.txt&quot;</span><span class="p">,</span> <span class="s2">&quot;dest.txt&quot;</span><span class="p">)</span>
+</span><span data-line="138">
+</span><span data-line="139">        <span class="k">assert</span> <span class="n">result</span><span class="o">.</span><span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;dest.txt&quot;</span>
+</span><span data-line="140">        <span class="k">assert</span> <span class="ow">not</span> <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="s2">&quot;source.txt&quot;</span><span class="p">)</span>  <span class="c1"># Original gone</span>
+</span><span data-line="141">        <span class="k">assert</span> <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="s2">&quot;dest.txt&quot;</span><span class="p">)</span>
+</span></pre></div>
+</div>
+</section>
+<section id="best-practices">
+<h2>Best Practices<a class="headerlink" href="#best-practices" title="Link to this heading">¶</a></h2>
+<section id="error-handling">
+<h3>Error Handling<a class="headerlink" href="#error-handling" title="Link to this heading">¶</a></h3>
+<p>Use the standard exception hierarchy:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_storages</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+</span><span data-line="2">    <span class="n">StorageError</span><span class="p">,</span>
+</span><span data-line="3">    <span class="ne">FileNotFoundError</span><span class="p">,</span>
+</span><span data-line="4">    <span class="ne">FileExistsError</span><span class="p">,</span>
+</span><span data-line="5">    <span class="ne">PermissionError</span><span class="p">,</span>
+</span><span data-line="6">    <span class="ne">ConnectionError</span><span class="p">,</span>
+</span><span data-line="7">    <span class="n">ConfigurationError</span><span class="p">,</span>
+</span><span data-line="8"><span class="p">)</span>
+</span><span data-line="9">
+</span><span data-line="10"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">put</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">StoredFile</span><span class="p">:</span>
+</span><span data-line="11">    <span class="k">try</span><span class="p">:</span>
+</span><span data-line="12">        <span class="c1"># Attempt storage operation</span>
+</span><span data-line="13">        <span class="o">...</span>
+</span><span data-line="14">    <span class="k">except</span> <span class="n">SomeBackendError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+</span><span data-line="15">        <span class="k">if</span> <span class="s2">&quot;not found&quot;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">):</span>
+</span><span data-line="16">            <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
+</span><span data-line="17">        <span class="k">elif</span> <span class="s2">&quot;permission&quot;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">):</span>
+</span><span data-line="18">            <span class="k">raise</span> <span class="ne">PermissionError</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
+</span><span data-line="19">        <span class="k">else</span><span class="p">:</span>
+</span><span data-line="20">            <span class="k">raise</span> <span class="n">StorageError</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
+</span></pre></div>
+</div>
+</section>
+<section id="key-sanitization">
+<h3>Key Sanitization<a class="headerlink" href="#key-sanitization" title="Link to this heading">¶</a></h3>
+<p>Always sanitize keys to prevent security issues:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">def</span><span class="w"> </span><span class="nf">_sanitize_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span data-line="2"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Sanitize key to prevent path traversal.&quot;&quot;&quot;</span>
+</span><span data-line="3">    <span class="c1"># Normalize separators</span>
+</span><span data-line="4">    <span class="n">key</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\\</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;/&quot;</span><span class="p">)</span>
+</span><span data-line="5">    <span class="c1"># Remove leading slashes</span>
+</span><span data-line="6">    <span class="n">key</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+</span><span data-line="7">    <span class="c1"># Resolve path components</span>
+</span><span data-line="8">    <span class="n">parts</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span data-line="9">    <span class="k">for</span> <span class="n">part</span> <span class="ow">in</span> <span class="n">key</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">):</span>
+</span><span data-line="10">        <span class="k">if</span> <span class="n">part</span> <span class="o">==</span> <span class="s2">&quot;..&quot;</span><span class="p">:</span>
+</span><span data-line="11">            <span class="k">if</span> <span class="n">parts</span><span class="p">:</span>
+</span><span data-line="12">                <span class="n">parts</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+</span><span data-line="13">        <span class="k">elif</span> <span class="n">part</span> <span class="ow">and</span> <span class="n">part</span> <span class="o">!=</span> <span class="s2">&quot;.&quot;</span><span class="p">:</span>
+</span><span data-line="14">            <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">part</span><span class="p">)</span>
+</span><span data-line="15">    <span class="k">return</span> <span class="s2">&quot;/&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parts</span><span class="p">)</span>
+</span></pre></div>
+</div>
+</section>
+<section id="async-context-managers">
+<h3>Async Context Managers<a class="headerlink" href="#async-context-managers" title="Link to this heading">¶</a></h3>
+<p>If your backend needs cleanup, implement context manager protocol:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">class</span><span class="w"> </span><span class="nc">MyStorage</span><span class="p">(</span><span class="n">BaseStorage</span><span class="p">):</span>
+</span><span data-line="2">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="fm">__aenter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;MyStorage&quot;</span><span class="p">:</span>
+</span><span data-line="3">        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connect</span><span class="p">()</span>
+</span><span data-line="4">        <span class="k">return</span> <span class="bp">self</span>
+</span><span data-line="5">
+</span><span data-line="6">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="fm">__aexit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="7">        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_disconnect</span><span class="p">()</span>
+</span><span data-line="8">
+</span><span data-line="9"><span class="c1"># Usage</span>
+</span><span data-line="10"><span class="k">async</span> <span class="k">with</span> <span class="n">MyStorage</span><span class="p">(</span><span class="n">config</span><span class="p">)</span> <span class="k">as</span> <span class="n">storage</span><span class="p">:</span>
+</span><span data-line="11">    <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="s2">&quot;file.txt&quot;</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+</span></pre></div>
+</div>
+</section>
+<section id="configuration-dataclasses">
+<h3>Configuration Dataclasses<a class="headerlink" href="#configuration-dataclasses" title="Link to this heading">¶</a></h3>
+<p>Use frozen dataclasses for configuration:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">timedelta</span>
+</span><span data-line="3">
+</span><span data-line="4">
+</span><span data-line="5"><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span data-line="6"><span class="k">class</span><span class="w"> </span><span class="nc">MyBackendConfig</span><span class="p">:</span>
+</span><span data-line="7"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Immutable configuration for my backend.&quot;&quot;&quot;</span>
+</span><span data-line="8">    <span class="n">endpoint</span><span class="p">:</span> <span class="nb">str</span>
+</span><span data-line="9">    <span class="n">api_key</span><span class="p">:</span> <span class="nb">str</span>
+</span><span data-line="10">    <span class="n">timeout</span><span class="p">:</span> <span class="n">timedelta</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="mi">30</span><span class="p">))</span>
+</span><span data-line="11">    <span class="n">max_retries</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span>
+</span><span data-line="12">
+</span><span data-line="13">    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span data-line="14"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Hide sensitive values in repr.&quot;&quot;&quot;</span>
+</span><span data-line="15">        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;MyBackendConfig(endpoint=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">endpoint</span><span class="si">!r}</span><span class="s2">, api_key=***)&quot;</span>
+</span></pre></div>
+</div>
+</section>
+</section>
+<section id="next-steps">
+<h2>Next Steps<a class="headerlink" href="#next-steps" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>Review the <a class="reference internal" href="../backends/filesystem.html"><span class="std std-doc">FileSystem backend</span></a> source for a reference implementation</p></li>
+<li><p>Check the <a class="reference internal" href="../backends/s3.html"><span class="std std-doc">S3 backend</span></a> for cloud integration patterns</p></li>
+<li><p>Use <a class="reference internal" href="../backends/memory.html"><span class="std std-doc">Memory storage</span></a> as a testing baseline</p></li>
+</ul>
+</section>
+</section>
+
+        </article><button class="back-to-top" type="button">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+  </svg>
+  <span>Back to top</span>
+</button><div class="navigation flex print:hidden"><div class="navigation-prev">
+    <a href="progress-callbacks.html">
+      <i class="i-lucide chevron-left"></i>
+      <div class="page-info">
+        <span>Previous</span><div class="title">Progress Callbacks</div></div>
+    </a>
+  </div><div class="navigation-next">
+    <a href="../api/index.html">
+      <div class="page-info">
+        <span>Next</span>
+        <div class="title">API Reference</div>
+      </div>
+      <i class="i-lucide chevron-right"></i>
+    </a>
+  </div></div></div>
+    </div>
+  </main>
+</div>
+<footer class="sy-foot">
+  <div class="sy-foot-inner sy-container mx-auto">
+    <div class="sy-foot-reserved md:flex justify-between items-center">
+      <div class="sy-foot-copyright"><p>2025, Jacob Coffee</p>
+  
+  <p>
+    Made with
+    
+    <a href="https://www.sphinx-doc.org/">Sphinx</a> and
+    
+    <a href="https://shibuya.lepture.com">Shibuya theme</a>.
+  </p>
+</div>
+      <div class="sy-foot-socials">
+<a href="https://github.com/JacobCoffee/litestar-storages" aria-label="GitHub">
+  <iconify-icon icon="simple-icons:github"></iconify-icon>
+</a></div>
+    </div>
+  </div>
+</footer>
+      <script src="../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../_static/copybutton.js?v=30646c52"></script>
+      <script src="../_static/design-tabs.js?v=f930bc37"></script>
+      <script src="../_static/shibuya.js?v=c1cf1a6b"></script></body>
+</html>

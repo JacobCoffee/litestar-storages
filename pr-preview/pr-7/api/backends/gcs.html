@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+<html lang="en" data-accent-color="violet" data-content_root="../../">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>GCS Storage - litestar-storages</title><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="Azure Storage" href="azure.html" /><link rel="prev" title="S3 Storage" href="s3.html" /><script>
+    function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
+    setColorMode(localStorage._theme||"auto");
+  </script><link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=e1a1ceaf" />
+    <link rel="stylesheet" type="text/css" href="../../_static/shibuya.css?v=14737038" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link media="print" rel="stylesheet" type="text/css" href="../../_static/print.css?v=20ff2c19" />
+    <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=5f8f7e8c" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --sy-f-text: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+  --sy-f-heading: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+}
+</style>
+    <meta property="og:type" content="website"/><meta property="og:title" content="GCS Storage"/>
+    <meta name="twitter:card" content="summary"/>
+  </head>
+<body><div class="sy-head">
+  <div class="sy-head-blur"></div>
+  <div class="sy-head-inner sy-container mx-auto">
+    <a class="sy-head-brand" href="../../index.html">
+      
+      
+      <strong>litestar-storages</strong>
+    </a>
+    <div class="sy-head-nav" id="head-nav">
+      <nav class="sy-head-links"><ul><li class="link">
+          <a href="https://litestar.dev/">
+            <span>Litestar</span></a>
+        </li><li class="link">
+          <a href="https://pypi.org/project/litestar-storages/">
+            <span>PyPI</span></a>
+        </li></ul></nav>
+      <div class="sy-head-extra flex items-center print:hidden"><form class="searchbox flex items-center" action="../../search.html" method="get">
+  <input type="text" name="q" placeholder="Search" />
+  <kbd>/</kbd>
+</form><div class="sy-head-socials">
+  <a href="https://github.com/JacobCoffee/litestar-storages" aria-label="GitHub">
+    <iconify-icon icon="simple-icons:github"></iconify-icon>
+  </a></div></div>
+    </div>
+    <div class="sy-head-actions flex items-center shrink-0 print:hidden"><button class="js-theme theme-switch flex items-center"
+data-aria-auto="Switch to light color mode"
+data-aria-light="Switch to dark color mode"
+data-aria-dark="Switch to auto color mode">
+<i class="i-lucide theme-icon"></i>
+</button><button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="head-nav" aria-expanded="false">
+        <div class="hamburger">
+          <span class="hamburger_1"></span>
+          <span class="hamburger_2"></span>
+          <span class="hamburger_3"></span>
+        </div>
+      </button>
+    </div>
+  </div>
+</div>
+<div class="sy-page sy-container flex mx-auto">
+  <aside id="lside" class="sy-lside md:w-72 md:shrink-0 print:hidden">
+    <div class="sy-lside-inner md:sticky">
+      <div class="sy-scrollbar p-6">
+        <div class="globaltoc" data-expand-depth="0"><p class="caption" role="heading" aria-level="3"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting-started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../examples.html">Example Applications</a></li>
+</ul>
+<p class="caption" role="heading" aria-level="3"><span class="caption-text">Storage Backends</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../backends/filesystem.html">FileSystem Storage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../backends/s3.html">S3 Storage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../backends/gcs.html">GCS Storage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../backends/azure.html">Azure Blob Storage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../backends/memory.html">Memory Storage</a></li>
+</ul>
+<p class="caption" role="heading" aria-level="3"><span class="caption-text">Advanced Topics</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../advanced/retry.html">Retry Utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../advanced/multipart-uploads.html">Multipart Uploads</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../advanced/progress-callbacks.html">Progress Callbacks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../advanced/custom-backends.html">Custom Backends</a></li>
+</ul>
+<p class="caption" role="heading" aria-level="3"><span class="caption-text">Reference</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">API Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../base.html">Base Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../types.html">Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../exceptions.html">Exceptions</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">Storage Backends</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="memory.html">Memory Storage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="filesystem.html">FileSystem Storage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="s3.html">S3 Storage</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">GCS Storage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="azure.html">Azure Storage</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../contrib/index.html">Litestar Integration</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../contrib/plugin.html">Storage Plugin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../contrib/dependencies.html">Dependencies</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../contrib/dto.html">DTOs</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../comparison.html">Comparison with Other Libraries</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../changelog.html">Changelog</a></li>
+</ul>
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="lside-overlay js-menu" role="button" aria-label="Close left sidebar" aria-controls="lside" aria-expanded="false"></div>
+  <aside id="rside" class="sy-rside pb-3 w-64 shrink-0 order-last">
+    <button class="rside-close js-menu xl:hidden" aria-label="Close Table of Contents" type="button" aria-controls="rside" aria-expanded="false">
+      <i class="i-lucide close"></i>
+    </button>
+    <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4"><div class="localtoc"><h3>On this page</h3><ul>
+<li><a class="reference internal" href="#configuration">Configuration</a><ul>
+<li><a class="reference internal" href="#litestar_storages.backends.gcs.GCSConfig"><code class="docutils literal notranslate"><span class="pre">GCSConfig</span></code></a><ul>
+<li><a class="reference internal" href="#litestar_storages.backends.gcs.GCSConfig.bucket"><code class="docutils literal notranslate">bucket</span></code></a></li>
+<li><a class="reference internal" href="#litestar_storages.backends.gcs.GCSConfig.project"><code class="docutils literal notranslate">project</span></code></a></li>
+<li><a class="reference internal" href="#litestar_storages.backends.gcs.GCSConfig.service_file"><code class="docutils literal notranslate">service_file</span></code></a></li>
+<li><a class="reference internal" href="#litestar_storages.backends.gcs.GCSConfig.prefix"><code class="docutils literal notranslate">prefix</span></code></a></li>
+<li><a class="reference internal" href="#litestar_storages.backends.gcs.GCSConfig.presigned_expiry"><code class="docutils literal notranslate">presigned_expiry</span></code></a></li>
+<li><a class="reference internal" href="#litestar_storages.backends.gcs.GCSConfig.api_root"><code class="docutils literal notranslate">api_root</span></code></a></li>
+<li><a class="reference internal" href="#litestar_storages.backends.gcs.GCSConfig.__init__"><code class="docutils literal notranslate">__init__()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#storage-class">Storage Class</a><ul>
+<li><a class="reference internal" href="#litestar_storages.backends.gcs.GCSStorage"><code class="docutils literal notranslate"><span class="pre">GCSStorage</span></code></a><ul>
+<li><a class="reference internal" href="#litestar_storages.backends.gcs.GCSStorage.__init__"><code class="docutils literal notranslate">__init__()</span></code></a></li>
+<li><a class="reference internal" href="#litestar_storages.backends.gcs.GCSStorage.put"><code class="docutils literal notranslate">put()</span></code></a></li>
+<li><a class="reference internal" href="#litestar_storages.backends.gcs.GCSStorage.get"><code class="docutils literal notranslate">get()</span></code></a></li>
+<li><a class="reference internal" href="#litestar_storages.backends.gcs.GCSStorage.get_bytes"><code class="docutils literal notranslate">get_bytes()</span></code></a></li>
+<li><a class="reference internal" href="#litestar_storages.backends.gcs.GCSStorage.delete"><code class="docutils literal notranslate">delete()</span></code></a></li>
+<li><a class="reference internal" href="#litestar_storages.backends.gcs.GCSStorage.exists"><code class="docutils literal notranslate">exists()</span></code></a></li>
+<li><a class="reference internal" href="#litestar_storages.backends.gcs.GCSStorage.list"><code class="docutils literal notranslate">list()</span></code></a></li>
+<li><a class="reference internal" href="#litestar_storages.backends.gcs.GCSStorage.url"><code class="docutils literal notranslate">url()</span></code></a></li>
+<li><a class="reference internal" href="#litestar_storages.backends.gcs.GCSStorage.copy"><code class="docutils literal notranslate">copy()</span></code></a></li>
+<li><a class="reference internal" href="#litestar_storages.backends.gcs.GCSStorage.move"><code class="docutils literal notranslate">move()</span></code></a></li>
+<li><a class="reference internal" href="#litestar_storages.backends.gcs.GCSStorage.info"><code class="docutils literal notranslate">info()</span></code></a></li>
+<li><a class="reference internal" href="#litestar_storages.backends.gcs.GCSStorage.start_multipart_upload"><code class="docutils literal notranslate">start_multipart_upload()</span></code></a></li>
+<li><a class="reference internal" href="#litestar_storages.backends.gcs.GCSStorage.upload_part"><code class="docutils literal notranslate">upload_part()</span></code></a></li>
+<li><a class="reference internal" href="#litestar_storages.backends.gcs.GCSStorage.complete_multipart_upload"><code class="docutils literal notranslate">complete_multipart_upload()</span></code></a></li>
+<li><a class="reference internal" href="#litestar_storages.backends.gcs.GCSStorage.abort_multipart_upload"><code class="docutils literal notranslate">abort_multipart_upload()</span></code></a></li>
+<li><a class="reference internal" href="#litestar_storages.backends.gcs.GCSStorage.put_large"><code class="docutils literal notranslate">put_large()</span></code></a></li>
+<li><a class="reference internal" href="#litestar_storages.backends.gcs.GCSStorage.close"><code class="docutils literal notranslate">close()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#usage-examples">Usage Examples</a><ul>
+<li><a class="reference internal" href="#using-application-default-credentials">Using Application Default Credentials</a></li>
+<li><a class="reference internal" href="#using-service-account">Using Service Account</a></li>
+<li><a class="reference internal" href="#using-emulator-fake-gcs-server">Using Emulator (fake-gcs-server)</a></li>
+<li><a class="reference internal" href="#with-key-prefix">With Key Prefix</a></li>
+<li><a class="reference internal" href="#signed-urls">Signed URLs</a></li>
+<li><a class="reference internal" href="#file-operations">File Operations</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#authentication-methods">Authentication Methods</a></li>
+<li><a class="reference internal" href="#resource-cleanup">Resource Cleanup</a></li>
+</ul>
+</div><div id="ethical-ad-placement" data-ea-publisher="readthedocs"></div></div>
+  </aside>
+  <div class="rside-overlay js-menu" role="button" aria-label="Close Table of Contents" aria-controls="rside" aria-expanded="false"></div>
+  <main class="sy-main w-full max-sm:max-w-full print:pt-6">
+<div class="sy-breadcrumbs" role="navigation">
+  <div class="sy-breadcrumbs-inner flex items-center">
+    <div class="md:hidden mr-3">
+      <button class="js-menu" aria-label="Menu" type="button" aria-controls="lside" aria-expanded="false">
+        <i class="i-lucide menu"></i>
+      </button>
+    </div>
+    <ol class="flex-1" itemscope itemtype="https://schema.org/BreadcrumbList"><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="../../index.html"><span itemprop="name">litestar-storages</span></a>
+        <span>/</span>
+        <meta itemprop="position" content="1" />
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="../index.html"><span itemprop="name">API Reference</span></a>
+        <span>/</span>
+        <meta itemprop="position" content="2" />
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="index.html"><span itemprop="name">Storage Backends</span></a>
+        <span>/</span>
+        <meta itemprop="position" content="3" />
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <strong itemprop="name">GCS Storage</strong>
+        <meta itemprop="position" content="4" />
+      </li></ol>
+    <div class="xl:hidden ml-1">
+      <button class="js-menu" aria-label="Show table of contents" type="button" aria-controls="rside"
+        aria-expanded="false">
+        <i class="i-lucide outdent"></i>
+      </button>
+    </div>
+  </div>
+</div><div class="flex flex-col break-words justify-between">
+      <div class="min-w-0 max-w-6xl px-6 pb-6 pt-8 xl:px-12">
+        <article class="yue" role="main">
+          <section id="module-litestar_storages.backends.gcs">
+<span id="gcs-storage"></span><h1>GCS Storage<a class="headerlink" href="#module-litestar_storages.backends.gcs" title="Link to this heading">¶</a></h1>
+<p>Google Cloud Storage backend using <code class="docutils literal notranslate"><span class="pre">gcloud-aio-storage</span></code> for async operations.
+Supports Application Default Credentials (ADC) and service account authentication.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Requires the <code class="docutils literal notranslate"><span class="pre">gcloud-aio-storage</span></code> package. Install with:
+<code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">litestar-storages[gcs]</span></code> or <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">gcloud-aio-storage</span></code></p>
+</div>
+<section id="configuration">
+<h2>Configuration<a class="headerlink" href="#configuration" title="Link to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="litestar_storages.backends.gcs.GCSConfig">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar_storages.backends.gcs.</span></span><span class="sig-name descname"><span class="pre">GCSConfig</span></span><a class="reference internal" href="../../_modules/litestar_storages/backends/gcs.html#GCSConfig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#litestar_storages.backends.gcs.GCSConfig" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Configuration for Google Cloud Storage.</p>
+<p>Supports authentication via:
+- Service account JSON file (service_file)
+- Application Default Credentials (ADC) - automatic when running on GCP
+- Explicit token (for testing/special cases)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>bucket</strong> – GCS bucket name</p></li>
+<li><p><strong>project</strong> – GCP project ID (required for some operations)</p></li>
+<li><p><strong>service_file</strong> – Path to service account JSON file</p></li>
+<li><p><strong>prefix</strong> – Key prefix for all operations (e.g., “uploads/”)</p></li>
+<li><p><strong>presigned_expiry</strong> – Default expiration time for signed URLs</p></li>
+<li><p><strong>api_root</strong> – Custom API endpoint (for emulators)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>bucket</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>)</p></li>
+<li><p><strong>project</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span>)</p></li>
+<li><p><strong>service_file</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span>)</p></li>
+<li><p><strong>prefix</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>)</p></li>
+<li><p><strong>presigned_expiry</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.timedelta" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">timedelta</span></code></a></span>)</p></li>
+<li><p><strong>api_root</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span>)</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="litestar_storages.backends.gcs.GCSConfig.bucket">
+<span class="sig-name descname"><span class="pre">bucket</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></em><a class="headerlink" href="#litestar_storages.backends.gcs.GCSConfig.bucket" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="litestar_storages.backends.gcs.GCSConfig.project">
+<span class="sig-name descname"><span class="pre">project</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> <span class="pre">|</span> <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#litestar_storages.backends.gcs.GCSConfig.project" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="litestar_storages.backends.gcs.GCSConfig.service_file">
+<span class="sig-name descname"><span class="pre">service_file</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> <span class="pre">|</span> <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#litestar_storages.backends.gcs.GCSConfig.service_file" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="litestar_storages.backends.gcs.GCSConfig.prefix">
+<span class="sig-name descname"><span class="pre">prefix</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></em><a class="headerlink" href="#litestar_storages.backends.gcs.GCSConfig.prefix" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="litestar_storages.backends.gcs.GCSConfig.presigned_expiry">
+<span class="sig-name descname"><span class="pre">presigned_expiry</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.timedelta" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">timedelta</span></code></a></em><a class="headerlink" href="#litestar_storages.backends.gcs.GCSConfig.presigned_expiry" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="litestar_storages.backends.gcs.GCSConfig.api_root">
+<span class="sig-name descname"><span class="pre">api_root</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> <span class="pre">|</span> <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#litestar_storages.backends.gcs.GCSConfig.api_root" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar_storages.backends.gcs.GCSConfig.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bucket</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">project=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">service_file=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix=''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">presigned_expiry=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">api_root=None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#litestar_storages.backends.gcs.GCSConfig.__init__" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>bucket</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>)</p></li>
+<li><p><strong>project</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span>)</p></li>
+<li><p><strong>service_file</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span>)</p></li>
+<li><p><strong>prefix</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>)</p></li>
+<li><p><strong>presigned_expiry</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.timedelta" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">timedelta</span></code></a></span>)</p></li>
+<li><p><strong>api_root</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span>)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="storage-class">
+<h2>Storage Class<a class="headerlink" href="#storage-class" title="Link to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="litestar_storages.backends.gcs.GCSStorage">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar_storages.backends.gcs.</span></span><span class="sig-name descname"><span class="pre">GCSStorage</span></span><a class="reference internal" href="../../_modules/litestar_storages/backends/gcs.html#GCSStorage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#litestar_storages.backends.gcs.GCSStorage" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="../base.html#litestar_storages.base.BaseStorage" title="litestar_storages.base.BaseStorage"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseStorage</span></code></a></p>
+<p>Google Cloud Storage backend.</p>
+<p>Uses gcloud-aio-storage for async GCS operations.</p>
+<div class="admonition-example admonition">
+<p class="admonition-title">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Using Application Default Credentials</span>
+</span><span data-line="2"><span class="gp">&gt;&gt;&gt; </span><span class="n">storage</span> <span class="o">=</span> <span class="n">GCSStorage</span><span class="p">(</span>
+</span><span data-line="3"><span class="gp">... </span>    <span class="n">config</span><span class="o">=</span><span class="n">GCSConfig</span><span class="p">(</span>
+</span><span data-line="4"><span class="gp">... </span>        <span class="n">bucket</span><span class="o">=</span><span class="s2">&quot;my-bucket&quot;</span><span class="p">,</span>
+</span><span data-line="5"><span class="gp">... </span>        <span class="n">project</span><span class="o">=</span><span class="s2">&quot;my-project&quot;</span><span class="p">,</span>
+</span><span data-line="6"><span class="gp">... </span>    <span class="p">)</span>
+</span><span data-line="7"><span class="gp">... </span><span class="p">)</span>
+</span></pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Using service account</span>
+</span><span data-line="2"><span class="gp">&gt;&gt;&gt; </span><span class="n">storage</span> <span class="o">=</span> <span class="n">GCSStorage</span><span class="p">(</span>
+</span><span data-line="3"><span class="gp">... </span>    <span class="n">config</span><span class="o">=</span><span class="n">GCSConfig</span><span class="p">(</span>
+</span><span data-line="4"><span class="gp">... </span>        <span class="n">bucket</span><span class="o">=</span><span class="s2">&quot;my-bucket&quot;</span><span class="p">,</span>
+</span><span data-line="5"><span class="gp">... </span>        <span class="n">service_file</span><span class="o">=</span><span class="s2">&quot;/path/to/service-account.json&quot;</span><span class="p">,</span>
+</span><span data-line="6"><span class="gp">... </span>    <span class="p">)</span>
+</span><span data-line="7"><span class="gp">... </span><span class="p">)</span>
+</span></pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Using emulator (fake-gcs-server)</span>
+</span><span data-line="2"><span class="gp">&gt;&gt;&gt; </span><span class="n">storage</span> <span class="o">=</span> <span class="n">GCSStorage</span><span class="p">(</span>
+</span><span data-line="3"><span class="gp">... </span>    <span class="n">config</span><span class="o">=</span><span class="n">GCSConfig</span><span class="p">(</span>
+</span><span data-line="4"><span class="gp">... </span>        <span class="n">bucket</span><span class="o">=</span><span class="s2">&quot;test-bucket&quot;</span><span class="p">,</span>
+</span><span data-line="5"><span class="gp">... </span>        <span class="n">api_root</span><span class="o">=</span><span class="s2">&quot;http://localhost:4443&quot;</span><span class="p">,</span>
+</span><span data-line="6"><span class="gp">... </span>    <span class="p">)</span>
+</span><span data-line="7"><span class="gp">... </span><span class="p">)</span>
+</span></pre></div>
+</div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The client is lazily initialized on first use. When running on GCP
+(GCE, GKE, Cloud Run, etc.), credentials are automatically detected.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>config</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="#litestar_storages.backends.gcs.GCSConfig" title="litestar_storages.backends.gcs.GCSConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">GCSConfig</span></code></a></span>)</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar_storages.backends.gcs.GCSStorage.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/litestar_storages/backends/gcs.html#GCSStorage.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#litestar_storages.backends.gcs.GCSStorage.__init__" title="Link to this definition">¶</a></dt>
+<dd><p>Initialize GCSStorage.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>config</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="#litestar_storages.backends.gcs.GCSConfig" title="litestar_storages.backends.gcs.GCSConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">GCSConfig</span></code></a></span>) – Configuration for the GCS backend</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="../exceptions.html#litestar_storages.exceptions.ConfigurationError" title="litestar_storages.exceptions.ConfigurationError"><strong>ConfigurationError</strong></a> – If required configuration is missing</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar_storages.backends.gcs.GCSStorage.put">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">put</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">content_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/litestar_storages/backends/gcs.html#GCSStorage.put"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#litestar_storages.backends.gcs.GCSStorage.put" title="Link to this definition">¶</a></dt>
+<dd><p>Store data at the given key.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – Storage path/key for the file</p></li>
+<li><p><strong>data</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.AsyncIterator" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">AsyncIterator</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></a>]</span>) – File contents as bytes or async byte stream</p></li>
+<li><p><strong>content_type</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span>) – MIME type of the content</p></li>
+<li><p><strong>metadata</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>] | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span>) – Additional metadata to store with the file</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="../types.html#litestar_storages.types.StoredFile" title="litestar_storages.types.StoredFile"><code class="xref py py-class docutils literal notranslate"><span class="pre">StoredFile</span></code></a></span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>StoredFile with metadata about the stored file</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="../exceptions.html#litestar_storages.exceptions.StorageError" title="litestar_storages.exceptions.StorageError"><strong>StorageError</strong></a> – If the upload fails</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar_storages.backends.gcs.GCSStorage.get">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/litestar_storages/backends/gcs.html#GCSStorage.get"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#litestar_storages.backends.gcs.GCSStorage.get" title="Link to this definition">¶</a></dt>
+<dd><p>Retrieve file contents as an async byte stream.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>key</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – Storage path/key for the file</p>
+</dd>
+<dt class="field-even">Yields<span class="colon">:</span></dt>
+<dd class="field-even"><p>Chunks of file data as bytes</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><a class="reference internal" href="../exceptions.html#litestar_storages.exceptions.StorageFileNotFoundError" title="litestar_storages.exceptions.StorageFileNotFoundError"><strong>StorageFileNotFoundError</strong></a> – If the file does not exist</p></li>
+<li><p><a class="reference internal" href="../exceptions.html#litestar_storages.exceptions.StorageError" title="litestar_storages.exceptions.StorageError"><strong>StorageError</strong></a> – If the retrieval fails</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.AsyncIterator" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">AsyncIterator</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></a>]</span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar_storages.backends.gcs.GCSStorage.get_bytes">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_bytes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/litestar_storages/backends/gcs.html#GCSStorage.get_bytes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#litestar_storages.backends.gcs.GCSStorage.get_bytes" title="Link to this definition">¶</a></dt>
+<dd><p>Retrieve entire file contents as bytes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>key</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – Storage path/key for the file</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></a></span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Complete file contents as bytes</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="../exceptions.html#litestar_storages.exceptions.StorageFileNotFoundError" title="litestar_storages.exceptions.StorageFileNotFoundError"><strong>StorageFileNotFoundError</strong></a> – If the file does not exist</p></li>
+<li><p><a class="reference internal" href="../exceptions.html#litestar_storages.exceptions.StorageError" title="litestar_storages.exceptions.StorageError"><strong>StorageError</strong></a> – If the retrieval fails</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar_storages.backends.gcs.GCSStorage.delete">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">delete</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/litestar_storages/backends/gcs.html#GCSStorage.delete"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#litestar_storages.backends.gcs.GCSStorage.delete" title="Link to this definition">¶</a></dt>
+<dd><p>Delete a file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>key</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – Storage path/key for the file</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>GCS delete is idempotent - deleting a non-existent key succeeds silently.</p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar_storages.backends.gcs.GCSStorage.exists">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">exists</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/litestar_storages/backends/gcs.html#GCSStorage.exists"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#litestar_storages.backends.gcs.GCSStorage.exists" title="Link to this definition">¶</a></dt>
+<dd><p>Check if a file exists.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>key</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – Storage path/key for the file</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>True if the file exists, False otherwise</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar_storages.backends.gcs.GCSStorage.list">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prefix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/litestar_storages/backends/gcs.html#GCSStorage.list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#litestar_storages.backends.gcs.GCSStorage.list" title="Link to this definition">¶</a></dt>
+<dd><p>List files with optional prefix filter.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>prefix</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – Filter results to keys starting with this prefix</p></li>
+<li><p><strong>limit</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span>) – Maximum number of results to return</p></li>
+</ul>
+</dd>
+<dt class="field-even">Yields<span class="colon">:</span></dt>
+<dd class="field-even"><p>StoredFile metadata for each matching file</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.AsyncGenerator" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">AsyncGenerator</span></code></a>[<a class="reference internal" href="../types.html#litestar_storages.types.StoredFile" title="litestar_storages.types.StoredFile"><code class="xref py py-class docutils literal notranslate"><span class="pre">StoredFile</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a>]</span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar_storages.backends.gcs.GCSStorage.url">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">url</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">expires_in</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/litestar_storages/backends/gcs.html#GCSStorage.url"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#litestar_storages.backends.gcs.GCSStorage.url" title="Link to this definition">¶</a></dt>
+<dd><p>Generate a signed URL for accessing the file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – Storage path/key for the file</p></li>
+<li><p><strong>expires_in</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.timedelta" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">timedelta</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span>) – Optional expiration time (defaults to config.presigned_expiry)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Signed URL string</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Signed URLs allow temporary access to private GCS objects without
+requiring GCP credentials. Requires service account credentials.</p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar_storages.backends.gcs.GCSStorage.copy">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">copy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">destination</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/litestar_storages/backends/gcs.html#GCSStorage.copy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#litestar_storages.backends.gcs.GCSStorage.copy" title="Link to this definition">¶</a></dt>
+<dd><p>Copy a file within the storage backend.</p>
+<p>Uses GCS’s native copy operation for efficiency.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>source</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – Source key to copy from</p></li>
+<li><p><strong>destination</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – Destination key to copy to</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="../types.html#litestar_storages.types.StoredFile" title="litestar_storages.types.StoredFile"><code class="xref py py-class docutils literal notranslate"><span class="pre">StoredFile</span></code></a></span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>StoredFile metadata for the new copy</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="../exceptions.html#litestar_storages.exceptions.StorageFileNotFoundError" title="litestar_storages.exceptions.StorageFileNotFoundError"><strong>StorageFileNotFoundError</strong></a> – If the source file does not exist</p></li>
+<li><p><a class="reference internal" href="../exceptions.html#litestar_storages.exceptions.StorageError" title="litestar_storages.exceptions.StorageError"><strong>StorageError</strong></a> – If the copy fails</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar_storages.backends.gcs.GCSStorage.move">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">move</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">destination</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/litestar_storages/backends/gcs.html#GCSStorage.move"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#litestar_storages.backends.gcs.GCSStorage.move" title="Link to this definition">¶</a></dt>
+<dd><p>Move/rename a file within the storage backend.</p>
+<p>Uses GCS’s copy + delete operations (no native move).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>source</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – Source key to move from</p></li>
+<li><p><strong>destination</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – Destination key to move to</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="../types.html#litestar_storages.types.StoredFile" title="litestar_storages.types.StoredFile"><code class="xref py py-class docutils literal notranslate"><span class="pre">StoredFile</span></code></a></span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>StoredFile metadata for the moved file</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="../exceptions.html#litestar_storages.exceptions.StorageFileNotFoundError" title="litestar_storages.exceptions.StorageFileNotFoundError"><strong>StorageFileNotFoundError</strong></a> – If the source file does not exist</p></li>
+<li><p><a class="reference internal" href="../exceptions.html#litestar_storages.exceptions.StorageError" title="litestar_storages.exceptions.StorageError"><strong>StorageError</strong></a> – If the move fails</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar_storages.backends.gcs.GCSStorage.info">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/litestar_storages/backends/gcs.html#GCSStorage.info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#litestar_storages.backends.gcs.GCSStorage.info" title="Link to this definition">¶</a></dt>
+<dd><p>Get metadata about a file without downloading it.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>key</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – Storage path/key for the file</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="../types.html#litestar_storages.types.StoredFile" title="litestar_storages.types.StoredFile"><code class="xref py py-class docutils literal notranslate"><span class="pre">StoredFile</span></code></a></span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>StoredFile with metadata</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="../exceptions.html#litestar_storages.exceptions.StorageFileNotFoundError" title="litestar_storages.exceptions.StorageFileNotFoundError"><strong>StorageFileNotFoundError</strong></a> – If the file does not exist</p></li>
+<li><p><a class="reference internal" href="../exceptions.html#litestar_storages.exceptions.StorageError" title="litestar_storages.exceptions.StorageError"><strong>StorageError</strong></a> – If retrieving metadata fails</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar_storages.backends.gcs.GCSStorage.start_multipart_upload">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">start_multipart_upload</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">content_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">part_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5242880</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/litestar_storages/backends/gcs.html#GCSStorage.start_multipart_upload"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#litestar_storages.backends.gcs.GCSStorage.start_multipart_upload" title="Link to this definition">¶</a></dt>
+<dd><p>Start a multipart upload.</p>
+<p>Use this for large files (typically &gt; 100MB) to enable:
+- Chunked uploads with progress tracking
+- Better handling of network failures
+- Memory-efficient streaming uploads</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>GCS doesn’t have native multipart upload like S3. This implementation
+buffers parts in memory and uploads them when complete_multipart_upload
+is called. For true resumable uploads, consider using GCS’s resumable
+upload API directly.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – Storage path/key for the file</p></li>
+<li><p><strong>content_type</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span>) – MIME type of the content</p></li>
+<li><p><strong>metadata</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>] | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span>) – Additional metadata to store with the file</p></li>
+<li><p><strong>part_size</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span>) – Size of each part in bytes (default 5MB)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">MultipartUpload</span></code></span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>MultipartUpload object to track the upload state</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="../exceptions.html#litestar_storages.exceptions.StorageError" title="litestar_storages.exceptions.StorageError"><strong>StorageError</strong></a> – If initiating the upload fails</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar_storages.backends.gcs.GCSStorage.upload_part">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">upload_part</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">upload</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">part_number</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/litestar_storages/backends/gcs.html#GCSStorage.upload_part"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#litestar_storages.backends.gcs.GCSStorage.upload_part" title="Link to this definition">¶</a></dt>
+<dd><p>Upload a single part of a multipart upload.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Parts are buffered in memory until complete_multipart_upload is called.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>upload</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">MultipartUpload</span></code></span>) – The MultipartUpload object from start_multipart_upload</p></li>
+<li><p><strong>part_number</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span>) – Part number (1-indexed, must be sequential)</p></li>
+<li><p><strong>data</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></a></span>) – The part data to upload</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ETag (placeholder) of the uploaded part</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="../exceptions.html#litestar_storages.exceptions.StorageError" title="litestar_storages.exceptions.StorageError"><strong>StorageError</strong></a> – If the part upload fails</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar_storages.backends.gcs.GCSStorage.complete_multipart_upload">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">complete_multipart_upload</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">upload</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/litestar_storages/backends/gcs.html#GCSStorage.complete_multipart_upload"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#litestar_storages.backends.gcs.GCSStorage.complete_multipart_upload" title="Link to this definition">¶</a></dt>
+<dd><p>Complete a multipart upload.</p>
+<p>Combines all buffered parts and uploads the complete file to GCS.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>upload</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">MultipartUpload</span></code></span>) – The MultipartUpload object with all parts uploaded</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="../types.html#litestar_storages.types.StoredFile" title="litestar_storages.types.StoredFile"><code class="xref py py-class docutils literal notranslate"><span class="pre">StoredFile</span></code></a></span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>StoredFile metadata for the completed upload</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="../exceptions.html#litestar_storages.exceptions.StorageError" title="litestar_storages.exceptions.StorageError"><strong>StorageError</strong></a> – If completing the upload fails</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar_storages.backends.gcs.GCSStorage.abort_multipart_upload">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">abort_multipart_upload</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">upload</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/litestar_storages/backends/gcs.html#GCSStorage.abort_multipart_upload"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#litestar_storages.backends.gcs.GCSStorage.abort_multipart_upload" title="Link to this definition">¶</a></dt>
+<dd><p>Abort a multipart upload.</p>
+<p>This cancels an in-progress multipart upload and frees buffered data.
+Use this to clean up failed uploads.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>upload</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">MultipartUpload</span></code></span>) – The MultipartUpload object to abort</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="../exceptions.html#litestar_storages.exceptions.StorageError" title="litestar_storages.exceptions.StorageError"><strong>StorageError</strong></a> – If aborting the upload fails</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar_storages.backends.gcs.GCSStorage.put_large">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">put_large</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">content_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">part_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10485760</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">progress_callback</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/litestar_storages/backends/gcs.html#GCSStorage.put_large"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#litestar_storages.backends.gcs.GCSStorage.put_large" title="Link to this definition">¶</a></dt>
+<dd><p>Upload a large file using multipart upload.</p>
+<p>This is a convenience method that handles the multipart upload process
+automatically. It splits the data into parts, uploads them, and
+completes the upload.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – Storage path/key for the file</p></li>
+<li><p><strong>data</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.AsyncIterator" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">AsyncIterator</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></a>]</span>) – File contents as bytes or async byte stream</p></li>
+<li><p><strong>content_type</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span>) – MIME type of the content</p></li>
+<li><p><strong>metadata</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>] | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span>) – Additional metadata to store with the file</p></li>
+<li><p><strong>part_size</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span>) – Size of each part in bytes (default 10MB)</p></li>
+<li><p><strong>progress_callback</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">ProgressCallback</span></code> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span>) – Optional callback for progress updates</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="../types.html#litestar_storages.types.StoredFile" title="litestar_storages.types.StoredFile"><code class="xref py py-class docutils literal notranslate"><span class="pre">StoredFile</span></code></a></span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>StoredFile with metadata about the stored file</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="../exceptions.html#litestar_storages.exceptions.StorageError" title="litestar_storages.exceptions.StorageError"><strong>StorageError</strong></a> – If the upload fails</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar_storages.backends.gcs.GCSStorage.close">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/litestar_storages/backends/gcs.html#GCSStorage.close"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#litestar_storages.backends.gcs.GCSStorage.close" title="Link to this definition">¶</a></dt>
+<dd><p>Close the GCS storage and release resources.</p>
+<p>This method closes the underlying aiohttp session.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="usage-examples">
+<h2>Usage Examples<a class="headerlink" href="#usage-examples" title="Link to this heading">¶</a></h2>
+<section id="using-application-default-credentials">
+<h3>Using Application Default Credentials<a class="headerlink" href="#using-application-default-credentials" title="Link to this heading">¶</a></h3>
+<p>When running on GCP (GCE, GKE, Cloud Run, Cloud Functions), credentials are
+automatically detected:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_storages</span><span class="w"> </span><span class="kn">import</span> <span class="n">GCSStorage</span><span class="p">,</span> <span class="n">GCSConfig</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="n">storage</span> <span class="o">=</span> <span class="n">GCSStorage</span><span class="p">(</span>
+</span><span data-line="4">    <span class="n">config</span><span class="o">=</span><span class="n">GCSConfig</span><span class="p">(</span>
+</span><span data-line="5">        <span class="n">bucket</span><span class="o">=</span><span class="s2">&quot;my-bucket&quot;</span><span class="p">,</span>
+</span><span data-line="6">        <span class="n">project</span><span class="o">=</span><span class="s2">&quot;my-project&quot;</span><span class="p">,</span>
+</span><span data-line="7">    <span class="p">)</span>
+</span><span data-line="8"><span class="p">)</span>
+</span></pre></div>
+</div>
+</section>
+<section id="using-service-account">
+<h3>Using Service Account<a class="headerlink" href="#using-service-account" title="Link to this heading">¶</a></h3>
+<p>For local development or non-GCP environments:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="n">storage</span> <span class="o">=</span> <span class="n">GCSStorage</span><span class="p">(</span>
+</span><span data-line="2">    <span class="n">config</span><span class="o">=</span><span class="n">GCSConfig</span><span class="p">(</span>
+</span><span data-line="3">        <span class="n">bucket</span><span class="o">=</span><span class="s2">&quot;my-bucket&quot;</span><span class="p">,</span>
+</span><span data-line="4">        <span class="n">service_file</span><span class="o">=</span><span class="s2">&quot;/path/to/service-account.json&quot;</span><span class="p">,</span>
+</span><span data-line="5">    <span class="p">)</span>
+</span><span data-line="6"><span class="p">)</span>
+</span></pre></div>
+</div>
+</section>
+<section id="using-emulator-fake-gcs-server">
+<h3>Using Emulator (fake-gcs-server)<a class="headerlink" href="#using-emulator-fake-gcs-server" title="Link to this heading">¶</a></h3>
+<p>For local testing without GCP access:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="c1"># Start emulator: docker run -p 4443:4443 fsouza/fake-gcs-server</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="n">storage</span> <span class="o">=</span> <span class="n">GCSStorage</span><span class="p">(</span>
+</span><span data-line="4">    <span class="n">config</span><span class="o">=</span><span class="n">GCSConfig</span><span class="p">(</span>
+</span><span data-line="5">        <span class="n">bucket</span><span class="o">=</span><span class="s2">&quot;test-bucket&quot;</span><span class="p">,</span>
+</span><span data-line="6">        <span class="n">api_root</span><span class="o">=</span><span class="s2">&quot;http://localhost:4443&quot;</span><span class="p">,</span>
+</span><span data-line="7">    <span class="p">)</span>
+</span><span data-line="8"><span class="p">)</span>
+</span></pre></div>
+</div>
+</section>
+<section id="with-key-prefix">
+<h3>With Key Prefix<a class="headerlink" href="#with-key-prefix" title="Link to this heading">¶</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="n">storage</span> <span class="o">=</span> <span class="n">GCSStorage</span><span class="p">(</span>
+</span><span data-line="2">    <span class="n">config</span><span class="o">=</span><span class="n">GCSConfig</span><span class="p">(</span>
+</span><span data-line="3">        <span class="n">bucket</span><span class="o">=</span><span class="s2">&quot;my-bucket&quot;</span><span class="p">,</span>
+</span><span data-line="4">        <span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;uploads/media/&quot;</span><span class="p">,</span>
+</span><span data-line="5">    <span class="p">)</span>
+</span><span data-line="6"><span class="p">)</span>
+</span><span data-line="7">
+</span><span data-line="8"><span class="c1"># Key &quot;image.jpg&quot; becomes &quot;uploads/media/image.jpg&quot; in GCS</span>
+</span><span data-line="9"><span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="s2">&quot;image.jpg&quot;</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+</span></pre></div>
+</div>
+</section>
+<section id="signed-urls">
+<h3>Signed URLs<a class="headerlink" href="#signed-urls" title="Link to this heading">¶</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">timedelta</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="c1"># Generate signed URL with default expiry (1 hour)</span>
+</span><span data-line="4"><span class="n">url</span> <span class="o">=</span> <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">url</span><span class="p">(</span><span class="s2">&quot;documents/contract.pdf&quot;</span><span class="p">)</span>
+</span><span data-line="5">
+</span><span data-line="6"><span class="c1"># Custom expiry</span>
+</span><span data-line="7"><span class="n">url</span> <span class="o">=</span> <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">url</span><span class="p">(</span>
+</span><span data-line="8">    <span class="s2">&quot;documents/contract.pdf&quot;</span><span class="p">,</span>
+</span><span data-line="9">    <span class="n">expires_in</span><span class="o">=</span><span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">7</span><span class="p">),</span>
+</span><span data-line="10"><span class="p">)</span>
+</span></pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Generating signed URLs requires service account credentials with the
+<code class="docutils literal notranslate"><span class="pre">iam.serviceAccounts.signBlob</span></code> permission.</p>
+</div>
+</section>
+<section id="file-operations">
+<h3>File Operations<a class="headerlink" href="#file-operations" title="Link to this heading">¶</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="c1"># Upload</span>
+</span><span data-line="2"><span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">put</span><span class="p">(</span>
+</span><span data-line="3">    <span class="s2">&quot;reports/monthly.pdf&quot;</span><span class="p">,</span>
+</span><span data-line="4">    <span class="n">pdf_bytes</span><span class="p">,</span>
+</span><span data-line="5">    <span class="n">content_type</span><span class="o">=</span><span class="s2">&quot;application/pdf&quot;</span><span class="p">,</span>
+</span><span data-line="6">    <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;department&quot;</span><span class="p">:</span> <span class="s2">&quot;finance&quot;</span><span class="p">},</span>
+</span><span data-line="7"><span class="p">)</span>
+</span><span data-line="8">
+</span><span data-line="9"><span class="c1"># Download</span>
+</span><span data-line="10"><span class="n">data</span> <span class="o">=</span> <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">get_bytes</span><span class="p">(</span><span class="s2">&quot;reports/monthly.pdf&quot;</span><span class="p">)</span>
+</span><span data-line="11">
+</span><span data-line="12"><span class="c1"># Stream download</span>
+</span><span data-line="13"><span class="k">async</span> <span class="k">for</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="n">storage</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;reports/monthly.pdf&quot;</span><span class="p">):</span>
+</span><span data-line="14">    <span class="n">process</span><span class="p">(</span><span class="n">chunk</span><span class="p">)</span>
+</span><span data-line="15">
+</span><span data-line="16"><span class="c1"># Check existence</span>
+</span><span data-line="17"><span class="k">if</span> <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="s2">&quot;reports/monthly.pdf&quot;</span><span class="p">):</span>
+</span><span data-line="18">    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;File exists&quot;</span><span class="p">)</span>
+</span><span data-line="19">
+</span><span data-line="20"><span class="c1"># Get metadata</span>
+</span><span data-line="21"><span class="n">info</span> <span class="o">=</span> <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;reports/monthly.pdf&quot;</span><span class="p">)</span>
+</span><span data-line="22"><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Size: </span><span class="si">{</span><span class="n">info</span><span class="o">.</span><span class="n">size</span><span class="si">}</span><span class="s2">, Type: </span><span class="si">{</span><span class="n">info</span><span class="o">.</span><span class="n">content_type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</span><span data-line="23">
+</span><span data-line="24"><span class="c1"># List files</span>
+</span><span data-line="25"><span class="k">async</span> <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">storage</span><span class="o">.</span><span class="n">list</span><span class="p">(</span><span class="s2">&quot;reports/&quot;</span><span class="p">):</span>
+</span><span data-line="26">    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">file</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">file</span><span class="o">.</span><span class="n">size</span><span class="si">}</span><span class="s2"> bytes&quot;</span><span class="p">)</span>
+</span><span data-line="27">
+</span><span data-line="28"><span class="c1"># Copy and move</span>
+</span><span data-line="29"><span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="s2">&quot;reports/v1.pdf&quot;</span><span class="p">,</span> <span class="s2">&quot;reports/v2.pdf&quot;</span><span class="p">)</span>
+</span><span data-line="30"><span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="s2">&quot;reports/draft.pdf&quot;</span><span class="p">,</span> <span class="s2">&quot;reports/final.pdf&quot;</span><span class="p">)</span>
+</span><span data-line="31">
+</span><span data-line="32"><span class="c1"># Delete</span>
+</span><span data-line="33"><span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="s2">&quot;reports/old.pdf&quot;</span><span class="p">)</span>
+</span></pre></div>
+</div>
+</section>
+</section>
+<section id="authentication-methods">
+<h2>Authentication Methods<a class="headerlink" href="#authentication-methods" title="Link to this heading">¶</a></h2>
+<p>GCS supports multiple authentication methods:</p>
+<ol class="arabic simple">
+<li><p><strong>Application Default Credentials (ADC)</strong> - Automatic on GCP</p></li>
+<li><p><strong>Service Account JSON</strong> - Via <code class="docutils literal notranslate"><span class="pre">service_file</span></code> config</p></li>
+<li><p><strong>Environment Variable</strong> - Set <code class="docutils literal notranslate"><span class="pre">GOOGLE_APPLICATION_CREDENTIALS</span></code></p></li>
+</ol>
+<p>For production on GCP, ADC with Workload Identity is recommended.</p>
+</section>
+<section id="resource-cleanup">
+<h2>Resource Cleanup<a class="headerlink" href="#resource-cleanup" title="Link to this heading">¶</a></h2>
+<p>Always close the storage when done to release HTTP sessions:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="n">storage</span> <span class="o">=</span> <span class="n">GCSStorage</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">GCSConfig</span><span class="p">(</span><span class="n">bucket</span><span class="o">=</span><span class="s2">&quot;my-bucket&quot;</span><span class="p">))</span>
+</span><span data-line="2"><span class="k">try</span><span class="p">:</span>
+</span><span data-line="3">    <span class="c1"># Use storage...</span>
+</span><span data-line="4">    <span class="k">pass</span>
+</span><span data-line="5"><span class="k">finally</span><span class="p">:</span>
+</span><span data-line="6">    <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</span></pre></div>
+</div>
+<p>When using <a class="reference internal" href="../contrib/plugin.html#litestar_storages.contrib.plugin.StoragePlugin" title="litestar_storages.contrib.plugin.StoragePlugin"><code class="xref py py-class docutils literal notranslate"><span class="pre">StoragePlugin</span></code></a>,
+cleanup is handled automatically on application shutdown.</p>
+</section>
+</section>
+
+        </article><button class="back-to-top" type="button">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+  </svg>
+  <span>Back to top</span>
+</button><div class="navigation flex print:hidden"><div class="navigation-prev">
+    <a href="s3.html">
+      <i class="i-lucide chevron-left"></i>
+      <div class="page-info">
+        <span>Previous</span><div class="title">S3 Storage</div></div>
+    </a>
+  </div><div class="navigation-next">
+    <a href="azure.html">
+      <div class="page-info">
+        <span>Next</span>
+        <div class="title">Azure Storage</div>
+      </div>
+      <i class="i-lucide chevron-right"></i>
+    </a>
+  </div></div></div>
+    </div>
+  </main>
+</div>
+<footer class="sy-foot">
+  <div class="sy-foot-inner sy-container mx-auto">
+    <div class="sy-foot-reserved md:flex justify-between items-center">
+      <div class="sy-foot-copyright"><p>2025, Jacob Coffee</p>
+  
+  <p>
+    Made with
+    
+    <a href="https://www.sphinx-doc.org/">Sphinx</a> and
+    
+    <a href="https://shibuya.lepture.com">Shibuya theme</a>.
+  </p>
+</div>
+      <div class="sy-foot-socials">
+<a href="https://github.com/JacobCoffee/litestar-storages" aria-label="GitHub">
+  <iconify-icon icon="simple-icons:github"></iconify-icon>
+</a></div>
+    </div>
+  </div>
+</footer>
+      <script src="../../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=30646c52"></script>
+      <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+      <script src="../../_static/shibuya.js?v=c1cf1a6b"></script></body>
+</html>

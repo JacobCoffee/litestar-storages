@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html lang="en" data-accent-color="violet" data-content_root="../">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Multipart Uploads - litestar-storages</title><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Progress Callbacks" href="progress-callbacks.html" /><link rel="prev" title="Retry Utilities" href="retry.html" /><script>
+    function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
+    setColorMode(localStorage._theme||"auto");
+  </script><link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=e1a1ceaf" />
+    <link rel="stylesheet" type="text/css" href="../_static/shibuya.css?v=14737038" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link media="print" rel="stylesheet" type="text/css" href="../_static/print.css?v=20ff2c19" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=5f8f7e8c" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --sy-f-text: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+  --sy-f-heading: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+}
+</style>
+    <meta property="og:type" content="website"/><meta property="og:title" content="Multipart Uploads"/>
+    <meta name="twitter:card" content="summary"/>
+  </head>
+<body><div class="sy-head">
+  <div class="sy-head-blur"></div>
+  <div class="sy-head-inner sy-container mx-auto">
+    <a class="sy-head-brand" href="../index.html">
+      
+      
+      <strong>litestar-storages</strong>
+    </a>
+    <div class="sy-head-nav" id="head-nav">
+      <nav class="sy-head-links"><ul><li class="link">
+          <a href="https://litestar.dev/">
+            <span>Litestar</span></a>
+        </li><li class="link">
+          <a href="https://pypi.org/project/litestar-storages/">
+            <span>PyPI</span></a>
+        </li></ul></nav>
+      <div class="sy-head-extra flex items-center print:hidden"><form class="searchbox flex items-center" action="../search.html" method="get">
+  <input type="text" name="q" placeholder="Search" />
+  <kbd>/</kbd>
+</form><div class="sy-head-socials">
+  <a href="https://github.com/JacobCoffee/litestar-storages" aria-label="GitHub">
+    <iconify-icon icon="simple-icons:github"></iconify-icon>
+  </a></div></div>
+    </div>
+    <div class="sy-head-actions flex items-center shrink-0 print:hidden"><button class="js-theme theme-switch flex items-center"
+data-aria-auto="Switch to light color mode"
+data-aria-light="Switch to dark color mode"
+data-aria-dark="Switch to auto color mode">
+<i class="i-lucide theme-icon"></i>
+</button><button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="head-nav" aria-expanded="false">
+        <div class="hamburger">
+          <span class="hamburger_1"></span>
+          <span class="hamburger_2"></span>
+          <span class="hamburger_3"></span>
+        </div>
+      </button>
+    </div>
+  </div>
+</div>
+<div class="sy-page sy-container flex mx-auto">
+  <aside id="lside" class="sy-lside md:w-72 md:shrink-0 print:hidden">
+    <div class="sy-lside-inner md:sticky">
+      <div class="sy-scrollbar p-6">
+        <div class="globaltoc" data-expand-depth="0"><p class="caption" role="heading" aria-level="3"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../getting-started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Example Applications</a></li>
+</ul>
+<p class="caption" role="heading" aria-level="3"><span class="caption-text">Storage Backends</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../backends/filesystem.html">FileSystem Storage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../backends/s3.html">S3 Storage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../backends/gcs.html">GCS Storage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../backends/azure.html">Azure Blob Storage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../backends/memory.html">Memory Storage</a></li>
+</ul>
+<p class="caption" role="heading" aria-level="3"><span class="caption-text">Advanced Topics</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="retry.html">Retry Utilities</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Multipart Uploads</a></li>
+<li class="toctree-l1"><a class="reference internal" href="progress-callbacks.html">Progress Callbacks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="custom-backends.html">Custom Backends</a></li>
+</ul>
+<p class="caption" role="heading" aria-level="3"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/index.html">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../api/base.html">Base Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/types.html">Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/exceptions.html">Exceptions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/backends/index.html">Storage Backends</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../api/backends/memory.html">Memory Storage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/backends/filesystem.html">FileSystem Storage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/backends/s3.html">S3 Storage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/backends/gcs.html">GCS Storage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/backends/azure.html">Azure Storage</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../api/contrib/index.html">Litestar Integration</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../api/contrib/plugin.html">Storage Plugin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/contrib/dependencies.html">Dependencies</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/contrib/dto.html">DTOs</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../comparison.html">Comparison with Other Libraries</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
+</ul>
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="lside-overlay js-menu" role="button" aria-label="Close left sidebar" aria-controls="lside" aria-expanded="false"></div>
+  <aside id="rside" class="sy-rside pb-3 w-64 shrink-0 order-last">
+    <button class="rside-close js-menu xl:hidden" aria-label="Close Table of Contents" type="button" aria-controls="rside" aria-expanded="false">
+      <i class="i-lucide close"></i>
+    </button>
+    <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4"><div class="localtoc"><h3>On this page</h3><ul>
+<li><a class="reference internal" href="#when-to-use-multipart-uploads">When to Use Multipart Uploads</a></li>
+<li><a class="reference internal" href="#the-put-large-convenience-method">The put_large() Convenience Method</a><ul>
+<li><a class="reference internal" href="#put-large-parameters">put_large() Parameters</a></li>
+<li><a class="reference internal" href="#automatic-fallback">Automatic Fallback</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#manual-multipart-upload">Manual Multipart Upload</a><ul>
+<li><a class="reference internal" href="#multipartupload-object">MultipartUpload Object</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#error-handling-and-cleanup">Error Handling and Cleanup</a><ul>
+<li><a class="reference internal" href="#using-put-large-for-automatic-cleanup">Using put_large() for Automatic Cleanup</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#progress-tracking">Progress Tracking</a></li>
+<li><a class="reference internal" href="#parallel-part-uploads">Parallel Part Uploads</a></li>
+<li><a class="reference internal" href="#resumable-uploads">Resumable Uploads</a></li>
+<li><a class="reference internal" href="#part-size-guidelines">Part Size Guidelines</a><ul>
+<li><a class="reference internal" href="#s3-limits">S3 Limits</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#best-practices">Best Practices</a><ul>
+<li><a class="reference internal" href="#use-put-large-unless-you-need-control">1. Use put_large() Unless You Need Control</a></li>
+<li><a class="reference internal" href="#always-clean-up-failed-uploads">2. Always Clean Up Failed Uploads</a></li>
+<li><a class="reference internal" href="#monitor-incomplete-uploads">3. Monitor Incomplete Uploads</a></li>
+<li><a class="reference internal" href="#use-progress-callbacks-for-user-feedback">4. Use Progress Callbacks for User Feedback</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#backend-specific-behavior">Backend-Specific Behavior</a><ul>
+<li><a class="reference internal" href="#s3-storage">S3 Storage</a></li>
+<li><a class="reference internal" href="#azure-blob-storage">Azure Blob Storage</a></li>
+<li><a class="reference internal" href="#google-cloud-storage">Google Cloud Storage</a></li>
+<li><a class="reference internal" href="#backend-comparison">Backend Comparison</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#choosing-the-right-approach">Choosing the Right Approach</a><ul>
+<li><a class="reference internal" href="#use-put-large-when">Use <code class="docutils literal notranslate"><span class="pre">put_large()</span></code> when:</a></li>
+<li><a class="reference internal" href="#use-manual-multipart-when">Use manual multipart when:</a></li>
+<li><a class="reference internal" href="#consider-regular-put-when">Consider regular <code class="docutils literal notranslate"><span class="pre">put()</span></code> when:</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#next-steps">Next Steps</a></li>
+</ul>
+</div><div id="ethical-ad-placement" data-ea-publisher="readthedocs"></div></div>
+  </aside>
+  <div class="rside-overlay js-menu" role="button" aria-label="Close Table of Contents" aria-controls="rside" aria-expanded="false"></div>
+  <main class="sy-main w-full max-sm:max-w-full print:pt-6">
+<div class="sy-breadcrumbs" role="navigation">
+  <div class="sy-breadcrumbs-inner flex items-center">
+    <div class="md:hidden mr-3">
+      <button class="js-menu" aria-label="Menu" type="button" aria-controls="lside" aria-expanded="false">
+        <i class="i-lucide menu"></i>
+      </button>
+    </div>
+    <ol class="flex-1" itemscope itemtype="https://schema.org/BreadcrumbList"><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="../index.html"><span itemprop="name">litestar-storages</span></a>
+        <span>/</span>
+        <meta itemprop="position" content="1" />
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <strong itemprop="name">Multipart Uploads</strong>
+        <meta itemprop="position" content="2" />
+      </li></ol>
+    <div class="xl:hidden ml-1">
+      <button class="js-menu" aria-label="Show table of contents" type="button" aria-controls="rside"
+        aria-expanded="false">
+        <i class="i-lucide outdent"></i>
+      </button>
+    </div>
+  </div>
+</div><div class="flex flex-col break-words justify-between">
+      <div class="min-w-0 max-w-6xl px-6 pb-6 pt-8 xl:px-12">
+        <article class="yue" role="main">
+          <section id="multipart-uploads">
+<h1>Multipart Uploads<a class="headerlink" href="#multipart-uploads" title="Link to this heading">¶</a></h1>
+<p>Multipart uploads enable efficient handling of large files by splitting them into smaller parts that can be uploaded independently. This provides better reliability, parallel upload capability, and the ability to resume interrupted uploads.</p>
+<section id="when-to-use-multipart-uploads">
+<h2>When to Use Multipart Uploads<a class="headerlink" href="#when-to-use-multipart-uploads" title="Link to this heading">¶</a></h2>
+<p>Use multipart uploads when:</p>
+<ul class="simple">
+<li><p><strong>File size exceeds 100MB</strong> - Single uploads become unreliable</p></li>
+<li><p><strong>Network is unstable</strong> - Parts can be retried independently</p></li>
+<li><p><strong>Upload speed matters</strong> - Parts can be uploaded in parallel</p></li>
+<li><p><strong>Resumable uploads needed</strong> - Track progress and resume after failure</p></li>
+</ul>
+<p>For files under 100MB, the standard <code class="docutils literal notranslate"><span class="pre">put()</span></code> method is usually sufficient.</p>
+</section>
+<section id="the-put-large-convenience-method">
+<h2>The put_large() Convenience Method<a class="headerlink" href="#the-put-large-convenience-method" title="Link to this heading">¶</a></h2>
+<p>For most use cases, <code class="docutils literal notranslate"><span class="pre">put_large()</span></code> handles all the complexity automatically:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_storages</span><span class="w"> </span><span class="kn">import</span> <span class="n">S3Storage</span><span class="p">,</span> <span class="n">S3Config</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="n">storage</span> <span class="o">=</span> <span class="n">S3Storage</span><span class="p">(</span><span class="n">S3Config</span><span class="p">(</span><span class="n">bucket</span><span class="o">=</span><span class="s2">&quot;my-bucket&quot;</span><span class="p">))</span>
+</span><span data-line="4">
+</span><span data-line="5"><span class="c1"># Upload a large file - automatically uses multipart</span>
+</span><span data-line="6"><span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">put_large</span><span class="p">(</span>
+</span><span data-line="7">    <span class="n">key</span><span class="o">=</span><span class="s2">&quot;backups/database.sql.gz&quot;</span><span class="p">,</span>
+</span><span data-line="8">    <span class="n">data</span><span class="o">=</span><span class="n">large_file_bytes</span><span class="p">,</span>
+</span><span data-line="9">    <span class="n">content_type</span><span class="o">=</span><span class="s2">&quot;application/gzip&quot;</span><span class="p">,</span>
+</span><span data-line="10"><span class="p">)</span>
+</span><span data-line="11">
+</span><span data-line="12"><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Uploaded </span><span class="si">{</span><span class="n">result</span><span class="o">.</span><span class="n">size</span><span class="si">}</span><span class="s2"> bytes to </span><span class="si">{</span><span class="n">result</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</span></pre></div>
+</div>
+<section id="put-large-parameters">
+<h3>put_large() Parameters<a class="headerlink" href="#put-large-parameters" title="Link to this heading">¶</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">put_large</span><span class="p">(</span>
+</span><span data-line="2">    <span class="n">key</span><span class="o">=</span><span class="s2">&quot;videos/presentation.mp4&quot;</span><span class="p">,</span>
+</span><span data-line="3">    <span class="n">data</span><span class="o">=</span><span class="n">video_bytes</span><span class="p">,</span>                    <span class="c1"># bytes or AsyncIterator[bytes]</span>
+</span><span data-line="4">    <span class="n">content_type</span><span class="o">=</span><span class="s2">&quot;video/mp4&quot;</span><span class="p">,</span>            <span class="c1"># Optional MIME type</span>
+</span><span data-line="5">    <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;author&quot;</span><span class="p">:</span> <span class="s2">&quot;Jane&quot;</span><span class="p">},</span>         <span class="c1"># Optional custom metadata</span>
+</span><span data-line="6">    <span class="n">part_size</span><span class="o">=</span><span class="mi">10</span> <span class="o">*</span> <span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span><span class="p">,</span>          <span class="c1"># Part size (default 10MB)</span>
+</span><span data-line="7">    <span class="n">progress_callback</span><span class="o">=</span><span class="n">my_callback</span><span class="p">,</span>       <span class="c1"># Optional progress tracking</span>
+</span><span data-line="8"><span class="p">)</span>
+</span></pre></div>
+</div>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Parameter</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">key</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">str</span></code></p></td>
+<td><p>Required</p></td>
+<td><p>Storage path for the file</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">data</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">bytes</span> <span class="pre">|</span> <span class="pre">AsyncIterator[bytes]</span></code></p></td>
+<td><p>Required</p></td>
+<td><p>File content</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">content_type</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
+<td><p>MIME type</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">metadata</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">dict[str,</span> <span class="pre">str]</span> <span class="pre">|</span> <span class="pre">None</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
+<td><p>Custom metadata</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">part_size</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">int</span></code></p></td>
+<td><p>10MB</p></td>
+<td><p>Size of each part in bytes</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">progress_callback</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ProgressCallback</span> <span class="pre">|</span> <span class="pre">None</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
+<td><p>Progress tracking callback</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="automatic-fallback">
+<h3>Automatic Fallback<a class="headerlink" href="#automatic-fallback" title="Link to this heading">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">put_large()</span></code> intelligently uses regular <code class="docutils literal notranslate"><span class="pre">put()</span></code> for small files:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="c1"># Files smaller than part_size use regular put()</span>
+</span><span data-line="2"><span class="n">small_result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">put_large</span><span class="p">(</span><span class="s2">&quot;small.txt&quot;</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot;Hello&quot;</span><span class="p">)</span>  <span class="c1"># Uses put()</span>
+</span><span data-line="3">
+</span><span data-line="4"><span class="c1"># Files larger than part_size use multipart</span>
+</span><span data-line="5"><span class="n">large_result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">put_large</span><span class="p">(</span><span class="s2">&quot;large.bin&quot;</span><span class="p">,</span> <span class="n">large_data</span><span class="p">)</span>  <span class="c1"># Uses multipart</span>
+</span></pre></div>
+</div>
+</section>
+</section>
+<section id="manual-multipart-upload">
+<h2>Manual Multipart Upload<a class="headerlink" href="#manual-multipart-upload" title="Link to this heading">¶</a></h2>
+<p>For fine-grained control, use the multipart upload API directly:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_storages</span><span class="w"> </span><span class="kn">import</span> <span class="n">S3Storage</span><span class="p">,</span> <span class="n">S3Config</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="n">storage</span> <span class="o">=</span> <span class="n">S3Storage</span><span class="p">(</span><span class="n">S3Config</span><span class="p">(</span><span class="n">bucket</span><span class="o">=</span><span class="s2">&quot;my-bucket&quot;</span><span class="p">))</span>
+</span><span data-line="4">
+</span><span data-line="5"><span class="c1"># Step 1: Start the multipart upload</span>
+</span><span data-line="6"><span class="n">upload</span> <span class="o">=</span> <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">start_multipart_upload</span><span class="p">(</span>
+</span><span data-line="7">    <span class="n">key</span><span class="o">=</span><span class="s2">&quot;large-file.zip&quot;</span><span class="p">,</span>
+</span><span data-line="8">    <span class="n">content_type</span><span class="o">=</span><span class="s2">&quot;application/zip&quot;</span><span class="p">,</span>
+</span><span data-line="9">    <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;source&quot;</span><span class="p">:</span> <span class="s2">&quot;backup-system&quot;</span><span class="p">},</span>
+</span><span data-line="10"><span class="p">)</span>
+</span><span data-line="11">
+</span><span data-line="12"><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Started upload: </span><span class="si">{</span><span class="n">upload</span><span class="o">.</span><span class="n">upload_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</span><span data-line="13">
+</span><span data-line="14"><span class="c1"># Step 2: Upload parts (must be at least 5MB each, except the last part)</span>
+</span><span data-line="15"><span class="n">part_size</span> <span class="o">=</span> <span class="mi">10</span> <span class="o">*</span> <span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span>  <span class="c1"># 10MB</span>
+</span><span data-line="16"><span class="n">data</span> <span class="o">=</span> <span class="n">load_large_file</span><span class="p">()</span>
+</span><span data-line="17">
+</span><span data-line="18"><span class="n">part_number</span> <span class="o">=</span> <span class="mi">1</span>
+</span><span data-line="19"><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="n">part_size</span><span class="p">):</span>
+</span><span data-line="20">    <span class="n">part_data</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">i</span> <span class="o">+</span> <span class="n">part_size</span><span class="p">]</span>
+</span><span data-line="21">    <span class="n">etag</span> <span class="o">=</span> <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">upload_part</span><span class="p">(</span><span class="n">upload</span><span class="p">,</span> <span class="n">part_number</span><span class="p">,</span> <span class="n">part_data</span><span class="p">)</span>
+</span><span data-line="22">    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Uploaded part </span><span class="si">{</span><span class="n">part_number</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">etag</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</span><span data-line="23">    <span class="n">part_number</span> <span class="o">+=</span> <span class="mi">1</span>
+</span><span data-line="24">
+</span><span data-line="25"><span class="c1"># Step 3: Complete the upload</span>
+</span><span data-line="26"><span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">complete_multipart_upload</span><span class="p">(</span><span class="n">upload</span><span class="p">)</span>
+</span><span data-line="27"><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Completed: </span><span class="si">{</span><span class="n">result</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">result</span><span class="o">.</span><span class="n">size</span><span class="si">}</span><span class="s2"> bytes)&quot;</span><span class="p">)</span>
+</span></pre></div>
+</div>
+<section id="multipartupload-object">
+<h3>MultipartUpload Object<a class="headerlink" href="#multipartupload-object" title="Link to this heading">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">MultipartUpload</span></code> dataclass tracks upload state:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_storages</span><span class="w"> </span><span class="kn">import</span> <span class="n">MultipartUpload</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="nd">@dataclass</span>
+</span><span data-line="4"><span class="k">class</span><span class="w"> </span><span class="nc">MultipartUpload</span><span class="p">:</span>
+</span><span data-line="5">    <span class="n">upload_id</span><span class="p">:</span> <span class="nb">str</span>                              <span class="c1"># Unique identifier for the upload</span>
+</span><span data-line="6">    <span class="n">key</span><span class="p">:</span> <span class="nb">str</span>                                    <span class="c1"># Storage key being uploaded to</span>
+</span><span data-line="7">    <span class="n">parts</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span>                <span class="c1"># Completed (part_number, etag) pairs</span>
+</span><span data-line="8">    <span class="n">part_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span> <span class="o">*</span> <span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span>           <span class="c1"># Size of each part (default 5MB)</span>
+</span><span data-line="9">    <span class="n">total_parts</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>             <span class="c1"># Expected total parts (if known)</span>
+</span></pre></div>
+</div>
+<p>Properties and methods:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="n">upload</span> <span class="o">=</span> <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">start_multipart_upload</span><span class="p">(</span><span class="s2">&quot;file.zip&quot;</span><span class="p">)</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="c1"># After uploading some parts...</span>
+</span><span data-line="4"><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Completed parts: </span><span class="si">{</span><span class="n">upload</span><span class="o">.</span><span class="n">completed_parts</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>  <span class="c1"># Number of parts uploaded</span>
+</span><span data-line="5"><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Parts list: </span><span class="si">{</span><span class="n">upload</span><span class="o">.</span><span class="n">parts</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>                 <span class="c1"># [(1, &quot;etag1&quot;), (2, &quot;etag2&quot;), ...]</span>
+</span></pre></div>
+</div>
+</section>
+</section>
+<section id="error-handling-and-cleanup">
+<h2>Error Handling and Cleanup<a class="headerlink" href="#error-handling-and-cleanup" title="Link to this heading">¶</a></h2>
+<p>Always handle errors to avoid orphaned multipart uploads (which incur storage costs):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="n">upload</span> <span class="o">=</span> <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">start_multipart_upload</span><span class="p">(</span><span class="s2">&quot;important.dat&quot;</span><span class="p">)</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="k">try</span><span class="p">:</span>
+</span><span data-line="4">    <span class="c1"># Upload parts...</span>
+</span><span data-line="5">    <span class="k">for</span> <span class="n">part_num</span><span class="p">,</span> <span class="n">part_data</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">chunks</span><span class="p">,</span> <span class="mi">1</span><span class="p">):</span>
+</span><span data-line="6">        <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">upload_part</span><span class="p">(</span><span class="n">upload</span><span class="p">,</span> <span class="n">part_num</span><span class="p">,</span> <span class="n">part_data</span><span class="p">)</span>
+</span><span data-line="7">
+</span><span data-line="8">    <span class="c1"># Complete the upload</span>
+</span><span data-line="9">    <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">complete_multipart_upload</span><span class="p">(</span><span class="n">upload</span><span class="p">)</span>
+</span><span data-line="10">
+</span><span data-line="11"><span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+</span><span data-line="12">    <span class="c1"># Clean up on failure</span>
+</span><span data-line="13">    <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">abort_multipart_upload</span><span class="p">(</span><span class="n">upload</span><span class="p">)</span>
+</span><span data-line="14">    <span class="k">raise</span>
+</span><span data-line="15">
+</span></pre></div>
+</div>
+<section id="using-put-large-for-automatic-cleanup">
+<h3>Using put_large() for Automatic Cleanup<a class="headerlink" href="#using-put-large-for-automatic-cleanup" title="Link to this heading">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">put_large()</span></code> method handles cleanup automatically:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">try</span><span class="p">:</span>
+</span><span data-line="2">    <span class="c1"># If this fails partway through, incomplete parts are automatically cleaned up</span>
+</span><span data-line="3">    <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">put_large</span><span class="p">(</span><span class="s2">&quot;file.zip&quot;</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+</span><span data-line="4"><span class="k">except</span> <span class="n">StorageError</span><span class="p">:</span>
+</span><span data-line="5">    <span class="c1"># No orphaned parts to worry about</span>
+</span><span data-line="6">    <span class="k">raise</span>
+</span></pre></div>
+</div>
+</section>
+</section>
+<section id="progress-tracking">
+<h2>Progress Tracking<a class="headerlink" href="#progress-tracking" title="Link to this heading">¶</a></h2>
+<p>Track upload progress using callbacks:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_storages</span><span class="w"> </span><span class="kn">import</span> <span class="n">ProgressInfo</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="k">def</span><span class="w"> </span><span class="nf">show_progress</span><span class="p">(</span><span class="n">info</span><span class="p">:</span> <span class="n">ProgressInfo</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="4"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Display upload progress.&quot;&quot;&quot;</span>
+</span><span data-line="5">    <span class="k">if</span> <span class="n">info</span><span class="o">.</span><span class="n">percentage</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="6">        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Uploading </span><span class="si">{</span><span class="n">info</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">info</span><span class="o">.</span><span class="n">percentage</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">%&quot;</span><span class="p">)</span>
+</span><span data-line="7">    <span class="k">else</span><span class="p">:</span>
+</span><span data-line="8">        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Uploading </span><span class="si">{</span><span class="n">info</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">info</span><span class="o">.</span><span class="n">bytes_transferred</span><span class="si">}</span><span class="s2"> bytes&quot;</span><span class="p">)</span>
+</span><span data-line="9">
+</span><span data-line="10"><span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">put_large</span><span class="p">(</span>
+</span><span data-line="11">    <span class="s2">&quot;large-video.mp4&quot;</span><span class="p">,</span>
+</span><span data-line="12">    <span class="n">video_data</span><span class="p">,</span>
+</span><span data-line="13">    <span class="n">progress_callback</span><span class="o">=</span><span class="n">show_progress</span><span class="p">,</span>
+</span><span data-line="14"><span class="p">)</span>
+</span></pre></div>
+</div>
+<p>For detailed progress tracking options, see <a class="reference internal" href="progress-callbacks.html"><span class="std std-doc">Progress Callbacks</span></a>.</p>
+</section>
+<section id="parallel-part-uploads">
+<h2>Parallel Part Uploads<a class="headerlink" href="#parallel-part-uploads" title="Link to this heading">¶</a></h2>
+<p>For maximum upload speed, upload parts in parallel:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_storages</span><span class="w"> </span><span class="kn">import</span> <span class="n">S3Storage</span><span class="p">,</span> <span class="n">MultipartUpload</span>
+</span><span data-line="3">
+</span><span data-line="4"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">upload_parts_parallel</span><span class="p">(</span>
+</span><span data-line="5">    <span class="n">storage</span><span class="p">:</span> <span class="n">S3Storage</span><span class="p">,</span>
+</span><span data-line="6">    <span class="n">upload</span><span class="p">:</span> <span class="n">MultipartUpload</span><span class="p">,</span>
+</span><span data-line="7">    <span class="n">data</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">,</span>
+</span><span data-line="8">    <span class="n">part_size</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+</span><span data-line="9">    <span class="n">max_concurrent</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">4</span><span class="p">,</span>
+</span><span data-line="10"><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="11"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Upload parts in parallel with concurrency limit.&quot;&quot;&quot;</span>
+</span><span data-line="12">
+</span><span data-line="13">    <span class="n">semaphore</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Semaphore</span><span class="p">(</span><span class="n">max_concurrent</span><span class="p">)</span>
+</span><span data-line="14">
+</span><span data-line="15">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">upload_part</span><span class="p">(</span><span class="n">part_num</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">part_data</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="16">        <span class="k">async</span> <span class="k">with</span> <span class="n">semaphore</span><span class="p">:</span>
+</span><span data-line="17">            <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">upload_part</span><span class="p">(</span><span class="n">upload</span><span class="p">,</span> <span class="n">part_num</span><span class="p">,</span> <span class="n">part_data</span><span class="p">)</span>
+</span><span data-line="18">
+</span><span data-line="19">    <span class="c1"># Create tasks for all parts</span>
+</span><span data-line="20">    <span class="n">tasks</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span data-line="21">    <span class="n">part_number</span> <span class="o">=</span> <span class="mi">1</span>
+</span><span data-line="22">    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="n">part_size</span><span class="p">):</span>
+</span><span data-line="23">        <span class="n">part_data</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">i</span> <span class="o">+</span> <span class="n">part_size</span><span class="p">]</span>
+</span><span data-line="24">        <span class="n">tasks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">upload_part</span><span class="p">(</span><span class="n">part_number</span><span class="p">,</span> <span class="n">part_data</span><span class="p">))</span>
+</span><span data-line="25">        <span class="n">part_number</span> <span class="o">+=</span> <span class="mi">1</span>
+</span><span data-line="26">
+</span><span data-line="27">    <span class="c1"># Run all uploads with concurrency limit</span>
+</span><span data-line="28">    <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="o">*</span><span class="n">tasks</span><span class="p">)</span>
+</span><span data-line="29">
+</span><span data-line="30">
+</span><span data-line="31"><span class="c1"># Usage</span>
+</span><span data-line="32"><span class="n">storage</span> <span class="o">=</span> <span class="n">S3Storage</span><span class="p">(</span><span class="n">S3Config</span><span class="p">(</span><span class="n">bucket</span><span class="o">=</span><span class="s2">&quot;my-bucket&quot;</span><span class="p">))</span>
+</span><span data-line="33"><span class="n">upload</span> <span class="o">=</span> <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">start_multipart_upload</span><span class="p">(</span><span class="s2">&quot;large-file.bin&quot;</span><span class="p">)</span>
+</span><span data-line="34">
+</span><span data-line="35"><span class="k">try</span><span class="p">:</span>
+</span><span data-line="36">    <span class="k">await</span> <span class="n">upload_parts_parallel</span><span class="p">(</span><span class="n">storage</span><span class="p">,</span> <span class="n">upload</span><span class="p">,</span> <span class="n">large_data</span><span class="p">,</span> <span class="mi">10</span> <span class="o">*</span> <span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span><span class="p">)</span>
+</span><span data-line="37">    <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">complete_multipart_upload</span><span class="p">(</span><span class="n">upload</span><span class="p">)</span>
+</span><span data-line="38"><span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+</span><span data-line="39">    <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">abort_multipart_upload</span><span class="p">(</span><span class="n">upload</span><span class="p">)</span>
+</span><span data-line="40">    <span class="k">raise</span>
+</span></pre></div>
+</div>
+</section>
+<section id="resumable-uploads">
+<h2>Resumable Uploads<a class="headerlink" href="#resumable-uploads" title="Link to this heading">¶</a></h2>
+<p>For truly resumable uploads, persist the upload state:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_storages</span><span class="w"> </span><span class="kn">import</span> <span class="n">S3Storage</span><span class="p">,</span> <span class="n">MultipartUpload</span>
+</span><span data-line="4">
+</span><span data-line="5"><span class="k">class</span><span class="w"> </span><span class="nc">ResumableUpload</span><span class="p">:</span>
+</span><span data-line="6"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Manage resumable multipart uploads.&quot;&quot;&quot;</span>
+</span><span data-line="7">
+</span><span data-line="8">    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">storage</span><span class="p">:</span> <span class="n">S3Storage</span><span class="p">,</span> <span class="n">state_file</span><span class="p">:</span> <span class="n">Path</span><span class="p">):</span>
+</span><span data-line="9">        <span class="bp">self</span><span class="o">.</span><span class="n">storage</span> <span class="o">=</span> <span class="n">storage</span>
+</span><span data-line="10">        <span class="bp">self</span><span class="o">.</span><span class="n">state_file</span> <span class="o">=</span> <span class="n">state_file</span>
+</span><span data-line="11">
+</span><span data-line="12">    <span class="k">def</span><span class="w"> </span><span class="nf">save_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">upload</span><span class="p">:</span> <span class="n">MultipartUpload</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="13"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Persist upload state to disk.&quot;&quot;&quot;</span>
+</span><span data-line="14">        <span class="n">state</span> <span class="o">=</span> <span class="p">{</span>
+</span><span data-line="15">            <span class="s2">&quot;upload_id&quot;</span><span class="p">:</span> <span class="n">upload</span><span class="o">.</span><span class="n">upload_id</span><span class="p">,</span>
+</span><span data-line="16">            <span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="n">upload</span><span class="o">.</span><span class="n">key</span><span class="p">,</span>
+</span><span data-line="17">            <span class="s2">&quot;parts&quot;</span><span class="p">:</span> <span class="n">upload</span><span class="o">.</span><span class="n">parts</span><span class="p">,</span>
+</span><span data-line="18">            <span class="s2">&quot;part_size&quot;</span><span class="p">:</span> <span class="n">upload</span><span class="o">.</span><span class="n">part_size</span><span class="p">,</span>
+</span><span data-line="19">        <span class="p">}</span>
+</span><span data-line="20">        <span class="bp">self</span><span class="o">.</span><span class="n">state_file</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">state</span><span class="p">))</span>
+</span><span data-line="21">
+</span><span data-line="22">    <span class="k">def</span><span class="w"> </span><span class="nf">load_state</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MultipartUpload</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="23"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Load upload state from disk.&quot;&quot;&quot;</span>
+</span><span data-line="24">        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">state_file</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+</span><span data-line="25">            <span class="k">return</span> <span class="kc">None</span>
+</span><span data-line="26">
+</span><span data-line="27">        <span class="n">state</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">state_file</span><span class="o">.</span><span class="n">read_text</span><span class="p">())</span>
+</span><span data-line="28">        <span class="k">return</span> <span class="n">MultipartUpload</span><span class="p">(</span>
+</span><span data-line="29">            <span class="n">upload_id</span><span class="o">=</span><span class="n">state</span><span class="p">[</span><span class="s2">&quot;upload_id&quot;</span><span class="p">],</span>
+</span><span data-line="30">            <span class="n">key</span><span class="o">=</span><span class="n">state</span><span class="p">[</span><span class="s2">&quot;key&quot;</span><span class="p">],</span>
+</span><span data-line="31">            <span class="n">parts</span><span class="o">=</span><span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">state</span><span class="p">[</span><span class="s2">&quot;parts&quot;</span><span class="p">]],</span>
+</span><span data-line="32">            <span class="n">part_size</span><span class="o">=</span><span class="n">state</span><span class="p">[</span><span class="s2">&quot;part_size&quot;</span><span class="p">],</span>
+</span><span data-line="33">        <span class="p">)</span>
+</span><span data-line="34">
+</span><span data-line="35">    <span class="k">def</span><span class="w"> </span><span class="nf">clear_state</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="36"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Remove saved state.&quot;&quot;&quot;</span>
+</span><span data-line="37">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">state_file</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+</span><span data-line="38">            <span class="bp">self</span><span class="o">.</span><span class="n">state_file</span><span class="o">.</span><span class="n">unlink</span><span class="p">()</span>
+</span><span data-line="39">
+</span><span data-line="40">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">upload</span><span class="p">(</span>
+</span><span data-line="41">        <span class="bp">self</span><span class="p">,</span>
+</span><span data-line="42">        <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+</span><span data-line="43">        <span class="n">data</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">,</span>
+</span><span data-line="44">        <span class="n">part_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span> <span class="o">*</span> <span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span><span class="p">,</span>
+</span><span data-line="45">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="46"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Upload with resume capability.&quot;&quot;&quot;</span>
+</span><span data-line="47">
+</span><span data-line="48">        <span class="c1"># Check for existing upload</span>
+</span><span data-line="49">        <span class="n">upload</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_state</span><span class="p">()</span>
+</span><span data-line="50">        <span class="n">start_part</span> <span class="o">=</span> <span class="mi">1</span>
+</span><span data-line="51">
+</span><span data-line="52">        <span class="k">if</span> <span class="n">upload</span> <span class="ow">and</span> <span class="n">upload</span><span class="o">.</span><span class="n">key</span> <span class="o">==</span> <span class="n">key</span><span class="p">:</span>
+</span><span data-line="53">            <span class="c1"># Resume existing upload</span>
+</span><span data-line="54">            <span class="n">start_part</span> <span class="o">=</span> <span class="n">upload</span><span class="o">.</span><span class="n">completed_parts</span> <span class="o">+</span> <span class="mi">1</span>
+</span><span data-line="55">            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Resuming from part </span><span class="si">{</span><span class="n">start_part</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</span><span data-line="56">        <span class="k">else</span><span class="p">:</span>
+</span><span data-line="57">            <span class="c1"># Start new upload</span>
+</span><span data-line="58">            <span class="n">upload</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">storage</span><span class="o">.</span><span class="n">start_multipart_upload</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">part_size</span><span class="o">=</span><span class="n">part_size</span><span class="p">)</span>
+</span><span data-line="59">
+</span><span data-line="60">        <span class="k">try</span><span class="p">:</span>
+</span><span data-line="61">            <span class="c1"># Upload remaining parts</span>
+</span><span data-line="62">            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">part_num</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">start_part</span><span class="p">,</span> <span class="o">-</span><span class="p">(</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">//</span> <span class="n">part_size</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)):</span>
+</span><span data-line="63">                <span class="n">start</span> <span class="o">=</span> <span class="p">(</span><span class="n">part_num</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">part_size</span>
+</span><span data-line="64">                <span class="n">part_data</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">start</span><span class="p">:</span><span class="n">start</span> <span class="o">+</span> <span class="n">part_size</span><span class="p">]</span>
+</span><span data-line="65">
+</span><span data-line="66">                <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">storage</span><span class="o">.</span><span class="n">upload_part</span><span class="p">(</span><span class="n">upload</span><span class="p">,</span> <span class="n">part_num</span><span class="p">,</span> <span class="n">part_data</span><span class="p">)</span>
+</span><span data-line="67">
+</span><span data-line="68">                <span class="c1"># Save state after each part</span>
+</span><span data-line="69">                <span class="bp">self</span><span class="o">.</span><span class="n">save_state</span><span class="p">(</span><span class="n">upload</span><span class="p">)</span>
+</span><span data-line="70">                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Part </span><span class="si">{</span><span class="n">part_num</span><span class="si">}</span><span class="s2"> complete&quot;</span><span class="p">)</span>
+</span><span data-line="71">
+</span><span data-line="72">            <span class="c1"># Complete upload</span>
+</span><span data-line="73">            <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">storage</span><span class="o">.</span><span class="n">complete_multipart_upload</span><span class="p">(</span><span class="n">upload</span><span class="p">)</span>
+</span><span data-line="74">            <span class="bp">self</span><span class="o">.</span><span class="n">clear_state</span><span class="p">()</span>
+</span><span data-line="75">
+</span><span data-line="76">        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+</span><span data-line="77">            <span class="c1"># State is already saved - can resume later</span>
+</span><span data-line="78">            <span class="k">raise</span>
+</span><span data-line="79">
+</span><span data-line="80">
+</span><span data-line="81"><span class="c1"># Usage</span>
+</span><span data-line="82"><span class="n">storage</span> <span class="o">=</span> <span class="n">S3Storage</span><span class="p">(</span><span class="n">S3Config</span><span class="p">(</span><span class="n">bucket</span><span class="o">=</span><span class="s2">&quot;my-bucket&quot;</span><span class="p">))</span>
+</span><span data-line="83"><span class="n">uploader</span> <span class="o">=</span> <span class="n">ResumableUpload</span><span class="p">(</span><span class="n">storage</span><span class="p">,</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;.upload_state.json&quot;</span><span class="p">))</span>
+</span><span data-line="84">
+</span><span data-line="85"><span class="k">await</span> <span class="n">uploader</span><span class="o">.</span><span class="n">upload</span><span class="p">(</span><span class="s2">&quot;huge-file.tar.gz&quot;</span><span class="p">,</span> <span class="n">file_data</span><span class="p">)</span>
+</span></pre></div>
+</div>
+</section>
+<section id="part-size-guidelines">
+<h2>Part Size Guidelines<a class="headerlink" href="#part-size-guidelines" title="Link to this heading">¶</a></h2>
+<p>Choose part sizes based on your use case:</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>File Size</p></th>
+<th class="head"><p>Recommended Part Size</p></th>
+<th class="head"><p>Reasoning</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>100MB - 1GB</p></td>
+<td><p>10MB</p></td>
+<td><p>Good balance of parallelism and overhead</p></td>
+</tr>
+<tr class="row-odd"><td><p>1GB - 10GB</p></td>
+<td><p>50MB</p></td>
+<td><p>Fewer parts to manage</p></td>
+</tr>
+<tr class="row-even"><td><p>10GB+</p></td>
+<td><p>100MB</p></td>
+<td><p>Minimize API calls</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<section id="s3-limits">
+<h3>S3 Limits<a class="headerlink" href="#s3-limits" title="Link to this heading">¶</a></h3>
+<p>Be aware of S3’s multipart upload limits:</p>
+<ul class="simple">
+<li><p><strong>Minimum part size</strong>: 5MB (except last part)</p></li>
+<li><p><strong>Maximum part size</strong>: 5GB</p></li>
+<li><p><strong>Maximum parts per upload</strong>: 10,000</p></li>
+<li><p><strong>Maximum file size</strong>: 5TB</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="c1"># The minimum part size is enforced automatically</span>
+</span><span data-line="2"><span class="n">upload</span> <span class="o">=</span> <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">start_multipart_upload</span><span class="p">(</span>
+</span><span data-line="3">    <span class="s2">&quot;file.bin&quot;</span><span class="p">,</span>
+</span><span data-line="4">    <span class="n">part_size</span><span class="o">=</span><span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span><span class="p">,</span>  <span class="c1"># 1MB requested</span>
+</span><span data-line="5"><span class="p">)</span>
+</span><span data-line="6"><span class="c1"># upload.part_size will be 5MB (minimum enforced)</span>
+</span></pre></div>
+</div>
+</section>
+</section>
+<section id="best-practices">
+<h2>Best Practices<a class="headerlink" href="#best-practices" title="Link to this heading">¶</a></h2>
+<section id="use-put-large-unless-you-need-control">
+<h3>1. Use put_large() Unless You Need Control<a class="headerlink" href="#use-put-large-unless-you-need-control" title="Link to this heading">¶</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="c1"># Simple and handles errors automatically</span>
+</span><span data-line="2"><span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">put_large</span><span class="p">(</span><span class="s2">&quot;file.zip&quot;</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+</span></pre></div>
+</div>
+</section>
+<section id="always-clean-up-failed-uploads">
+<h3>2. Always Clean Up Failed Uploads<a class="headerlink" href="#always-clean-up-failed-uploads" title="Link to this heading">¶</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="c1"># Manual multipart - always use try/finally</span>
+</span><span data-line="2"><span class="n">upload</span> <span class="o">=</span> <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">start_multipart_upload</span><span class="p">(</span><span class="s2">&quot;file.zip&quot;</span><span class="p">)</span>
+</span><span data-line="3"><span class="k">try</span><span class="p">:</span>
+</span><span data-line="4">    <span class="c1"># ... upload parts ...</span>
+</span><span data-line="5">    <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">complete_multipart_upload</span><span class="p">(</span><span class="n">upload</span><span class="p">)</span>
+</span><span data-line="6"><span class="k">finally</span><span class="p">:</span>
+</span><span data-line="7">    <span class="k">if</span> <span class="ow">not</span> <span class="n">upload_completed</span><span class="p">:</span>
+</span><span data-line="8">        <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">abort_multipart_upload</span><span class="p">(</span><span class="n">upload</span><span class="p">)</span>
+</span></pre></div>
+</div>
+</section>
+<section id="monitor-incomplete-uploads">
+<h3>3. Monitor Incomplete Uploads<a class="headerlink" href="#monitor-incomplete-uploads" title="Link to this heading">¶</a></h3>
+<p>Configure S3 lifecycle rules to auto-delete incomplete uploads:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="p">{</span>
+</span><span data-line="2"><span class="w">    </span><span class="nt">&quot;Rules&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+</span><span data-line="3"><span class="w">        </span><span class="p">{</span>
+</span><span data-line="4"><span class="w">            </span><span class="nt">&quot;ID&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;AbortIncompleteMultipartUploads&quot;</span><span class="p">,</span>
+</span><span data-line="5"><span class="w">            </span><span class="nt">&quot;Status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Enabled&quot;</span><span class="p">,</span>
+</span><span data-line="6"><span class="w">            </span><span class="nt">&quot;Filter&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span>
+</span><span data-line="7"><span class="w">            </span><span class="nt">&quot;AbortIncompleteMultipartUpload&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="8"><span class="w">                </span><span class="nt">&quot;DaysAfterInitiation&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">7</span>
+</span><span data-line="9"><span class="w">            </span><span class="p">}</span>
+</span><span data-line="10"><span class="w">        </span><span class="p">}</span>
+</span><span data-line="11"><span class="w">    </span><span class="p">]</span>
+</span><span data-line="12"><span class="p">}</span>
+</span></pre></div>
+</div>
+</section>
+<section id="use-progress-callbacks-for-user-feedback">
+<h3>4. Use Progress Callbacks for User Feedback<a class="headerlink" href="#use-progress-callbacks-for-user-feedback" title="Link to this heading">¶</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">upload_with_ui</span><span class="p">(</span><span class="n">storage</span><span class="p">:</span> <span class="n">S3Storage</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="2"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Upload with progress feedback.&quot;&quot;&quot;</span>
+</span><span data-line="3">
+</span><span data-line="4">    <span class="k">def</span><span class="w"> </span><span class="nf">update_ui</span><span class="p">(</span><span class="n">info</span><span class="p">:</span> <span class="n">ProgressInfo</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="5">        <span class="n">percent</span> <span class="o">=</span> <span class="n">info</span><span class="o">.</span><span class="n">percentage</span> <span class="ow">or</span> <span class="mi">0</span>
+</span><span data-line="6">        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\r</span><span class="s2">Uploading: </span><span class="si">{</span><span class="n">percent</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2">%&quot;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span data-line="7">
+</span><span data-line="8">    <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">put_large</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">progress_callback</span><span class="o">=</span><span class="n">update_ui</span><span class="p">)</span>
+</span><span data-line="9">    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Complete!&quot;</span><span class="p">)</span>
+</span></pre></div>
+</div>
+</section>
+</section>
+<section id="backend-specific-behavior">
+<h2>Backend-Specific Behavior<a class="headerlink" href="#backend-specific-behavior" title="Link to this heading">¶</a></h2>
+<p>While all backends support the same multipart upload API, their underlying implementations differ significantly.</p>
+<section id="s3-storage">
+<h3>S3 Storage<a class="headerlink" href="#s3-storage" title="Link to this heading">¶</a></h3>
+<p>S3 uses true multipart uploads with server-side part tracking:</p>
+<ul class="simple">
+<li><p>Parts are uploaded directly to S3 and stored until committed</p></li>
+<li><p>Each part returns an ETag used to verify integrity</p></li>
+<li><p>Minimum part size: 5MB (except last part)</p></li>
+<li><p>Maximum parts per upload: 10,000</p></li>
+<li><p>Maximum file size: 5TB</p></li>
+<li><p>Incomplete uploads incur storage costs until aborted</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_storages</span><span class="w"> </span><span class="kn">import</span> <span class="n">S3Storage</span><span class="p">,</span> <span class="n">S3Config</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="n">storage</span> <span class="o">=</span> <span class="n">S3Storage</span><span class="p">(</span><span class="n">S3Config</span><span class="p">(</span><span class="n">bucket</span><span class="o">=</span><span class="s2">&quot;my-bucket&quot;</span><span class="p">))</span>
+</span><span data-line="4">
+</span><span data-line="5"><span class="c1"># S3 natively tracks parts on the server</span>
+</span><span data-line="6"><span class="n">upload</span> <span class="o">=</span> <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">start_multipart_upload</span><span class="p">(</span><span class="s2">&quot;large-file.bin&quot;</span><span class="p">)</span>
+</span><span data-line="7"><span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">upload_part</span><span class="p">(</span><span class="n">upload</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">part_data</span><span class="p">)</span>  <span class="c1"># Stored on S3</span>
+</span><span data-line="8"><span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">complete_multipart_upload</span><span class="p">(</span><span class="n">upload</span><span class="p">)</span>  <span class="c1"># Commits parts</span>
+</span></pre></div>
+</div>
+</section>
+<section id="azure-blob-storage">
+<h3>Azure Blob Storage<a class="headerlink" href="#azure-blob-storage" title="Link to this heading">¶</a></h3>
+<p>Azure uses Block Blobs with staged blocks:</p>
+<ul class="simple">
+<li><p>Blocks are staged (uploaded) but not visible until committed</p></li>
+<li><p>Block IDs are base64-encoded strings (handled automatically)</p></li>
+<li><p>Maximum blocks per blob: 50,000</p></li>
+<li><p>Maximum block size: 4000MB</p></li>
+<li><p>Uncommitted blocks are automatically garbage-collected after 7 days</p></li>
+<li><p>No explicit abort needed - uncommitted blocks expire automatically</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_storages</span><span class="w"> </span><span class="kn">import</span> <span class="n">AzureStorage</span><span class="p">,</span> <span class="n">AzureConfig</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="n">storage</span> <span class="o">=</span> <span class="n">AzureStorage</span><span class="p">(</span>
+</span><span data-line="4">    <span class="n">AzureConfig</span><span class="p">(</span>
+</span><span data-line="5">        <span class="n">container</span><span class="o">=</span><span class="s2">&quot;my-container&quot;</span><span class="p">,</span>
+</span><span data-line="6">        <span class="n">connection_string</span><span class="o">=</span><span class="s2">&quot;DefaultEndpointsProtocol=https;...&quot;</span><span class="p">,</span>
+</span><span data-line="7">    <span class="p">)</span>
+</span><span data-line="8"><span class="p">)</span>
+</span><span data-line="9">
+</span><span data-line="10"><span class="c1"># Azure stages blocks, then commits them as a block list</span>
+</span><span data-line="11"><span class="n">upload</span> <span class="o">=</span> <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">start_multipart_upload</span><span class="p">(</span>
+</span><span data-line="12">    <span class="s2">&quot;large-file.bin&quot;</span><span class="p">,</span>
+</span><span data-line="13">    <span class="n">part_size</span><span class="o">=</span><span class="mi">4</span> <span class="o">*</span> <span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span><span class="p">,</span>  <span class="c1"># 4MB default for Azure</span>
+</span><span data-line="14"><span class="p">)</span>
+</span><span data-line="15">
+</span><span data-line="16"><span class="c1"># Each part is staged as a block</span>
+</span><span data-line="17"><span class="k">for</span> <span class="n">part_num</span><span class="p">,</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">chunks</span><span class="p">,</span> <span class="mi">1</span><span class="p">):</span>
+</span><span data-line="18">    <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">upload_part</span><span class="p">(</span><span class="n">upload</span><span class="p">,</span> <span class="n">part_num</span><span class="p">,</span> <span class="n">chunk</span><span class="p">)</span>
+</span><span data-line="19">
+</span><span data-line="20"><span class="c1"># Commit all blocks as a single blob</span>
+</span><span data-line="21"><span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">complete_multipart_upload</span><span class="p">(</span><span class="n">upload</span><span class="p">)</span>
+</span></pre></div>
+</div>
+<p><strong>Azure-specific notes:</strong></p>
+<ul class="simple">
+<li><p>The <code class="docutils literal notranslate"><span class="pre">upload_id</span></code> is generated client-side (Azure doesn’t have a server-side upload ID)</p></li>
+<li><p>Content type and metadata are applied when committing the block list</p></li>
+<li><p>Aborting is a no-op since uncommitted blocks auto-expire</p></li>
+</ul>
+</section>
+<section id="google-cloud-storage">
+<h3>Google Cloud Storage<a class="headerlink" href="#google-cloud-storage" title="Link to this heading">¶</a></h3>
+<p>GCS uses a buffering approach since gcloud-aio-storage doesn’t expose resumable uploads:</p>
+<ul class="simple">
+<li><p>Parts are buffered in memory until <code class="docutils literal notranslate"><span class="pre">complete_multipart_upload</span></code> is called</p></li>
+<li><p>All parts are combined and uploaded as a single request</p></li>
+<li><p>Memory usage equals total file size during upload</p></li>
+<li><p>Best suited for files up to a few hundred MB</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_storages</span><span class="w"> </span><span class="kn">import</span> <span class="n">GCSStorage</span><span class="p">,</span> <span class="n">GCSConfig</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="n">storage</span> <span class="o">=</span> <span class="n">GCSStorage</span><span class="p">(</span>
+</span><span data-line="4">    <span class="n">GCSConfig</span><span class="p">(</span>
+</span><span data-line="5">        <span class="n">bucket</span><span class="o">=</span><span class="s2">&quot;my-bucket&quot;</span><span class="p">,</span>
+</span><span data-line="6">        <span class="n">project</span><span class="o">=</span><span class="s2">&quot;my-project&quot;</span><span class="p">,</span>
+</span><span data-line="7">    <span class="p">)</span>
+</span><span data-line="8"><span class="p">)</span>
+</span><span data-line="9">
+</span><span data-line="10"><span class="c1"># GCS buffers parts in memory</span>
+</span><span data-line="11"><span class="n">upload</span> <span class="o">=</span> <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">start_multipart_upload</span><span class="p">(</span>
+</span><span data-line="12">    <span class="s2">&quot;large-file.bin&quot;</span><span class="p">,</span>
+</span><span data-line="13">    <span class="n">part_size</span><span class="o">=</span><span class="mi">10</span> <span class="o">*</span> <span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span><span class="p">,</span>  <span class="c1"># 10MB default</span>
+</span><span data-line="14"><span class="p">)</span>
+</span><span data-line="15">
+</span><span data-line="16"><span class="c1"># Parts are buffered locally</span>
+</span><span data-line="17"><span class="k">for</span> <span class="n">part_num</span><span class="p">,</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">chunks</span><span class="p">,</span> <span class="mi">1</span><span class="p">):</span>
+</span><span data-line="18">    <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">upload_part</span><span class="p">(</span><span class="n">upload</span><span class="p">,</span> <span class="n">part_num</span><span class="p">,</span> <span class="n">chunk</span><span class="p">)</span>  <span class="c1"># Stored in memory</span>
+</span><span data-line="19">
+</span><span data-line="20"><span class="c1"># All buffered data is uploaded at once</span>
+</span><span data-line="21"><span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">complete_multipart_upload</span><span class="p">(</span><span class="n">upload</span><span class="p">)</span>  <span class="c1"># Single upload</span>
+</span></pre></div>
+</div>
+<p><strong>GCS-specific notes:</strong></p>
+<ul class="simple">
+<li><p>Memory consumption: buffering means total file data is held in memory</p></li>
+<li><p>For very large files (multi-GB), consider using GCS’s native resumable upload API directly</p></li>
+<li><p>Aborting simply clears the buffered data from memory</p></li>
+<li><p>No server-side storage until the upload is completed</p></li>
+</ul>
+</section>
+<section id="backend-comparison">
+<h3>Backend Comparison<a class="headerlink" href="#backend-comparison" title="Link to this heading">¶</a></h3>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Feature</p></th>
+<th class="head"><p>S3</p></th>
+<th class="head"><p>Azure</p></th>
+<th class="head"><p>GCS</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Server-side part storage</p></td>
+<td><p>Yes</p></td>
+<td><p>Yes (staged blocks)</p></td>
+<td><p>No (memory buffer)</p></td>
+</tr>
+<tr class="row-odd"><td><p>Minimum part size</p></td>
+<td><p>5MB</p></td>
+<td><p>None</p></td>
+<td><p>None</p></td>
+</tr>
+<tr class="row-even"><td><p>Maximum part size</p></td>
+<td><p>5GB</p></td>
+<td><p>4000MB</p></td>
+<td><p>N/A</p></td>
+</tr>
+<tr class="row-odd"><td><p>Maximum parts</p></td>
+<td><p>10,000</p></td>
+<td><p>50,000</p></td>
+<td><p>N/A</p></td>
+</tr>
+<tr class="row-even"><td><p>Maximum file size</p></td>
+<td><p>5TB</p></td>
+<td><p>~190TB</p></td>
+<td><p>Memory-limited</p></td>
+</tr>
+<tr class="row-odd"><td><p>Cleanup required</p></td>
+<td><p>Yes (abort or lifecycle)</p></td>
+<td><p>Auto (7 days)</p></td>
+<td><p>No</p></td>
+</tr>
+<tr class="row-even"><td><p>Memory efficiency</p></td>
+<td><p>High</p></td>
+<td><p>High</p></td>
+<td><p>Low</p></td>
+</tr>
+<tr class="row-odd"><td><p>Resume after restart</p></td>
+<td><p>Yes</p></td>
+<td><p>Yes (with block IDs)</p></td>
+<td><p>No</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</section>
+<section id="choosing-the-right-approach">
+<h2>Choosing the Right Approach<a class="headerlink" href="#choosing-the-right-approach" title="Link to this heading">¶</a></h2>
+<section id="use-put-large-when">
+<h3>Use <code class="docutils literal notranslate"><span class="pre">put_large()</span></code> when:<a class="headerlink" href="#use-put-large-when" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p>You want automatic handling of chunking and errors</p></li>
+<li><p>File sizes are under a few GB</p></li>
+<li><p>You don’t need to resume uploads across restarts</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="c1"># Recommended for most cases</span>
+</span><span data-line="2"><span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">put_large</span><span class="p">(</span><span class="s2">&quot;file.bin&quot;</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">progress_callback</span><span class="o">=</span><span class="n">show_progress</span><span class="p">)</span>
+</span></pre></div>
+</div>
+</section>
+<section id="use-manual-multipart-when">
+<h3>Use manual multipart when:<a class="headerlink" href="#use-manual-multipart-when" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p>You need resumable uploads that survive application restarts (S3/Azure only)</p></li>
+<li><p>You want parallel part uploads for maximum speed</p></li>
+<li><p>You need fine-grained control over part sizes and timing</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="c1"># For advanced control</span>
+</span><span data-line="2"><span class="n">upload</span> <span class="o">=</span> <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">start_multipart_upload</span><span class="p">(</span><span class="s2">&quot;file.bin&quot;</span><span class="p">)</span>
+</span><span data-line="3"><span class="c1"># ... custom upload logic ...</span>
+</span><span data-line="4"><span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">complete_multipart_upload</span><span class="p">(</span><span class="n">upload</span><span class="p">)</span>
+</span></pre></div>
+</div>
+</section>
+<section id="consider-regular-put-when">
+<h3>Consider regular <code class="docutils literal notranslate"><span class="pre">put()</span></code> when:<a class="headerlink" href="#consider-regular-put-when" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p>Files are under 100MB</p></li>
+<li><p>Network is reliable</p></li>
+<li><p>Simplicity is more important than resumability</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="c1"># For smaller files</span>
+</span><span data-line="2"><span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="s2">&quot;file.bin&quot;</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+</span></pre></div>
+</div>
+</section>
+</section>
+<section id="next-steps">
+<h2>Next Steps<a class="headerlink" href="#next-steps" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>Learn about <a class="reference internal" href="progress-callbacks.html"><span class="std std-doc">progress callbacks</span></a> for detailed progress tracking</p></li>
+<li><p>Explore <a class="reference internal" href="retry.html"><span class="std std-doc">retry utilities</span></a> for reliable uploads</p></li>
+<li><p>See <a class="reference internal" href="../backends/s3.html"><span class="std std-doc">S3 storage</span></a> for full S3Storage documentation</p></li>
+<li><p>See <a class="reference internal" href="../backends/azure.html"><span class="std std-doc">Azure storage</span></a> for Azure-specific features</p></li>
+<li><p>See <a class="reference internal" href="../backends/gcs.html"><span class="std std-doc">GCS storage</span></a> for Google Cloud Storage details</p></li>
+</ul>
+</section>
+</section>
+
+        </article><button class="back-to-top" type="button">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+  </svg>
+  <span>Back to top</span>
+</button><div class="navigation flex print:hidden"><div class="navigation-prev">
+    <a href="retry.html">
+      <i class="i-lucide chevron-left"></i>
+      <div class="page-info">
+        <span>Previous</span><div class="title">Retry Utilities</div></div>
+    </a>
+  </div><div class="navigation-next">
+    <a href="progress-callbacks.html">
+      <div class="page-info">
+        <span>Next</span>
+        <div class="title">Progress Callbacks</div>
+      </div>
+      <i class="i-lucide chevron-right"></i>
+    </a>
+  </div></div></div>
+    </div>
+  </main>
+</div>
+<footer class="sy-foot">
+  <div class="sy-foot-inner sy-container mx-auto">
+    <div class="sy-foot-reserved md:flex justify-between items-center">
+      <div class="sy-foot-copyright"><p>2025, Jacob Coffee</p>
+  
+  <p>
+    Made with
+    
+    <a href="https://www.sphinx-doc.org/">Sphinx</a> and
+    
+    <a href="https://shibuya.lepture.com">Shibuya theme</a>.
+  </p>
+</div>
+      <div class="sy-foot-socials">
+<a href="https://github.com/JacobCoffee/litestar-storages" aria-label="GitHub">
+  <iconify-icon icon="simple-icons:github"></iconify-icon>
+</a></div>
+    </div>
+  </div>
+</footer>
+      <script src="../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../_static/copybutton.js?v=30646c52"></script>
+      <script src="../_static/design-tabs.js?v=f930bc37"></script>
+      <script src="../_static/shibuya.js?v=c1cf1a6b"></script></body>
+</html>

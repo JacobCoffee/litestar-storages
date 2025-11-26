@@ -1,0 +1,922 @@
+<!DOCTYPE html>
+<html lang="en" data-accent-color="violet" data-content_root="../">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Base Classes - litestar-storages</title><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Types" href="types.html" /><link rel="prev" title="API Reference" href="index.html" /><script>
+    function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
+    setColorMode(localStorage._theme||"auto");
+  </script><link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=e1a1ceaf" />
+    <link rel="stylesheet" type="text/css" href="../_static/shibuya.css?v=14737038" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link media="print" rel="stylesheet" type="text/css" href="../_static/print.css?v=20ff2c19" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=5f8f7e8c" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --sy-f-text: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+  --sy-f-heading: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+}
+</style>
+    <meta property="og:type" content="website"/><meta property="og:title" content="Base Classes"/>
+    <meta name="twitter:card" content="summary"/>
+  </head>
+<body><div class="sy-head">
+  <div class="sy-head-blur"></div>
+  <div class="sy-head-inner sy-container mx-auto">
+    <a class="sy-head-brand" href="../index.html">
+      
+      
+      <strong>litestar-storages</strong>
+    </a>
+    <div class="sy-head-nav" id="head-nav">
+      <nav class="sy-head-links"><ul><li class="link">
+          <a href="https://litestar.dev/">
+            <span>Litestar</span></a>
+        </li><li class="link">
+          <a href="https://pypi.org/project/litestar-storages/">
+            <span>PyPI</span></a>
+        </li></ul></nav>
+      <div class="sy-head-extra flex items-center print:hidden"><form class="searchbox flex items-center" action="../search.html" method="get">
+  <input type="text" name="q" placeholder="Search" />
+  <kbd>/</kbd>
+</form><div class="sy-head-socials">
+  <a href="https://github.com/JacobCoffee/litestar-storages" aria-label="GitHub">
+    <iconify-icon icon="simple-icons:github"></iconify-icon>
+  </a></div></div>
+    </div>
+    <div class="sy-head-actions flex items-center shrink-0 print:hidden"><button class="js-theme theme-switch flex items-center"
+data-aria-auto="Switch to light color mode"
+data-aria-light="Switch to dark color mode"
+data-aria-dark="Switch to auto color mode">
+<i class="i-lucide theme-icon"></i>
+</button><button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="head-nav" aria-expanded="false">
+        <div class="hamburger">
+          <span class="hamburger_1"></span>
+          <span class="hamburger_2"></span>
+          <span class="hamburger_3"></span>
+        </div>
+      </button>
+    </div>
+  </div>
+</div>
+<div class="sy-page sy-container flex mx-auto">
+  <aside id="lside" class="sy-lside md:w-72 md:shrink-0 print:hidden">
+    <div class="sy-lside-inner md:sticky">
+      <div class="sy-scrollbar p-6">
+        <div class="globaltoc" data-expand-depth="0"><p class="caption" role="heading" aria-level="3"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../getting-started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Example Applications</a></li>
+</ul>
+<p class="caption" role="heading" aria-level="3"><span class="caption-text">Storage Backends</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../backends/filesystem.html">FileSystem Storage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../backends/s3.html">S3 Storage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../backends/gcs.html">GCS Storage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../backends/azure.html">Azure Blob Storage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../backends/memory.html">Memory Storage</a></li>
+</ul>
+<p class="caption" role="heading" aria-level="3"><span class="caption-text">Advanced Topics</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../advanced/retry.html">Retry Utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../advanced/multipart-uploads.html">Multipart Uploads</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../advanced/progress-callbacks.html">Progress Callbacks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../advanced/custom-backends.html">Custom Backends</a></li>
+</ul>
+<p class="caption" role="heading" aria-level="3"><span class="caption-text">Reference</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">API Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Base Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="types.html">Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="exceptions.html">Exceptions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="backends/index.html">Storage Backends</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="backends/memory.html">Memory Storage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="backends/filesystem.html">FileSystem Storage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="backends/s3.html">S3 Storage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="backends/gcs.html">GCS Storage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="backends/azure.html">Azure Storage</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="contrib/index.html">Litestar Integration</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="contrib/plugin.html">Storage Plugin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="contrib/dependencies.html">Dependencies</a></li>
+<li class="toctree-l3"><a class="reference internal" href="contrib/dto.html">DTOs</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../comparison.html">Comparison with Other Libraries</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
+</ul>
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="lside-overlay js-menu" role="button" aria-label="Close left sidebar" aria-controls="lside" aria-expanded="false"></div>
+  <aside id="rside" class="sy-rside pb-3 w-64 shrink-0 order-last">
+    <button class="rside-close js-menu xl:hidden" aria-label="Close Table of Contents" type="button" aria-controls="rside" aria-expanded="false">
+      <i class="i-lucide close"></i>
+    </button>
+    <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4"><div class="localtoc"><h3>On this page</h3><ul>
+<li><a class="reference internal" href="#storage-protocol">Storage Protocol</a><ul>
+<li><a class="reference internal" href="#litestar_storages.base.Storage"><code class="docutils literal notranslate"><span class="pre">Storage</span></code></a><ul>
+<li><a class="reference internal" href="#litestar_storages.base.Storage.put"><code class="docutils literal notranslate">put()</span></code></a></li>
+<li><a class="reference internal" href="#litestar_storages.base.Storage.get"><code class="docutils literal notranslate">get()</span></code></a></li>
+<li><a class="reference internal" href="#litestar_storages.base.Storage.get_bytes"><code class="docutils literal notranslate">get_bytes()</span></code></a></li>
+<li><a class="reference internal" href="#litestar_storages.base.Storage.delete"><code class="docutils literal notranslate">delete()</span></code></a></li>
+<li><a class="reference internal" href="#litestar_storages.base.Storage.exists"><code class="docutils literal notranslate">exists()</span></code></a></li>
+<li><a class="reference internal" href="#litestar_storages.base.Storage.list"><code class="docutils literal notranslate">list()</span></code></a></li>
+<li><a class="reference internal" href="#litestar_storages.base.Storage.url"><code class="docutils literal notranslate">url()</span></code></a></li>
+<li><a class="reference internal" href="#litestar_storages.base.Storage.copy"><code class="docutils literal notranslate">copy()</span></code></a></li>
+<li><a class="reference internal" href="#litestar_storages.base.Storage.move"><code class="docutils literal notranslate">move()</span></code></a></li>
+<li><a class="reference internal" href="#litestar_storages.base.Storage.info"><code class="docutils literal notranslate">info()</span></code></a></li>
+<li><a class="reference internal" href="#litestar_storages.base.Storage.close"><code class="docutils literal notranslate">close()</span></code></a></li>
+<li><a class="reference internal" href="#litestar_storages.base.Storage.__init__"><code class="docutils literal notranslate">__init__()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#base-storage-class">Base Storage Class</a><ul>
+<li><a class="reference internal" href="#litestar_storages.base.BaseStorage"><code class="docutils literal notranslate"><span class="pre">BaseStorage</span></code></a><ul>
+<li><a class="reference internal" href="#litestar_storages.base.BaseStorage.put"><code class="docutils literal notranslate">put()</span></code></a></li>
+<li><a class="reference internal" href="#litestar_storages.base.BaseStorage.get"><code class="docutils literal notranslate">get()</span></code></a></li>
+<li><a class="reference internal" href="#litestar_storages.base.BaseStorage.delete"><code class="docutils literal notranslate">delete()</span></code></a></li>
+<li><a class="reference internal" href="#litestar_storages.base.BaseStorage.exists"><code class="docutils literal notranslate">exists()</span></code></a></li>
+<li><a class="reference internal" href="#litestar_storages.base.BaseStorage.list"><code class="docutils literal notranslate">list()</span></code></a></li>
+<li><a class="reference internal" href="#litestar_storages.base.BaseStorage.url"><code class="docutils literal notranslate">url()</span></code></a></li>
+<li><a class="reference internal" href="#litestar_storages.base.BaseStorage.info"><code class="docutils literal notranslate">info()</span></code></a></li>
+<li><a class="reference internal" href="#litestar_storages.base.BaseStorage.get_bytes"><code class="docutils literal notranslate">get_bytes()</span></code></a></li>
+<li><a class="reference internal" href="#litestar_storages.base.BaseStorage.copy"><code class="docutils literal notranslate">copy()</span></code></a></li>
+<li><a class="reference internal" href="#litestar_storages.base.BaseStorage.move"><code class="docutils literal notranslate">move()</span></code></a></li>
+<li><a class="reference internal" href="#litestar_storages.base.BaseStorage.close"><code class="docutils literal notranslate">close()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#usage-example">Usage Example</a></li>
+</ul>
+</div><div id="ethical-ad-placement" data-ea-publisher="readthedocs"></div></div>
+  </aside>
+  <div class="rside-overlay js-menu" role="button" aria-label="Close Table of Contents" aria-controls="rside" aria-expanded="false"></div>
+  <main class="sy-main w-full max-sm:max-w-full print:pt-6">
+<div class="sy-breadcrumbs" role="navigation">
+  <div class="sy-breadcrumbs-inner flex items-center">
+    <div class="md:hidden mr-3">
+      <button class="js-menu" aria-label="Menu" type="button" aria-controls="lside" aria-expanded="false">
+        <i class="i-lucide menu"></i>
+      </button>
+    </div>
+    <ol class="flex-1" itemscope itemtype="https://schema.org/BreadcrumbList"><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="../index.html"><span itemprop="name">litestar-storages</span></a>
+        <span>/</span>
+        <meta itemprop="position" content="1" />
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="index.html"><span itemprop="name">API Reference</span></a>
+        <span>/</span>
+        <meta itemprop="position" content="2" />
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <strong itemprop="name">Base Classes</strong>
+        <meta itemprop="position" content="3" />
+      </li></ol>
+    <div class="xl:hidden ml-1">
+      <button class="js-menu" aria-label="Show table of contents" type="button" aria-controls="rside"
+        aria-expanded="false">
+        <i class="i-lucide outdent"></i>
+      </button>
+    </div>
+  </div>
+</div><div class="flex flex-col break-words justify-between">
+      <div class="min-w-0 max-w-6xl px-6 pb-6 pt-8 xl:px-12">
+        <article class="yue" role="main">
+          <section id="module-litestar_storages.base">
+<span id="base-classes"></span><h1>Base Classes<a class="headerlink" href="#module-litestar_storages.base" title="Link to this heading">¶</a></h1>
+<p>This module defines the core storage protocol and abstract base class that all
+storage backends implement. The protocol-based design ensures consistent behavior
+across different storage providers while allowing for backend-specific optimizations.</p>
+<section id="storage-protocol">
+<h2>Storage Protocol<a class="headerlink" href="#storage-protocol" title="Link to this heading">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">Storage</span></code> protocol defines the interface that all storage backends must implement.
+It is marked with <code class="docutils literal notranslate"><span class="pre">&#64;runtime_checkable</span></code>, allowing runtime type checking with <code class="docutils literal notranslate"><span class="pre">isinstance()</span></code>.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="litestar_storages.base.Storage">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar_storages.base.</span></span><span class="sig-name descname"><span class="pre">Storage</span></span><a class="reference internal" href="../_modules/litestar_storages/base.html#Storage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#litestar_storages.base.Storage" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Protocol" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Protocol</span></code></a></p>
+<p>Async storage protocol.</p>
+<p>All storage backends must implement this protocol to ensure
+consistent behavior across different storage providers.</p>
+<p>This protocol defines the core interface for async file storage operations,
+including uploading, downloading, deleting, and managing file metadata.</p>
+<p class="rubric">Core Operations</p>
+<p>The protocol defines these core async operations:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#litestar_storages.base.Storage.put" title="litestar_storages.base.Storage.put"><code class="xref py py-meth docutils literal notranslate"><span class="pre">put()</span></code></a> - Store data at a key</p></li>
+<li><p><a class="reference internal" href="#litestar_storages.base.Storage.get" title="litestar_storages.base.Storage.get"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get()</span></code></a> - Retrieve data as an async stream</p></li>
+<li><p><a class="reference internal" href="#litestar_storages.base.Storage.get_bytes" title="litestar_storages.base.Storage.get_bytes"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_bytes()</span></code></a> - Retrieve data as bytes</p></li>
+<li><p><a class="reference internal" href="#litestar_storages.base.Storage.delete" title="litestar_storages.base.Storage.delete"><code class="xref py py-meth docutils literal notranslate"><span class="pre">delete()</span></code></a> - Remove a file</p></li>
+<li><p><a class="reference internal" href="#litestar_storages.base.Storage.exists" title="litestar_storages.base.Storage.exists"><code class="xref py py-meth docutils literal notranslate"><span class="pre">exists()</span></code></a> - Check if a file exists</p></li>
+<li><p><a class="reference internal" href="#litestar_storages.base.Storage.list" title="litestar_storages.base.Storage.list"><code class="xref py py-meth docutils literal notranslate"><span class="pre">list()</span></code></a> - List files with optional prefix filter</p></li>
+<li><p><a class="reference internal" href="#litestar_storages.base.Storage.url" title="litestar_storages.base.Storage.url"><code class="xref py py-meth docutils literal notranslate"><span class="pre">url()</span></code></a> - Generate access URL (presigned for cloud backends)</p></li>
+<li><p><a class="reference internal" href="#litestar_storages.base.Storage.copy" title="litestar_storages.base.Storage.copy"><code class="xref py py-meth docutils literal notranslate"><span class="pre">copy()</span></code></a> - Copy a file within the storage</p></li>
+<li><p><a class="reference internal" href="#litestar_storages.base.Storage.move" title="litestar_storages.base.Storage.move"><code class="xref py py-meth docutils literal notranslate"><span class="pre">move()</span></code></a> - Move/rename a file</p></li>
+<li><p><a class="reference internal" href="#litestar_storages.base.Storage.info" title="litestar_storages.base.Storage.info"><code class="xref py py-meth docutils literal notranslate"><span class="pre">info()</span></code></a> - Get file metadata without downloading</p></li>
+<li><p><a class="reference internal" href="#litestar_storages.base.Storage.close" title="litestar_storages.base.Storage.close"><code class="xref py py-meth docutils literal notranslate"><span class="pre">close()</span></code></a> - Release resources</p></li>
+</ul>
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar_storages.base.Storage.put">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">put</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">content_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/litestar_storages/base.html#Storage.put"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#litestar_storages.base.Storage.put" title="Link to this definition">¶</a></dt>
+<dd><p>Store data at the given key.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – Storage path/key for the file. This should be a forward-slash
+separated path (e.g., “images/photo.jpg”).</p></li>
+<li><p><strong>data</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.AsyncGenerator" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">AsyncGenerator</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a>]</span>) – File contents as bytes or async byte stream. For large files,
+prefer using an async iterator to avoid loading the entire file
+into memory.</p></li>
+<li><p><strong>content_type</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span>) – MIME type of the content (e.g., ‘image/jpeg’, ‘text/plain’).
+If not provided, backends may attempt to infer it from the file extension.</p></li>
+<li><p><strong>metadata</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>] | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span>) – Additional metadata to store with the file. Keys and values
+must be strings. Backend-specific limits may apply.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="types.html#litestar_storages.types.StoredFile" title="litestar_storages.types.StoredFile"><code class="xref py py-class docutils literal notranslate"><span class="pre">StoredFile</span></code></a></span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>StoredFile containing metadata about the stored file, including
+the actual size, etag, and last modified timestamp.</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="exceptions.html#litestar_storages.exceptions.StorageError" title="litestar_storages.exceptions.StorageError"><strong>StorageError</strong></a> – If the upload fails for any reason</p></li>
+<li><p><a class="reference internal" href="exceptions.html#litestar_storages.exceptions.StoragePermissionError" title="litestar_storages.exceptions.StoragePermissionError"><strong>StoragePermissionError</strong></a> – If lacking permissions to write to this location</p></li>
+<li><p><a class="reference internal" href="exceptions.html#litestar_storages.exceptions.ConfigurationError" title="litestar_storages.exceptions.ConfigurationError"><strong>ConfigurationError</strong></a> – If storage backend is misconfigured</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar_storages.base.Storage.get">
+<span class="sig-name descname"><span class="pre">get</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/litestar_storages/base.html#Storage.get"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#litestar_storages.base.Storage.get" title="Link to this definition">¶</a></dt>
+<dd><p>Retrieve file contents as an async byte stream.</p>
+<p>This method returns an async iterator that yields chunks of the file,
+allowing for efficient streaming of large files without loading the
+entire content into memory.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>key</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – Storage path/key for the file</p>
+</dd>
+<dt class="field-even">Yields<span class="colon">:</span></dt>
+<dd class="field-even"><p>Chunks of file data as bytes. Chunk size is backend-dependent.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><a class="reference internal" href="exceptions.html#litestar_storages.exceptions.StorageFileNotFoundError" title="litestar_storages.exceptions.StorageFileNotFoundError"><strong>StorageFileNotFoundError</strong></a> – If the file does not exist</p></li>
+<li><p><a class="reference internal" href="exceptions.html#litestar_storages.exceptions.StorageError" title="litestar_storages.exceptions.StorageError"><strong>StorageError</strong></a> – If the retrieval fails</p></li>
+<li><p><a class="reference internal" href="exceptions.html#litestar_storages.exceptions.StoragePermissionError" title="litestar_storages.exceptions.StoragePermissionError"><strong>StoragePermissionError</strong></a> – If lacking permissions to read this file</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.AsyncIterator" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">AsyncIterator</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></a>]</span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar_storages.base.Storage.get_bytes">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_bytes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/litestar_storages/base.html#Storage.get_bytes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#litestar_storages.base.Storage.get_bytes" title="Link to this definition">¶</a></dt>
+<dd><p>Retrieve entire file contents as bytes.</p>
+<p>This is a convenience method that collects the stream from get()
+into memory. Use get() for large files to avoid memory pressure.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>key</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – Storage path/key for the file</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></a></span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Complete file contents as bytes</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="exceptions.html#litestar_storages.exceptions.StorageFileNotFoundError" title="litestar_storages.exceptions.StorageFileNotFoundError"><strong>StorageFileNotFoundError</strong></a> – If the file does not exist</p></li>
+<li><p><a class="reference internal" href="exceptions.html#litestar_storages.exceptions.StorageError" title="litestar_storages.exceptions.StorageError"><strong>StorageError</strong></a> – If the retrieval fails</p></li>
+<li><p><a class="reference internal" href="exceptions.html#litestar_storages.exceptions.StoragePermissionError" title="litestar_storages.exceptions.StoragePermissionError"><strong>StoragePermissionError</strong></a> – If lacking permissions to read this file</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar_storages.base.Storage.delete">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">delete</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/litestar_storages/base.html#Storage.delete"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#litestar_storages.base.Storage.delete" title="Link to this definition">¶</a></dt>
+<dd><p>Delete a file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>key</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – Storage path/key for the file</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="exceptions.html#litestar_storages.exceptions.StorageFileNotFoundError" title="litestar_storages.exceptions.StorageFileNotFoundError"><strong>StorageFileNotFoundError</strong></a> – If the file does not exist (implementation-dependent;
+    some backends may silently succeed for idempotency)</p></li>
+<li><p><a class="reference internal" href="exceptions.html#litestar_storages.exceptions.StorageError" title="litestar_storages.exceptions.StorageError"><strong>StorageError</strong></a> – If the deletion fails</p></li>
+<li><p><a class="reference internal" href="exceptions.html#litestar_storages.exceptions.StoragePermissionError" title="litestar_storages.exceptions.StoragePermissionError"><strong>StoragePermissionError</strong></a> – If lacking permissions to delete this file</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar_storages.base.Storage.exists">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">exists</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/litestar_storages/base.html#Storage.exists"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#litestar_storages.base.Storage.exists" title="Link to this definition">¶</a></dt>
+<dd><p>Check if a file exists.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>key</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – Storage path/key for the file</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>True if the file exists, False otherwise</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="exceptions.html#litestar_storages.exceptions.StorageError" title="litestar_storages.exceptions.StorageError"><strong>StorageError</strong></a> – If the check fails (rare; typically returns False)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar_storages.base.Storage.list">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prefix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/litestar_storages/base.html#Storage.list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#litestar_storages.base.Storage.list" title="Link to this definition">¶</a></dt>
+<dd><p>List files with optional prefix filter.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>prefix</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – Filter results to keys starting with this prefix.
+Use empty string to list all files. For hierarchical storage,
+use forward slashes (e.g., “images/2024/”).</p></li>
+<li><p><strong>limit</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span>) – Maximum number of results to return. If None, returns all
+matching files. Note: backends may have their own internal limits.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Yields<span class="colon">:</span></dt>
+<dd class="field-even"><p>StoredFile metadata for each matching file, typically in
+lexicographical order by key.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><a class="reference internal" href="exceptions.html#litestar_storages.exceptions.StorageError" title="litestar_storages.exceptions.StorageError"><strong>StorageError</strong></a> – If the listing operation fails</p></li>
+<li><p><a class="reference internal" href="exceptions.html#litestar_storages.exceptions.StoragePermissionError" title="litestar_storages.exceptions.StoragePermissionError"><strong>StoragePermissionError</strong></a> – If lacking permissions to list files</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.AsyncGenerator" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">AsyncGenerator</span></code></a>[<a class="reference internal" href="types.html#litestar_storages.types.StoredFile" title="litestar_storages.types.StoredFile"><code class="xref py py-class docutils literal notranslate"><span class="pre">StoredFile</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a>]</span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar_storages.base.Storage.url">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">url</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">expires_in</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/litestar_storages/base.html#Storage.url"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#litestar_storages.base.Storage.url" title="Link to this definition">¶</a></dt>
+<dd><p>Generate a URL for accessing the file.</p>
+<p>For cloud backends, this typically generates a presigned URL that grants
+temporary access to the file. For filesystem backends, this returns a
+path or configured base URL.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – Storage path/key for the file</p></li>
+<li><p><strong>expires_in</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.timedelta" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">timedelta</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span>) – Optional expiration time for signed URLs. If None,
+uses backend’s default expiration (typically 1 hour). For
+filesystem backends, this parameter may be ignored.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p>A presigned URL with embedded credentials (cloud backends)</p></li>
+<li><p>A public URL if the file is publicly accessible</p></li>
+<li><p>A <a class="reference external" href="file://">file://</a> URL or relative path (filesystem backend)</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>URL string for accessing the file. This may be</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="exceptions.html#litestar_storages.exceptions.StorageFileNotFoundError" title="litestar_storages.exceptions.StorageFileNotFoundError"><strong>StorageFileNotFoundError</strong></a> – If the file does not exist (implementation-dependent)</p></li>
+<li><p><a class="reference internal" href="exceptions.html#litestar_storages.exceptions.StorageError" title="litestar_storages.exceptions.StorageError"><strong>StorageError</strong></a> – If URL generation fails</p></li>
+<li><p><a class="reference internal" href="exceptions.html#litestar_storages.exceptions.StoragePermissionError" title="litestar_storages.exceptions.StoragePermissionError"><strong>StoragePermissionError</strong></a> – If lacking permissions to generate URLs</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>URLs may become invalid after the expiration time or if the file
+is deleted. Clients should handle 404/403 responses gracefully.</p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar_storages.base.Storage.copy">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">copy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">destination</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/litestar_storages/base.html#Storage.copy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#litestar_storages.base.Storage.copy" title="Link to this definition">¶</a></dt>
+<dd><p>Copy a file within the storage backend.</p>
+<p>This operation should be atomic where possible. Some backends can
+perform server-side copies without downloading and re-uploading data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>source</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – Source key to copy from</p></li>
+<li><p><strong>destination</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – Destination key to copy to. If this key already exists,
+it will be overwritten.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="types.html#litestar_storages.types.StoredFile" title="litestar_storages.types.StoredFile"><code class="xref py py-class docutils literal notranslate"><span class="pre">StoredFile</span></code></a></span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>StoredFile metadata for the new copy at the destination</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="exceptions.html#litestar_storages.exceptions.StorageFileNotFoundError" title="litestar_storages.exceptions.StorageFileNotFoundError"><strong>StorageFileNotFoundError</strong></a> – If the source file does not exist</p></li>
+<li><p><a class="reference internal" href="exceptions.html#litestar_storages.exceptions.StorageError" title="litestar_storages.exceptions.StorageError"><strong>StorageError</strong></a> – If the copy operation fails</p></li>
+<li><p><a class="reference internal" href="exceptions.html#litestar_storages.exceptions.StoragePermissionError" title="litestar_storages.exceptions.StoragePermissionError"><strong>StoragePermissionError</strong></a> – If lacking permissions for the operation</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar_storages.base.Storage.move">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">move</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">destination</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/litestar_storages/base.html#Storage.move"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#litestar_storages.base.Storage.move" title="Link to this definition">¶</a></dt>
+<dd><p>Move/rename a file within the storage backend.</p>
+<p>This operation should be atomic where possible. Default implementation
+performs a copy followed by delete.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>source</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – Source key to move from</p></li>
+<li><p><strong>destination</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – Destination key to move to. If this key already exists,
+it will be overwritten.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="types.html#litestar_storages.types.StoredFile" title="litestar_storages.types.StoredFile"><code class="xref py py-class docutils literal notranslate"><span class="pre">StoredFile</span></code></a></span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>StoredFile metadata for the file at the new destination</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="exceptions.html#litestar_storages.exceptions.StorageFileNotFoundError" title="litestar_storages.exceptions.StorageFileNotFoundError"><strong>StorageFileNotFoundError</strong></a> – If the source file does not exist</p></li>
+<li><p><a class="reference internal" href="exceptions.html#litestar_storages.exceptions.StorageError" title="litestar_storages.exceptions.StorageError"><strong>StorageError</strong></a> – If the move operation fails</p></li>
+<li><p><a class="reference internal" href="exceptions.html#litestar_storages.exceptions.StoragePermissionError" title="litestar_storages.exceptions.StoragePermissionError"><strong>StoragePermissionError</strong></a> – If lacking permissions for the operation</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar_storages.base.Storage.info">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/litestar_storages/base.html#Storage.info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#litestar_storages.base.Storage.info" title="Link to this definition">¶</a></dt>
+<dd><p>Get metadata about a file without downloading it.</p>
+<p>This is useful for checking file size, content type, and other
+metadata without incurring the cost of downloading the file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>key</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – Storage path/key for the file</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="types.html#litestar_storages.types.StoredFile" title="litestar_storages.types.StoredFile"><code class="xref py py-class docutils literal notranslate"><span class="pre">StoredFile</span></code></a></span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>StoredFile with metadata including size, content_type, etag,
+last_modified, and any custom metadata</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="exceptions.html#litestar_storages.exceptions.StorageFileNotFoundError" title="litestar_storages.exceptions.StorageFileNotFoundError"><strong>StorageFileNotFoundError</strong></a> – If the file does not exist</p></li>
+<li><p><a class="reference internal" href="exceptions.html#litestar_storages.exceptions.StorageError" title="litestar_storages.exceptions.StorageError"><strong>StorageError</strong></a> – If the metadata retrieval fails</p></li>
+<li><p><a class="reference internal" href="exceptions.html#litestar_storages.exceptions.StoragePermissionError" title="litestar_storages.exceptions.StoragePermissionError"><strong>StoragePermissionError</strong></a> – If lacking permissions to access file metadata</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar_storages.base.Storage.close">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/litestar_storages/base.html#Storage.close"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#litestar_storages.base.Storage.close" title="Link to this definition">¶</a></dt>
+<dd><p>Close the storage backend and release resources.</p>
+<p>This method should be called when the storage is no longer needed,
+typically during application shutdown. It allows backends to clean up
+resources like HTTP sessions, connection pools, or file handles.</p>
+<p>For backends that don’t require cleanup, this method is a no-op.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>After calling close(), the storage instance should not be used.
+Some backends may raise errors if operations are attempted after close().</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar_storages.base.Storage.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#litestar_storages.base.Storage.__init__" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="base-storage-class">
+<h2>Base Storage Class<a class="headerlink" href="#base-storage-class" title="Link to this heading">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">BaseStorage</span></code> abstract base class provides default implementations for
+convenience methods while requiring subclasses to implement core operations.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="litestar_storages.base.BaseStorage">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar_storages.base.</span></span><span class="sig-name descname"><span class="pre">BaseStorage</span></span><a class="reference internal" href="../_modules/litestar_storages/base.html#BaseStorage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#litestar_storages.base.BaseStorage" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/abc.html#abc.ABC" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></a></p>
+<p>Abstract base class providing common functionality for storage backends.</p>
+<p>Backends can inherit from this to get default implementations of
+convenience methods while only implementing core abstract operations.</p>
+<p>Subclasses must implement:
+- put()
+- get()
+- delete()
+- exists()
+- list()
+- url()
+- info()</p>
+<p>This class provides default implementations for:
+- get_bytes() - collects stream into memory
+- copy() - downloads and re-uploads
+- move() - copies then deletes</p>
+<p class="rubric">Abstract Methods (must implement)</p>
+<p>Subclasses must implement these methods:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#litestar_storages.base.BaseStorage.put" title="litestar_storages.base.BaseStorage.put"><code class="xref py py-meth docutils literal notranslate"><span class="pre">put()</span></code></a></p></li>
+<li><p><a class="reference internal" href="#litestar_storages.base.BaseStorage.get" title="litestar_storages.base.BaseStorage.get"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get()</span></code></a></p></li>
+<li><p><a class="reference internal" href="#litestar_storages.base.BaseStorage.delete" title="litestar_storages.base.BaseStorage.delete"><code class="xref py py-meth docutils literal notranslate"><span class="pre">delete()</span></code></a></p></li>
+<li><p><a class="reference internal" href="#litestar_storages.base.BaseStorage.exists" title="litestar_storages.base.BaseStorage.exists"><code class="xref py py-meth docutils literal notranslate"><span class="pre">exists()</span></code></a></p></li>
+<li><p><a class="reference internal" href="#litestar_storages.base.BaseStorage.list" title="litestar_storages.base.BaseStorage.list"><code class="xref py py-meth docutils literal notranslate"><span class="pre">list()</span></code></a></p></li>
+<li><p><a class="reference internal" href="#litestar_storages.base.BaseStorage.url" title="litestar_storages.base.BaseStorage.url"><code class="xref py py-meth docutils literal notranslate"><span class="pre">url()</span></code></a></p></li>
+<li><p><a class="reference internal" href="#litestar_storages.base.BaseStorage.info" title="litestar_storages.base.BaseStorage.info"><code class="xref py py-meth docutils literal notranslate"><span class="pre">info()</span></code></a></p></li>
+</ul>
+<p class="rubric">Default Implementations</p>
+<p>These methods have default implementations that can be overridden for optimization:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#litestar_storages.base.BaseStorage.get_bytes" title="litestar_storages.base.BaseStorage.get_bytes"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_bytes()</span></code></a> - Collects stream into bytes</p></li>
+<li><p><a class="reference internal" href="#litestar_storages.base.BaseStorage.copy" title="litestar_storages.base.BaseStorage.copy"><code class="xref py py-meth docutils literal notranslate"><span class="pre">copy()</span></code></a> - Downloads and re-uploads (override for server-side copy)</p></li>
+<li><p><a class="reference internal" href="#litestar_storages.base.BaseStorage.move" title="litestar_storages.base.BaseStorage.move"><code class="xref py py-meth docutils literal notranslate"><span class="pre">move()</span></code></a> - Copies then deletes (override for atomic rename)</p></li>
+<li><p><a class="reference internal" href="#litestar_storages.base.BaseStorage.close" title="litestar_storages.base.BaseStorage.close"><code class="xref py py-meth docutils literal notranslate"><span class="pre">close()</span></code></a> - No-op (override to release resources)</p></li>
+</ul>
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar_storages.base.BaseStorage.put">
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">put</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">content_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/litestar_storages/base.html#BaseStorage.put"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#litestar_storages.base.BaseStorage.put" title="Link to this definition">¶</a></dt>
+<dd><p>Store data at the given key. Must be implemented by subclasses.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>)</p></li>
+<li><p><strong>data</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.AsyncGenerator" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">AsyncGenerator</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a>]</span>)</p></li>
+<li><p><strong>content_type</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span>)</p></li>
+<li><p><strong>metadata</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>] | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="types.html#litestar_storages.types.StoredFile" title="litestar_storages.types.StoredFile"><code class="xref py py-class docutils literal notranslate"><span class="pre">StoredFile</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar_storages.base.BaseStorage.get">
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/litestar_storages/base.html#BaseStorage.get"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#litestar_storages.base.BaseStorage.get" title="Link to this definition">¶</a></dt>
+<dd><p>Retrieve file as async byte stream. Must be implemented by subclasses.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>key</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>)</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.AsyncIterator" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">AsyncIterator</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></a>]</span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar_storages.base.BaseStorage.delete">
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">delete</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/litestar_storages/base.html#BaseStorage.delete"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#litestar_storages.base.BaseStorage.delete" title="Link to this definition">¶</a></dt>
+<dd><p>Delete a file. Must be implemented by subclasses.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>key</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>)</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar_storages.base.BaseStorage.exists">
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">exists</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/litestar_storages/base.html#BaseStorage.exists"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#litestar_storages.base.BaseStorage.exists" title="Link to this definition">¶</a></dt>
+<dd><p>Check if file exists. Must be implemented by subclasses.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>key</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>)</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar_storages.base.BaseStorage.list">
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prefix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/litestar_storages/base.html#BaseStorage.list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#litestar_storages.base.BaseStorage.list" title="Link to this definition">¶</a></dt>
+<dd><p>List files with prefix filter. Must be implemented by subclasses.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>prefix</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>)</p></li>
+<li><p><strong>limit</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.AsyncGenerator" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">AsyncGenerator</span></code></a>[<a class="reference internal" href="types.html#litestar_storages.types.StoredFile" title="litestar_storages.types.StoredFile"><code class="xref py py-class docutils literal notranslate"><span class="pre">StoredFile</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a>]</span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar_storages.base.BaseStorage.url">
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">url</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">expires_in</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/litestar_storages/base.html#BaseStorage.url"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#litestar_storages.base.BaseStorage.url" title="Link to this definition">¶</a></dt>
+<dd><p>Generate URL for file access. Must be implemented by subclasses.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>)</p></li>
+<li><p><strong>expires_in</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.timedelta" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">timedelta</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar_storages.base.BaseStorage.info">
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/litestar_storages/base.html#BaseStorage.info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#litestar_storages.base.BaseStorage.info" title="Link to this definition">¶</a></dt>
+<dd><p>Get file metadata. Must be implemented by subclasses.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>key</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>)</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="types.html#litestar_storages.types.StoredFile" title="litestar_storages.types.StoredFile"><code class="xref py py-class docutils literal notranslate"><span class="pre">StoredFile</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar_storages.base.BaseStorage.get_bytes">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_bytes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/litestar_storages/base.html#BaseStorage.get_bytes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#litestar_storages.base.BaseStorage.get_bytes" title="Link to this definition">¶</a></dt>
+<dd><p>Default implementation: collect stream into bytes.</p>
+<p>This method gathers all chunks from get() and joins them into
+a single bytes object. For large files, prefer using get() directly
+to stream the content.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>key</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – Storage path/key for the file</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></a></span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Complete file contents as bytes</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="exceptions.html#litestar_storages.exceptions.StorageFileNotFoundError" title="litestar_storages.exceptions.StorageFileNotFoundError"><strong>StorageFileNotFoundError</strong></a> – If the file does not exist</p></li>
+<li><p><a class="reference internal" href="exceptions.html#litestar_storages.exceptions.StorageError" title="litestar_storages.exceptions.StorageError"><strong>StorageError</strong></a> – If the retrieval fails</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar_storages.base.BaseStorage.copy">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">copy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">destination</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/litestar_storages/base.html#BaseStorage.copy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#litestar_storages.base.BaseStorage.copy" title="Link to this definition">¶</a></dt>
+<dd><p>Default implementation: download and re-upload.</p>
+<p>This implementation downloads the source file completely into memory,
+then uploads it to the destination. Backends that support server-side
+copy should override this method for better performance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>source</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – Source key to copy from</p></li>
+<li><p><strong>destination</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – Destination key to copy to</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="types.html#litestar_storages.types.StoredFile" title="litestar_storages.types.StoredFile"><code class="xref py py-class docutils literal notranslate"><span class="pre">StoredFile</span></code></a></span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>StoredFile metadata for the new copy</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="exceptions.html#litestar_storages.exceptions.StorageFileNotFoundError" title="litestar_storages.exceptions.StorageFileNotFoundError"><strong>StorageFileNotFoundError</strong></a> – If source does not exist</p></li>
+<li><p><a class="reference internal" href="exceptions.html#litestar_storages.exceptions.StorageError" title="litestar_storages.exceptions.StorageError"><strong>StorageError</strong></a> – If the operation fails</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar_storages.base.BaseStorage.move">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">move</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">destination</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/litestar_storages/base.html#BaseStorage.move"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#litestar_storages.base.BaseStorage.move" title="Link to this definition">¶</a></dt>
+<dd><p>Default implementation: copy then delete.</p>
+<p>This implementation performs a copy operation followed by deletion
+of the source. Backends that support atomic move/rename should
+override this method.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>source</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – Source key to move from</p></li>
+<li><p><strong>destination</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – Destination key to move to</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="types.html#litestar_storages.types.StoredFile" title="litestar_storages.types.StoredFile"><code class="xref py py-class docutils literal notranslate"><span class="pre">StoredFile</span></code></a></span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>StoredFile metadata for the moved file</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="exceptions.html#litestar_storages.exceptions.StorageFileNotFoundError" title="litestar_storages.exceptions.StorageFileNotFoundError"><strong>StorageFileNotFoundError</strong></a> – If source does not exist</p></li>
+<li><p><a class="reference internal" href="exceptions.html#litestar_storages.exceptions.StorageError" title="litestar_storages.exceptions.StorageError"><strong>StorageError</strong></a> – If the operation fails</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This operation is not atomic in the default implementation.
+If deletion fails after a successful copy, the source file
+will remain.</p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar_storages.base.BaseStorage.close">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/litestar_storages/base.html#BaseStorage.close"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#litestar_storages.base.BaseStorage.close" title="Link to this definition">¶</a></dt>
+<dd><p>Default implementation: no-op.</p>
+<p>Subclasses that manage resources (HTTP sessions, connection pools, etc.)
+should override this method to properly release them.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="usage-example">
+<h2>Usage Example<a class="headerlink" href="#usage-example" title="Link to this heading">¶</a></h2>
+<p>Implementing a custom storage backend:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncGenerator</span><span class="p">,</span> <span class="n">AsyncIterator</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">timedelta</span>
+</span><span data-line="3">
+</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_storages</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseStorage</span><span class="p">,</span> <span class="n">StoredFile</span>
+</span><span data-line="5">
+</span><span data-line="6">
+</span><span data-line="7"><span class="k">class</span><span class="w"> </span><span class="nc">MyCustomStorage</span><span class="p">(</span><span class="n">BaseStorage</span><span class="p">):</span>
+</span><span data-line="8"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Custom storage backend example.&quot;&quot;&quot;</span>
+</span><span data-line="9">
+</span><span data-line="10">    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">connection_url</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="11">        <span class="bp">self</span><span class="o">.</span><span class="n">connection_url</span> <span class="o">=</span> <span class="n">connection_url</span>
+</span><span data-line="12">        <span class="bp">self</span><span class="o">.</span><span class="n">_client</span> <span class="o">=</span> <span class="kc">None</span>
+</span><span data-line="13">
+</span><span data-line="14">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">put</span><span class="p">(</span>
+</span><span data-line="15">        <span class="bp">self</span><span class="p">,</span>
+</span><span data-line="16">        <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+</span><span data-line="17">        <span class="n">data</span><span class="p">:</span> <span class="nb">bytes</span> <span class="o">|</span> <span class="n">AsyncGenerator</span><span class="p">[</span><span class="nb">bytes</span><span class="p">,</span> <span class="kc">None</span><span class="p">],</span>
+</span><span data-line="18">        <span class="o">*</span><span class="p">,</span>
+</span><span data-line="19">        <span class="n">content_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="20">        <span class="n">metadata</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="21">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">StoredFile</span><span class="p">:</span>
+</span><span data-line="22">        <span class="c1"># Implementation here</span>
+</span><span data-line="23">        <span class="o">...</span>
+</span><span data-line="24">
+</span><span data-line="25">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncIterator</span><span class="p">[</span><span class="nb">bytes</span><span class="p">]:</span>
+</span><span data-line="26">        <span class="c1"># Implementation here</span>
+</span><span data-line="27">        <span class="o">...</span>
+</span><span data-line="28">
+</span><span data-line="29">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="30">        <span class="c1"># Implementation here</span>
+</span><span data-line="31">        <span class="o">...</span>
+</span><span data-line="32">
+</span><span data-line="33">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">exists</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span data-line="34">        <span class="c1"># Implementation here</span>
+</span><span data-line="35">        <span class="o">...</span>
+</span><span data-line="36">
+</span><span data-line="37">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">list</span><span class="p">(</span>
+</span><span data-line="38">        <span class="bp">self</span><span class="p">,</span>
+</span><span data-line="39">        <span class="n">prefix</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+</span><span data-line="40">        <span class="o">*</span><span class="p">,</span>
+</span><span data-line="41">        <span class="n">limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="42">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncGenerator</span><span class="p">[</span><span class="n">StoredFile</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+</span><span data-line="43">        <span class="c1"># Implementation here</span>
+</span><span data-line="44">        <span class="o">...</span>
+</span><span data-line="45">
+</span><span data-line="46">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">url</span><span class="p">(</span>
+</span><span data-line="47">        <span class="bp">self</span><span class="p">,</span>
+</span><span data-line="48">        <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+</span><span data-line="49">        <span class="o">*</span><span class="p">,</span>
+</span><span data-line="50">        <span class="n">expires_in</span><span class="p">:</span> <span class="n">timedelta</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="51">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span data-line="52">        <span class="c1"># Implementation here</span>
+</span><span data-line="53">        <span class="o">...</span>
+</span><span data-line="54">
+</span><span data-line="55">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">StoredFile</span><span class="p">:</span>
+</span><span data-line="56">        <span class="c1"># Implementation here</span>
+</span><span data-line="57">        <span class="o">...</span>
+</span><span data-line="58">
+</span><span data-line="59">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="60">        <span class="c1"># Clean up resources</span>
+</span><span data-line="61">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">:</span>
+</span><span data-line="62">            <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</span></pre></div>
+</div>
+</section>
+</section>
+
+        </article><button class="back-to-top" type="button">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+  </svg>
+  <span>Back to top</span>
+</button><div class="navigation flex print:hidden"><div class="navigation-prev">
+    <a href="index.html">
+      <i class="i-lucide chevron-left"></i>
+      <div class="page-info">
+        <span>Previous</span><div class="title">API Reference</div></div>
+    </a>
+  </div><div class="navigation-next">
+    <a href="types.html">
+      <div class="page-info">
+        <span>Next</span>
+        <div class="title">Types</div>
+      </div>
+      <i class="i-lucide chevron-right"></i>
+    </a>
+  </div></div></div>
+    </div>
+  </main>
+</div>
+<footer class="sy-foot">
+  <div class="sy-foot-inner sy-container mx-auto">
+    <div class="sy-foot-reserved md:flex justify-between items-center">
+      <div class="sy-foot-copyright"><p>2025, Jacob Coffee</p>
+  
+  <p>
+    Made with
+    
+    <a href="https://www.sphinx-doc.org/">Sphinx</a> and
+    
+    <a href="https://shibuya.lepture.com">Shibuya theme</a>.
+  </p>
+</div>
+      <div class="sy-foot-socials">
+<a href="https://github.com/JacobCoffee/litestar-storages" aria-label="GitHub">
+  <iconify-icon icon="simple-icons:github"></iconify-icon>
+</a></div>
+    </div>
+  </div>
+</footer>
+      <script src="../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../_static/copybutton.js?v=30646c52"></script>
+      <script src="../_static/design-tabs.js?v=f930bc37"></script>
+      <script src="../_static/shibuya.js?v=c1cf1a6b"></script></body>
+</html>

@@ -1,0 +1,1088 @@
+<!DOCTYPE html>
+<html lang="en" data-accent-color="violet" data-content_root="../../../">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>litestar_storages.backends.s3 - litestar-storages</title><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" /><script>
+    function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
+    setColorMode(localStorage._theme||"auto");
+  </script><link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=e1a1ceaf" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/shibuya.css?v=14737038" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link media="print" rel="stylesheet" type="text/css" href="../../../_static/print.css?v=20ff2c19" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=5f8f7e8c" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --sy-f-text: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+  --sy-f-heading: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+}
+</style>
+    <meta property="og:type" content="website"/><meta property="og:title" content="litestar_storages.backends.s3"/>
+    <meta name="twitter:card" content="summary"/>
+  </head>
+<body><div class="sy-head">
+  <div class="sy-head-blur"></div>
+  <div class="sy-head-inner sy-container mx-auto">
+    <a class="sy-head-brand" href="../../../index.html">
+      
+      
+      <strong>litestar-storages</strong>
+    </a>
+    <div class="sy-head-nav" id="head-nav">
+      <nav class="sy-head-links"><ul><li class="link">
+          <a href="https://litestar.dev/">
+            <span>Litestar</span></a>
+        </li><li class="link">
+          <a href="https://pypi.org/project/litestar-storages/">
+            <span>PyPI</span></a>
+        </li></ul></nav>
+      <div class="sy-head-extra flex items-center print:hidden"><form class="searchbox flex items-center" action="../../../search.html" method="get">
+  <input type="text" name="q" placeholder="Search" />
+  <kbd>/</kbd>
+</form><div class="sy-head-socials">
+  <a href="https://github.com/JacobCoffee/litestar-storages" aria-label="GitHub">
+    <iconify-icon icon="simple-icons:github"></iconify-icon>
+  </a></div></div>
+    </div>
+    <div class="sy-head-actions flex items-center shrink-0 print:hidden"><button class="js-theme theme-switch flex items-center"
+data-aria-auto="Switch to light color mode"
+data-aria-light="Switch to dark color mode"
+data-aria-dark="Switch to auto color mode">
+<i class="i-lucide theme-icon"></i>
+</button><button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="head-nav" aria-expanded="false">
+        <div class="hamburger">
+          <span class="hamburger_1"></span>
+          <span class="hamburger_2"></span>
+          <span class="hamburger_3"></span>
+        </div>
+      </button>
+    </div>
+  </div>
+</div>
+<div class="sy-page sy-container flex mx-auto">
+  <aside id="lside" class="sy-lside md:w-72 md:shrink-0 print:hidden">
+    <div class="sy-lside-inner md:sticky">
+      <div class="sy-scrollbar p-6">
+        <div class="globaltoc" data-expand-depth="0"><p class="caption" role="heading" aria-level="3"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting-started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Example Applications</a></li>
+</ul>
+<p class="caption" role="heading" aria-level="3"><span class="caption-text">Storage Backends</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../backends/filesystem.html">FileSystem Storage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../backends/s3.html">S3 Storage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../backends/gcs.html">GCS Storage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../backends/azure.html">Azure Blob Storage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../backends/memory.html">Memory Storage</a></li>
+</ul>
+<p class="caption" role="heading" aria-level="3"><span class="caption-text">Advanced Topics</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../advanced/retry.html">Retry Utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../advanced/multipart-uploads.html">Multipart Uploads</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../advanced/progress-callbacks.html">Progress Callbacks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../advanced/custom-backends.html">Custom Backends</a></li>
+</ul>
+<p class="caption" role="heading" aria-level="3"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/index.html">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/base.html">Base Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/types.html">Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/exceptions.html">Exceptions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/backends/index.html">Storage Backends</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/backends/memory.html">Memory Storage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/backends/filesystem.html">FileSystem Storage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/backends/s3.html">S3 Storage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/backends/gcs.html">GCS Storage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/backends/azure.html">Azure Storage</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/contrib/index.html">Litestar Integration</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/contrib/plugin.html">Storage Plugin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/contrib/dependencies.html">Dependencies</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/contrib/dto.html">DTOs</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../comparison.html">Comparison with Other Libraries</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../changelog.html">Changelog</a></li>
+</ul>
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="lside-overlay js-menu" role="button" aria-label="Close left sidebar" aria-controls="lside" aria-expanded="false"></div>
+  <aside id="rside" class="sy-rside pb-3 w-64 shrink-0 order-last">
+    <button class="rside-close js-menu xl:hidden" aria-label="Close Table of Contents" type="button" aria-controls="rside" aria-expanded="false">
+      <i class="i-lucide close"></i>
+    </button>
+    <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4"><div id="ethical-ad-placement" data-ea-publisher="readthedocs"></div></div>
+  </aside>
+  <div class="rside-overlay js-menu" role="button" aria-label="Close Table of Contents" aria-controls="rside" aria-expanded="false"></div>
+  <main class="sy-main w-full max-sm:max-w-full print:pt-6">
+<div class="sy-breadcrumbs" role="navigation">
+  <div class="sy-breadcrumbs-inner flex items-center">
+    <div class="md:hidden mr-3">
+      <button class="js-menu" aria-label="Menu" type="button" aria-controls="lside" aria-expanded="false">
+        <i class="i-lucide menu"></i>
+      </button>
+    </div>
+    <ol class="flex-1" itemscope itemtype="https://schema.org/BreadcrumbList"><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="../../../index.html"><span itemprop="name">litestar-storages</span></a>
+        <span>/</span>
+        <meta itemprop="position" content="1" />
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="../../index.html"><span itemprop="name">Module code</span></a>
+        <span>/</span>
+        <meta itemprop="position" content="2" />
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <strong itemprop="name">litestar_storages.backends.s3</strong>
+        <meta itemprop="position" content="3" />
+      </li></ol>
+    <div class="xl:hidden ml-1">
+      <button class="js-menu" aria-label="Show table of contents" type="button" aria-controls="rside"
+        aria-expanded="false">
+        <i class="i-lucide outdent"></i>
+      </button>
+    </div>
+  </div>
+</div><div class="flex flex-col break-words justify-between">
+      <div class="min-w-0 max-w-6xl px-6 pb-6 pt-8 xl:px-12">
+        <article class="yue" role="main">
+          <h1>Source code for litestar_storages.backends.s3</h1><div class="highlight"><pre>
+<span></span><span data-line="1"><span class="sd">&quot;&quot;&quot;Amazon S3 and S3-compatible storage backend.&quot;&quot;&quot;</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+</span><span data-line="4">
+</span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncGenerator</span><span class="p">,</span> <span class="n">AsyncIterator</span>
+</span><span data-line="6"><span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
+</span><span data-line="7"><span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timedelta</span><span class="p">,</span> <span class="n">timezone</span>
+</span><span data-line="8"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
+</span><span data-line="9">
+</span><span data-line="10"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_storages.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseStorage</span>
+</span><span data-line="11"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_storages.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+</span><span data-line="12">    <span class="n">ConfigurationError</span><span class="p">,</span>
+</span><span data-line="13">    <span class="n">StorageConnectionError</span><span class="p">,</span>
+</span><span data-line="14">    <span class="n">StorageFileNotFoundError</span><span class="p">,</span>
+</span><span data-line="15"><span class="p">)</span>
+</span><span data-line="16"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_storages.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">MultipartUpload</span><span class="p">,</span> <span class="n">ProgressCallback</span><span class="p">,</span> <span class="n">ProgressInfo</span><span class="p">,</span> <span class="n">StoredFile</span>
+</span><span data-line="17">
+</span><span data-line="18"><span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;S3Config&quot;</span><span class="p">,</span> <span class="s2">&quot;S3Storage&quot;</span><span class="p">)</span>
+</span><span data-line="19">
+</span><span data-line="20">
+<div class="viewcode-block" id="S3Config">
+<a class="viewcode-back" href="../../../api/backends/s3.html#litestar_storages.backends.s3.S3Config">[docs]</a>
+</span><span data-line="21"><span class="nd">@dataclass</span>
+</span><span data-line="22"><span class="k">class</span><span class="w"> </span><span class="nc">S3Config</span><span class="p">:</span>
+</span><span data-line="23"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Configuration for S3-compatible storage.</span>
+</span><span data-line="24">
+</span><span data-line="25"><span class="sd">    Supports AWS S3 and S3-compatible services like:</span>
+</span><span data-line="26"><span class="sd">    - Cloudflare R2</span>
+</span><span data-line="27"><span class="sd">    - DigitalOcean Spaces</span>
+</span><span data-line="28"><span class="sd">    - MinIO</span>
+</span><span data-line="29"><span class="sd">    - Backblaze B2</span>
+</span><span data-line="30">
+</span><span data-line="31"><span class="sd">    Attributes:</span>
+</span><span data-line="32"><span class="sd">        bucket: S3 bucket name</span>
+</span><span data-line="33"><span class="sd">        region: AWS region (e.g., &quot;us-east-1&quot;)</span>
+</span><span data-line="34"><span class="sd">        endpoint_url: Custom endpoint for S3-compatible services</span>
+</span><span data-line="35"><span class="sd">        access_key_id: AWS access key ID (falls back to environment/IAM)</span>
+</span><span data-line="36"><span class="sd">        secret_access_key: AWS secret access key</span>
+</span><span data-line="37"><span class="sd">        session_token: AWS session token for temporary credentials</span>
+</span><span data-line="38"><span class="sd">        prefix: Key prefix for all operations (e.g., &quot;uploads/&quot;)</span>
+</span><span data-line="39"><span class="sd">        presigned_expiry: Default expiration time for presigned URLs</span>
+</span><span data-line="40"><span class="sd">        use_ssl: Use SSL/TLS for connections</span>
+</span><span data-line="41"><span class="sd">        verify_ssl: Verify SSL certificates</span>
+</span><span data-line="42"><span class="sd">        max_pool_connections: Maximum connection pool size</span>
+</span><span data-line="43"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="44">
+</span><span data-line="45">    <span class="n">bucket</span><span class="p">:</span> <span class="nb">str</span>
+</span><span data-line="46">    <span class="n">region</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+</span><span data-line="47">    <span class="n">endpoint_url</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+</span><span data-line="48">    <span class="n">access_key_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+</span><span data-line="49">    <span class="n">secret_access_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+</span><span data-line="50">    <span class="n">session_token</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+</span><span data-line="51">    <span class="n">prefix</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+</span><span data-line="52">    <span class="n">presigned_expiry</span><span class="p">:</span> <span class="n">timedelta</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">hours</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+</span><span data-line="53">    <span class="n">use_ssl</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+</span><span data-line="54">    <span class="n">verify_ssl</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+</span><span data-line="55">    <span class="n">max_pool_connections</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span></div>
+
+</span><span data-line="56">
+</span><span data-line="57">
+<div class="viewcode-block" id="S3Storage">
+<a class="viewcode-back" href="../../../api/backends/s3.html#litestar_storages.backends.s3.S3Storage">[docs]</a>
+</span><span data-line="58"><span class="k">class</span><span class="w"> </span><span class="nc">S3Storage</span><span class="p">(</span><span class="n">BaseStorage</span><span class="p">):</span>
+</span><span data-line="59"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Amazon S3 and S3-compatible storage backend.</span>
+</span><span data-line="60">
+</span><span data-line="61"><span class="sd">    Uses aioboto3 for async S3 operations with support for AWS S3 and</span>
+</span><span data-line="62"><span class="sd">    S3-compatible services.</span>
+</span><span data-line="63">
+</span><span data-line="64"><span class="sd">    Example:</span>
+</span><span data-line="65"><span class="sd">        &gt;&gt;&gt; # AWS S3</span>
+</span><span data-line="66"><span class="sd">        &gt;&gt;&gt; storage = S3Storage(</span>
+</span><span data-line="67"><span class="sd">        ...     config=S3Config(</span>
+</span><span data-line="68"><span class="sd">        ...         bucket=&quot;my-bucket&quot;,</span>
+</span><span data-line="69"><span class="sd">        ...         region=&quot;us-east-1&quot;,</span>
+</span><span data-line="70"><span class="sd">        ...     )</span>
+</span><span data-line="71"><span class="sd">        ... )</span>
+</span><span data-line="72">
+</span><span data-line="73"><span class="sd">        &gt;&gt;&gt; # Cloudflare R2</span>
+</span><span data-line="74"><span class="sd">        &gt;&gt;&gt; storage = S3Storage(</span>
+</span><span data-line="75"><span class="sd">        ...     config=S3Config(</span>
+</span><span data-line="76"><span class="sd">        ...         bucket=&quot;my-bucket&quot;,</span>
+</span><span data-line="77"><span class="sd">        ...         endpoint_url=&quot;https://account.r2.cloudflarestorage.com&quot;,</span>
+</span><span data-line="78"><span class="sd">        ...         access_key_id=&quot;...&quot;,</span>
+</span><span data-line="79"><span class="sd">        ...         secret_access_key=&quot;...&quot;,</span>
+</span><span data-line="80"><span class="sd">        ...     )</span>
+</span><span data-line="81"><span class="sd">        ... )</span>
+</span><span data-line="82">
+</span><span data-line="83"><span class="sd">    Note:</span>
+</span><span data-line="84"><span class="sd">        The client is lazily initialized on first use. Credentials can come from:</span>
+</span><span data-line="85"><span class="sd">        1. Explicit configuration (access_key_id, secret_access_key)</span>
+</span><span data-line="86"><span class="sd">        2. Environment variables (AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY)</span>
+</span><span data-line="87"><span class="sd">        3. IAM roles (when running on EC2/ECS/Lambda)</span>
+</span><span data-line="88"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="89">
+<div class="viewcode-block" id="S3Storage.__init__">
+<a class="viewcode-back" href="../../../api/backends/s3.html#litestar_storages.backends.s3.S3Storage.__init__">[docs]</a>
+</span><span data-line="90">    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">S3Config</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="91"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize S3Storage.</span>
+</span><span data-line="92">
+</span><span data-line="93"><span class="sd">        Args:</span>
+</span><span data-line="94"><span class="sd">            config: Configuration for the S3 backend</span>
+</span><span data-line="95">
+</span><span data-line="96"><span class="sd">        Raises:</span>
+</span><span data-line="97"><span class="sd">            ConfigurationError: If required configuration is missing</span>
+</span><span data-line="98"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="99">        <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">config</span>
+</span><span data-line="100">        <span class="bp">self</span><span class="o">.</span><span class="n">_client</span> <span class="o">=</span> <span class="kc">None</span>
+</span><span data-line="101">        <span class="bp">self</span><span class="o">.</span><span class="n">_session</span> <span class="o">=</span> <span class="kc">None</span>
+</span><span data-line="102">
+</span><span data-line="103">        <span class="k">if</span> <span class="ow">not</span> <span class="n">config</span><span class="o">.</span><span class="n">bucket</span><span class="p">:</span>
+</span><span data-line="104">            <span class="k">raise</span> <span class="n">ConfigurationError</span><span class="p">(</span><span class="s2">&quot;S3 bucket name is required&quot;</span><span class="p">)</span></div>
+
+</span><span data-line="105">
+</span><span data-line="106">    <span class="k">def</span><span class="w"> </span><span class="nf">_get_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span data-line="107"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Apply prefix to a key.</span>
+</span><span data-line="108">
+</span><span data-line="109"><span class="sd">        Args:</span>
+</span><span data-line="110"><span class="sd">            key: The raw key</span>
+</span><span data-line="111">
+</span><span data-line="112"><span class="sd">        Returns:</span>
+</span><span data-line="113"><span class="sd">            Key with prefix applied</span>
+</span><span data-line="114"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="115">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">prefix</span><span class="p">:</span>
+</span><span data-line="116">            <span class="c1"># Ensure prefix ends with / and key doesn&#39;t start with /</span>
+</span><span data-line="117">            <span class="n">prefix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">prefix</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span>
+</span><span data-line="118">            <span class="n">key</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+</span><span data-line="119">            <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">prefix</span><span class="si">}{</span><span class="n">key</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span data-line="120">        <span class="k">return</span> <span class="n">key</span>
+</span><span data-line="121">
+</span><span data-line="122">    <span class="k">def</span><span class="w"> </span><span class="nf">_strip_prefix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span data-line="123"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Remove prefix from a key.</span>
+</span><span data-line="124">
+</span><span data-line="125"><span class="sd">        Args:</span>
+</span><span data-line="126"><span class="sd">            key: The key with prefix</span>
+</span><span data-line="127">
+</span><span data-line="128"><span class="sd">        Returns:</span>
+</span><span data-line="129"><span class="sd">            Key without prefix</span>
+</span><span data-line="130"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="131">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">prefix</span> <span class="ow">and</span> <span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">prefix</span><span class="p">):</span>
+</span><span data-line="132">            <span class="k">return</span> <span class="n">key</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">prefix</span><span class="p">)</span> <span class="p">:]</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+</span><span data-line="133">        <span class="k">return</span> <span class="n">key</span>
+</span><span data-line="134">
+</span><span data-line="135">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_get_client</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+</span><span data-line="136"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Get or create S3 client.</span>
+</span><span data-line="137">
+</span><span data-line="138"><span class="sd">        Returns:</span>
+</span><span data-line="139"><span class="sd">            aioboto3 S3 client</span>
+</span><span data-line="140">
+</span><span data-line="141"><span class="sd">        Raises:</span>
+</span><span data-line="142"><span class="sd">            ConfigurationError: If aioboto3 is not installed</span>
+</span><span data-line="143"><span class="sd">            StorageConnectionError: If unable to create client</span>
+</span><span data-line="144"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="145">        <span class="k">try</span><span class="p">:</span>
+</span><span data-line="146">            <span class="kn">import</span><span class="w"> </span><span class="nn">aioboto3</span>
+</span><span data-line="147">        <span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+</span><span data-line="148">            <span class="k">raise</span> <span class="n">ConfigurationError</span><span class="p">(</span><span class="s2">&quot;aioboto3 is required for S3Storage. Install it with: pip install aioboto3&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
+</span><span data-line="149">
+</span><span data-line="150">        <span class="k">try</span><span class="p">:</span>
+</span><span data-line="151">            <span class="kn">from</span><span class="w"> </span><span class="nn">botocore.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">Config</span>
+</span><span data-line="152">
+</span><span data-line="153">            <span class="c1"># Create session if not already created</span>
+</span><span data-line="154">            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="155">                <span class="bp">self</span><span class="o">.</span><span class="n">_session</span> <span class="o">=</span> <span class="n">aioboto3</span><span class="o">.</span><span class="n">Session</span><span class="p">(</span>
+</span><span data-line="156">                    <span class="n">aws_access_key_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">access_key_id</span><span class="p">,</span>
+</span><span data-line="157">                    <span class="n">aws_secret_access_key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">secret_access_key</span><span class="p">,</span>
+</span><span data-line="158">                    <span class="n">aws_session_token</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">session_token</span><span class="p">,</span>
+</span><span data-line="159">                    <span class="n">region_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">region</span><span class="p">,</span>
+</span><span data-line="160">                <span class="p">)</span>
+</span><span data-line="161">
+</span><span data-line="162">            <span class="c1"># Configure client options</span>
+</span><span data-line="163">            <span class="n">config</span> <span class="o">=</span> <span class="n">Config</span><span class="p">(</span>
+</span><span data-line="164">                <span class="n">max_pool_connections</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">max_pool_connections</span><span class="p">,</span>
+</span><span data-line="165">            <span class="p">)</span>
+</span><span data-line="166">
+</span><span data-line="167">            <span class="c1"># Create a new client context manager each time</span>
+</span><span data-line="168">            <span class="c1"># Note: aioboto3 clients are async context managers that can only be used once</span>
+</span><span data-line="169">            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">client</span><span class="p">(</span>
+</span><span data-line="170">                <span class="s2">&quot;s3&quot;</span><span class="p">,</span>
+</span><span data-line="171">                <span class="n">endpoint_url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">endpoint_url</span><span class="p">,</span>
+</span><span data-line="172">                <span class="n">use_ssl</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">use_ssl</span><span class="p">,</span>
+</span><span data-line="173">                <span class="n">verify</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">verify_ssl</span><span class="p">,</span>
+</span><span data-line="174">                <span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">,</span>
+</span><span data-line="175">            <span class="p">)</span>
+</span><span data-line="176">
+</span><span data-line="177">        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
+</span><span data-line="178">            <span class="k">raise</span> <span class="n">StorageConnectionError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to create S3 client: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
+</span><span data-line="179">
+<div class="viewcode-block" id="S3Storage.put">
+<a class="viewcode-back" href="../../../api/backends/s3.html#litestar_storages.backends.s3.S3Storage.put">[docs]</a>
+</span><span data-line="180">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">put</span><span class="p">(</span>
+</span><span data-line="181">        <span class="bp">self</span><span class="p">,</span>
+</span><span data-line="182">        <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+</span><span data-line="183">        <span class="n">data</span><span class="p">:</span> <span class="nb">bytes</span> <span class="o">|</span> <span class="n">AsyncIterator</span><span class="p">[</span><span class="nb">bytes</span><span class="p">],</span>
+</span><span data-line="184">        <span class="o">*</span><span class="p">,</span>
+</span><span data-line="185">        <span class="n">content_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="186">        <span class="n">metadata</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="187">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">StoredFile</span><span class="p">:</span>
+</span><span data-line="188"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Store data at the given key.</span>
+</span><span data-line="189">
+</span><span data-line="190"><span class="sd">        Args:</span>
+</span><span data-line="191"><span class="sd">            key: Storage path/key for the file</span>
+</span><span data-line="192"><span class="sd">            data: File contents as bytes or async byte stream</span>
+</span><span data-line="193"><span class="sd">            content_type: MIME type of the content</span>
+</span><span data-line="194"><span class="sd">            metadata: Additional metadata to store with the file</span>
+</span><span data-line="195">
+</span><span data-line="196"><span class="sd">        Returns:</span>
+</span><span data-line="197"><span class="sd">            StoredFile with metadata about the stored file</span>
+</span><span data-line="198">
+</span><span data-line="199"><span class="sd">        Raises:</span>
+</span><span data-line="200"><span class="sd">            StorageError: If the upload fails</span>
+</span><span data-line="201"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="202">        <span class="n">client</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_client</span><span class="p">()</span>
+</span><span data-line="203">        <span class="n">s3_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_key</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+</span><span data-line="204">
+</span><span data-line="205">        <span class="c1"># Collect data if it&#39;s an async iterator</span>
+</span><span data-line="206">        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">):</span>
+</span><span data-line="207">            <span class="n">file_data</span> <span class="o">=</span> <span class="n">data</span>
+</span><span data-line="208">        <span class="k">else</span><span class="p">:</span>
+</span><span data-line="209">            <span class="n">chunks</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span data-line="210">            <span class="k">async</span> <span class="k">for</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+</span><span data-line="211">                <span class="n">chunks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">chunk</span><span class="p">)</span>
+</span><span data-line="212">            <span class="n">file_data</span> <span class="o">=</span> <span class="sa">b</span><span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">chunks</span><span class="p">)</span>
+</span><span data-line="213">
+</span><span data-line="214">        <span class="c1"># Prepare upload parameters</span>
+</span><span data-line="215">        <span class="n">upload_params</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+</span><span data-line="216">            <span class="s2">&quot;Bucket&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">bucket</span><span class="p">,</span>
+</span><span data-line="217">            <span class="s2">&quot;Key&quot;</span><span class="p">:</span> <span class="n">s3_key</span><span class="p">,</span>
+</span><span data-line="218">            <span class="s2">&quot;Body&quot;</span><span class="p">:</span> <span class="n">file_data</span><span class="p">,</span>
+</span><span data-line="219">        <span class="p">}</span>
+</span><span data-line="220">
+</span><span data-line="221">        <span class="k">if</span> <span class="n">content_type</span><span class="p">:</span>
+</span><span data-line="222">            <span class="n">upload_params</span><span class="p">[</span><span class="s2">&quot;ContentType&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">content_type</span>
+</span><span data-line="223">
+</span><span data-line="224">        <span class="k">if</span> <span class="n">metadata</span><span class="p">:</span>
+</span><span data-line="225">            <span class="n">upload_params</span><span class="p">[</span><span class="s2">&quot;Metadata&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">metadata</span>
+</span><span data-line="226">
+</span><span data-line="227">        <span class="k">try</span><span class="p">:</span>
+</span><span data-line="228">            <span class="k">async</span> <span class="k">with</span> <span class="n">client</span> <span class="k">as</span> <span class="n">s3</span><span class="p">:</span>
+</span><span data-line="229">                <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">s3</span><span class="o">.</span><span class="n">put_object</span><span class="p">(</span><span class="o">**</span><span class="n">upload_params</span><span class="p">)</span>
+</span><span data-line="230">
+</span><span data-line="231">                <span class="k">return</span> <span class="n">StoredFile</span><span class="p">(</span>
+</span><span data-line="232">                    <span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">,</span>
+</span><span data-line="233">                    <span class="n">size</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">file_data</span><span class="p">),</span>
+</span><span data-line="234">                    <span class="n">content_type</span><span class="o">=</span><span class="n">content_type</span><span class="p">,</span>
+</span><span data-line="235">                    <span class="n">etag</span><span class="o">=</span><span class="n">response</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;ETag&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s1">&#39;&quot;&#39;</span><span class="p">),</span>
+</span><span data-line="236">                    <span class="n">last_modified</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(</span><span class="n">tz</span><span class="o">=</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">),</span>
+</span><span data-line="237">                    <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span> <span class="ow">or</span> <span class="p">{},</span>
+</span><span data-line="238">                <span class="p">)</span>
+</span><span data-line="239">
+</span><span data-line="240">        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+</span><span data-line="241">            <span class="kn">from</span><span class="w"> </span><span class="nn">litestar_storages.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">StorageError</span>
+</span><span data-line="242">
+</span><span data-line="243">            <span class="k">raise</span> <span class="n">StorageError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to upload file </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span></div>
+
+</span><span data-line="244">
+<div class="viewcode-block" id="S3Storage.get">
+<a class="viewcode-back" href="../../../api/backends/s3.html#litestar_storages.backends.s3.S3Storage.get">[docs]</a>
+</span><span data-line="245">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncIterator</span><span class="p">[</span><span class="nb">bytes</span><span class="p">]:</span>
+</span><span data-line="246"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Retrieve file contents as an async byte stream.</span>
+</span><span data-line="247">
+</span><span data-line="248"><span class="sd">        Args:</span>
+</span><span data-line="249"><span class="sd">            key: Storage path/key for the file</span>
+</span><span data-line="250">
+</span><span data-line="251"><span class="sd">        Yields:</span>
+</span><span data-line="252"><span class="sd">            Chunks of file data as bytes</span>
+</span><span data-line="253">
+</span><span data-line="254"><span class="sd">        Raises:</span>
+</span><span data-line="255"><span class="sd">            StorageFileNotFoundError: If the file does not exist</span>
+</span><span data-line="256"><span class="sd">            StorageError: If the retrieval fails</span>
+</span><span data-line="257"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="258">        <span class="n">client</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_client</span><span class="p">()</span>
+</span><span data-line="259">        <span class="n">s3_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_key</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+</span><span data-line="260">
+</span><span data-line="261">        <span class="k">try</span><span class="p">:</span>
+</span><span data-line="262">            <span class="k">async</span> <span class="k">with</span> <span class="n">client</span> <span class="k">as</span> <span class="n">s3</span><span class="p">:</span>
+</span><span data-line="263">                <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">s3</span><span class="o">.</span><span class="n">get_object</span><span class="p">(</span>
+</span><span data-line="264">                    <span class="n">Bucket</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">bucket</span><span class="p">,</span>
+</span><span data-line="265">                    <span class="n">Key</span><span class="o">=</span><span class="n">s3_key</span><span class="p">,</span>
+</span><span data-line="266">                <span class="p">)</span>
+</span><span data-line="267">
+</span><span data-line="268">                <span class="c1"># Stream the body</span>
+</span><span data-line="269">                <span class="k">async</span> <span class="k">for</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="n">response</span><span class="p">[</span><span class="s2">&quot;Body&quot;</span><span class="p">]:</span>
+</span><span data-line="270">                    <span class="k">yield</span> <span class="n">chunk</span>
+</span><span data-line="271">
+</span><span data-line="272">        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+</span><span data-line="273">            <span class="n">error_code</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="s2">&quot;response&quot;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Error&quot;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Code&quot;</span><span class="p">)</span>
+</span><span data-line="274">            <span class="k">if</span> <span class="n">error_code</span> <span class="o">==</span> <span class="s2">&quot;NoSuchKey&quot;</span><span class="p">:</span>
+</span><span data-line="275">                <span class="k">raise</span> <span class="n">StorageFileNotFoundError</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
+</span><span data-line="276">
+</span><span data-line="277">            <span class="kn">from</span><span class="w"> </span><span class="nn">litestar_storages.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">StorageError</span>  <span class="c1"># pragma: no cover</span>
+</span><span data-line="278">
+</span><span data-line="279">            <span class="k">raise</span> <span class="n">StorageError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to retrieve file </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>  <span class="c1"># pragma: no cover</span></div>
+
+</span><span data-line="280">
+<div class="viewcode-block" id="S3Storage.get_bytes">
+<a class="viewcode-back" href="../../../api/backends/s3.html#litestar_storages.backends.s3.S3Storage.get_bytes">[docs]</a>
+</span><span data-line="281">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_bytes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
+</span><span data-line="282"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Retrieve entire file contents as bytes.</span>
+</span><span data-line="283">
+</span><span data-line="284"><span class="sd">        Args:</span>
+</span><span data-line="285"><span class="sd">            key: Storage path/key for the file</span>
+</span><span data-line="286">
+</span><span data-line="287"><span class="sd">        Returns:</span>
+</span><span data-line="288"><span class="sd">            Complete file contents as bytes</span>
+</span><span data-line="289">
+</span><span data-line="290"><span class="sd">        Raises:</span>
+</span><span data-line="291"><span class="sd">            StorageFileNotFoundError: If the file does not exist</span>
+</span><span data-line="292"><span class="sd">            StorageError: If the retrieval fails</span>
+</span><span data-line="293"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="294">        <span class="n">client</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_client</span><span class="p">()</span>
+</span><span data-line="295">        <span class="n">s3_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_key</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+</span><span data-line="296">
+</span><span data-line="297">        <span class="k">try</span><span class="p">:</span>
+</span><span data-line="298">            <span class="k">async</span> <span class="k">with</span> <span class="n">client</span> <span class="k">as</span> <span class="n">s3</span><span class="p">:</span>
+</span><span data-line="299">                <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">s3</span><span class="o">.</span><span class="n">get_object</span><span class="p">(</span>
+</span><span data-line="300">                    <span class="n">Bucket</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">bucket</span><span class="p">,</span>
+</span><span data-line="301">                    <span class="n">Key</span><span class="o">=</span><span class="n">s3_key</span><span class="p">,</span>
+</span><span data-line="302">                <span class="p">)</span>
+</span><span data-line="303">
+</span><span data-line="304">                <span class="c1"># Read the entire body</span>
+</span><span data-line="305">                <span class="k">return</span> <span class="k">await</span> <span class="n">response</span><span class="p">[</span><span class="s2">&quot;Body&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+</span><span data-line="306">
+</span><span data-line="307">        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+</span><span data-line="308">            <span class="n">error_code</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="s2">&quot;response&quot;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Error&quot;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Code&quot;</span><span class="p">)</span>
+</span><span data-line="309">            <span class="k">if</span> <span class="n">error_code</span> <span class="o">==</span> <span class="s2">&quot;NoSuchKey&quot;</span><span class="p">:</span>
+</span><span data-line="310">                <span class="k">raise</span> <span class="n">StorageFileNotFoundError</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
+</span><span data-line="311">
+</span><span data-line="312">            <span class="kn">from</span><span class="w"> </span><span class="nn">litestar_storages.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">StorageError</span>  <span class="c1"># pragma: no cover</span>
+</span><span data-line="313">
+</span><span data-line="314">            <span class="k">raise</span> <span class="n">StorageError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to retrieve file </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>  <span class="c1"># pragma: no cover</span></div>
+
+</span><span data-line="315">
+<div class="viewcode-block" id="S3Storage.delete">
+<a class="viewcode-back" href="../../../api/backends/s3.html#litestar_storages.backends.s3.S3Storage.delete">[docs]</a>
+</span><span data-line="316">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="317"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Delete a file.</span>
+</span><span data-line="318">
+</span><span data-line="319"><span class="sd">        Args:</span>
+</span><span data-line="320"><span class="sd">            key: Storage path/key for the file</span>
+</span><span data-line="321">
+</span><span data-line="322"><span class="sd">        Note:</span>
+</span><span data-line="323"><span class="sd">            S3 delete is idempotent - deleting a non-existent key succeeds silently.</span>
+</span><span data-line="324"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="325">        <span class="n">client</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_client</span><span class="p">()</span>
+</span><span data-line="326">        <span class="n">s3_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_key</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+</span><span data-line="327">
+</span><span data-line="328">        <span class="k">try</span><span class="p">:</span>
+</span><span data-line="329">            <span class="k">async</span> <span class="k">with</span> <span class="n">client</span> <span class="k">as</span> <span class="n">s3</span><span class="p">:</span>
+</span><span data-line="330">                <span class="k">await</span> <span class="n">s3</span><span class="o">.</span><span class="n">delete_object</span><span class="p">(</span>
+</span><span data-line="331">                    <span class="n">Bucket</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">bucket</span><span class="p">,</span>
+</span><span data-line="332">                    <span class="n">Key</span><span class="o">=</span><span class="n">s3_key</span><span class="p">,</span>
+</span><span data-line="333">                <span class="p">)</span>
+</span><span data-line="334">
+</span><span data-line="335">        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
+</span><span data-line="336">            <span class="kn">from</span><span class="w"> </span><span class="nn">litestar_storages.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">StorageError</span>
+</span><span data-line="337">
+</span><span data-line="338">            <span class="k">raise</span> <span class="n">StorageError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to delete file </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span></div>
+
+</span><span data-line="339">
+<div class="viewcode-block" id="S3Storage.exists">
+<a class="viewcode-back" href="../../../api/backends/s3.html#litestar_storages.backends.s3.S3Storage.exists">[docs]</a>
+</span><span data-line="340">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">exists</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span data-line="341"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Check if a file exists.</span>
+</span><span data-line="342">
+</span><span data-line="343"><span class="sd">        Args:</span>
+</span><span data-line="344"><span class="sd">            key: Storage path/key for the file</span>
+</span><span data-line="345">
+</span><span data-line="346"><span class="sd">        Returns:</span>
+</span><span data-line="347"><span class="sd">            True if the file exists, False otherwise</span>
+</span><span data-line="348"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="349">        <span class="n">client</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_client</span><span class="p">()</span>
+</span><span data-line="350">        <span class="n">s3_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_key</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+</span><span data-line="351">
+</span><span data-line="352">        <span class="k">try</span><span class="p">:</span>
+</span><span data-line="353">            <span class="k">async</span> <span class="k">with</span> <span class="n">client</span> <span class="k">as</span> <span class="n">s3</span><span class="p">:</span>
+</span><span data-line="354">                <span class="k">await</span> <span class="n">s3</span><span class="o">.</span><span class="n">head_object</span><span class="p">(</span>
+</span><span data-line="355">                    <span class="n">Bucket</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">bucket</span><span class="p">,</span>
+</span><span data-line="356">                    <span class="n">Key</span><span class="o">=</span><span class="n">s3_key</span><span class="p">,</span>
+</span><span data-line="357">                <span class="p">)</span>
+</span><span data-line="358">                <span class="k">return</span> <span class="kc">True</span>
+</span><span data-line="359">
+</span><span data-line="360">        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+</span><span data-line="361">            <span class="k">return</span> <span class="kc">False</span></div>
+
+</span><span data-line="362">
+<div class="viewcode-block" id="S3Storage.list">
+<a class="viewcode-back" href="../../../api/backends/s3.html#litestar_storages.backends.s3.S3Storage.list">[docs]</a>
+</span><span data-line="363">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">list</span><span class="p">(</span>
+</span><span data-line="364">        <span class="bp">self</span><span class="p">,</span>
+</span><span data-line="365">        <span class="n">prefix</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+</span><span data-line="366">        <span class="o">*</span><span class="p">,</span>
+</span><span data-line="367">        <span class="n">limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="368">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncGenerator</span><span class="p">[</span><span class="n">StoredFile</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+</span><span data-line="369"><span class="w">        </span><span class="sd">&quot;&quot;&quot;List files with optional prefix filter.</span>
+</span><span data-line="370">
+</span><span data-line="371"><span class="sd">        Args:</span>
+</span><span data-line="372"><span class="sd">            prefix: Filter results to keys starting with this prefix</span>
+</span><span data-line="373"><span class="sd">            limit: Maximum number of results to return</span>
+</span><span data-line="374">
+</span><span data-line="375"><span class="sd">        Yields:</span>
+</span><span data-line="376"><span class="sd">            StoredFile metadata for each matching file</span>
+</span><span data-line="377"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="378">        <span class="n">client</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_client</span><span class="p">()</span>
+</span><span data-line="379">        <span class="n">s3_prefix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_key</span><span class="p">(</span><span class="n">prefix</span><span class="p">)</span>
+</span><span data-line="380">
+</span><span data-line="381">        <span class="k">try</span><span class="p">:</span>
+</span><span data-line="382">            <span class="k">async</span> <span class="k">with</span> <span class="n">client</span> <span class="k">as</span> <span class="n">s3</span><span class="p">:</span>
+</span><span data-line="383">                <span class="n">paginator</span> <span class="o">=</span> <span class="n">s3</span><span class="o">.</span><span class="n">get_paginator</span><span class="p">(</span><span class="s2">&quot;list_objects_v2&quot;</span><span class="p">)</span>
+</span><span data-line="384">                <span class="n">page_iterator</span> <span class="o">=</span> <span class="n">paginator</span><span class="o">.</span><span class="n">paginate</span><span class="p">(</span>
+</span><span data-line="385">                    <span class="n">Bucket</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">bucket</span><span class="p">,</span>
+</span><span data-line="386">                    <span class="n">Prefix</span><span class="o">=</span><span class="n">s3_prefix</span><span class="p">,</span>
+</span><span data-line="387">                <span class="p">)</span>
+</span><span data-line="388">
+</span><span data-line="389">                <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span data-line="390">                <span class="k">async</span> <span class="k">for</span> <span class="n">page</span> <span class="ow">in</span> <span class="n">page_iterator</span><span class="p">:</span>
+</span><span data-line="391">                    <span class="k">if</span> <span class="s2">&quot;Contents&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">page</span><span class="p">:</span>
+</span><span data-line="392">                        <span class="k">break</span>
+</span><span data-line="393">
+</span><span data-line="394">                    <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">page</span><span class="p">[</span><span class="s2">&quot;Contents&quot;</span><span class="p">]:</span>
+</span><span data-line="395">                        <span class="n">s3_key</span> <span class="o">=</span> <span class="n">obj</span><span class="p">[</span><span class="s2">&quot;Key&quot;</span><span class="p">]</span>
+</span><span data-line="396">                        <span class="n">key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_strip_prefix</span><span class="p">(</span><span class="n">s3_key</span><span class="p">)</span>
+</span><span data-line="397">
+</span><span data-line="398">                        <span class="k">yield</span> <span class="n">StoredFile</span><span class="p">(</span>
+</span><span data-line="399">                            <span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">,</span>
+</span><span data-line="400">                            <span class="n">size</span><span class="o">=</span><span class="n">obj</span><span class="p">[</span><span class="s2">&quot;Size&quot;</span><span class="p">],</span>
+</span><span data-line="401">                            <span class="n">content_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+</span><span data-line="402">                            <span class="n">etag</span><span class="o">=</span><span class="n">obj</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;ETag&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s1">&#39;&quot;&#39;</span><span class="p">),</span>
+</span><span data-line="403">                            <span class="n">last_modified</span><span class="o">=</span><span class="n">obj</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;LastModified&quot;</span><span class="p">),</span>
+</span><span data-line="404">                            <span class="n">metadata</span><span class="o">=</span><span class="p">{},</span>
+</span><span data-line="405">                        <span class="p">)</span>
+</span><span data-line="406">
+</span><span data-line="407">                        <span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
+</span><span data-line="408">                        <span class="k">if</span> <span class="n">limit</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">count</span> <span class="o">&gt;=</span> <span class="n">limit</span><span class="p">:</span>
+</span><span data-line="409">                            <span class="k">return</span>
+</span><span data-line="410">
+</span><span data-line="411">        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
+</span><span data-line="412">            <span class="kn">from</span><span class="w"> </span><span class="nn">litestar_storages.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">StorageError</span>
+</span><span data-line="413">
+</span><span data-line="414">            <span class="k">raise</span> <span class="n">StorageError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to list files: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span></div>
+
+</span><span data-line="415">
+<div class="viewcode-block" id="S3Storage.url">
+<a class="viewcode-back" href="../../../api/backends/s3.html#litestar_storages.backends.s3.S3Storage.url">[docs]</a>
+</span><span data-line="416">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">url</span><span class="p">(</span>
+</span><span data-line="417">        <span class="bp">self</span><span class="p">,</span>
+</span><span data-line="418">        <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+</span><span data-line="419">        <span class="o">*</span><span class="p">,</span>
+</span><span data-line="420">        <span class="n">expires_in</span><span class="p">:</span> <span class="n">timedelta</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="421">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span data-line="422"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate a presigned URL for accessing the file.</span>
+</span><span data-line="423">
+</span><span data-line="424"><span class="sd">        Args:</span>
+</span><span data-line="425"><span class="sd">            key: Storage path/key for the file</span>
+</span><span data-line="426"><span class="sd">            expires_in: Optional expiration time (defaults to config.presigned_expiry)</span>
+</span><span data-line="427">
+</span><span data-line="428"><span class="sd">        Returns:</span>
+</span><span data-line="429"><span class="sd">            Presigned URL string</span>
+</span><span data-line="430">
+</span><span data-line="431"><span class="sd">        Note:</span>
+</span><span data-line="432"><span class="sd">            Presigned URLs allow temporary access to private S3 objects without</span>
+</span><span data-line="433"><span class="sd">            requiring AWS credentials.</span>
+</span><span data-line="434"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="435">        <span class="n">client</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_client</span><span class="p">()</span>
+</span><span data-line="436">        <span class="n">s3_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_key</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+</span><span data-line="437">
+</span><span data-line="438">        <span class="n">expiry</span> <span class="o">=</span> <span class="n">expires_in</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">presigned_expiry</span>
+</span><span data-line="439">        <span class="n">expires_seconds</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">expiry</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">())</span>
+</span><span data-line="440">
+</span><span data-line="441">        <span class="k">try</span><span class="p">:</span>
+</span><span data-line="442">            <span class="k">async</span> <span class="k">with</span> <span class="n">client</span> <span class="k">as</span> <span class="n">s3</span><span class="p">:</span>
+</span><span data-line="443">                <span class="k">return</span> <span class="k">await</span> <span class="n">s3</span><span class="o">.</span><span class="n">generate_presigned_url</span><span class="p">(</span>
+</span><span data-line="444">                    <span class="s2">&quot;get_object&quot;</span><span class="p">,</span>
+</span><span data-line="445">                    <span class="n">Params</span><span class="o">=</span><span class="p">{</span>
+</span><span data-line="446">                        <span class="s2">&quot;Bucket&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">bucket</span><span class="p">,</span>
+</span><span data-line="447">                        <span class="s2">&quot;Key&quot;</span><span class="p">:</span> <span class="n">s3_key</span><span class="p">,</span>
+</span><span data-line="448">                    <span class="p">},</span>
+</span><span data-line="449">                    <span class="n">ExpiresIn</span><span class="o">=</span><span class="n">expires_seconds</span><span class="p">,</span>
+</span><span data-line="450">                <span class="p">)</span>
+</span><span data-line="451">
+</span><span data-line="452">        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
+</span><span data-line="453">            <span class="kn">from</span><span class="w"> </span><span class="nn">litestar_storages.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">StorageError</span>
+</span><span data-line="454">
+</span><span data-line="455">            <span class="k">raise</span> <span class="n">StorageError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to generate URL for </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span></div>
+
+</span><span data-line="456">
+<div class="viewcode-block" id="S3Storage.copy">
+<a class="viewcode-back" href="../../../api/backends/s3.html#litestar_storages.backends.s3.S3Storage.copy">[docs]</a>
+</span><span data-line="457">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">copy</span><span class="p">(</span>
+</span><span data-line="458">        <span class="bp">self</span><span class="p">,</span>
+</span><span data-line="459">        <span class="n">source</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+</span><span data-line="460">        <span class="n">destination</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+</span><span data-line="461">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">StoredFile</span><span class="p">:</span>
+</span><span data-line="462"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Copy a file within the storage backend.</span>
+</span><span data-line="463">
+</span><span data-line="464"><span class="sd">        Uses S3&#39;s native copy operation for efficiency.</span>
+</span><span data-line="465">
+</span><span data-line="466"><span class="sd">        Args:</span>
+</span><span data-line="467"><span class="sd">            source: Source key to copy from</span>
+</span><span data-line="468"><span class="sd">            destination: Destination key to copy to</span>
+</span><span data-line="469">
+</span><span data-line="470"><span class="sd">        Returns:</span>
+</span><span data-line="471"><span class="sd">            StoredFile metadata for the new copy</span>
+</span><span data-line="472">
+</span><span data-line="473"><span class="sd">        Raises:</span>
+</span><span data-line="474"><span class="sd">            FileNotFoundError: If the source file does not exist</span>
+</span><span data-line="475"><span class="sd">            StorageError: If the copy fails</span>
+</span><span data-line="476"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="477">        <span class="n">client</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_client</span><span class="p">()</span>
+</span><span data-line="478">        <span class="n">source_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_key</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
+</span><span data-line="479">        <span class="n">dest_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_key</span><span class="p">(</span><span class="n">destination</span><span class="p">)</span>
+</span><span data-line="480">
+</span><span data-line="481">        <span class="k">try</span><span class="p">:</span>
+</span><span data-line="482">            <span class="k">async</span> <span class="k">with</span> <span class="n">client</span> <span class="k">as</span> <span class="n">s3</span><span class="p">:</span>
+</span><span data-line="483">                <span class="c1"># Use S3&#39;s native copy</span>
+</span><span data-line="484">                <span class="n">copy_source</span> <span class="o">=</span> <span class="p">{</span>
+</span><span data-line="485">                    <span class="s2">&quot;Bucket&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">bucket</span><span class="p">,</span>
+</span><span data-line="486">                    <span class="s2">&quot;Key&quot;</span><span class="p">:</span> <span class="n">source_key</span><span class="p">,</span>
+</span><span data-line="487">                <span class="p">}</span>
+</span><span data-line="488">
+</span><span data-line="489">                <span class="k">await</span> <span class="n">s3</span><span class="o">.</span><span class="n">copy_object</span><span class="p">(</span>
+</span><span data-line="490">                    <span class="n">CopySource</span><span class="o">=</span><span class="n">copy_source</span><span class="p">,</span>
+</span><span data-line="491">                    <span class="n">Bucket</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">bucket</span><span class="p">,</span>
+</span><span data-line="492">                    <span class="n">Key</span><span class="o">=</span><span class="n">dest_key</span><span class="p">,</span>
+</span><span data-line="493">                <span class="p">)</span>
+</span><span data-line="494">
+</span><span data-line="495">                <span class="c1"># Get metadata for the new copy</span>
+</span><span data-line="496">                <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">destination</span><span class="p">)</span>
+</span><span data-line="497">
+</span><span data-line="498">        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+</span><span data-line="499">            <span class="n">error_code</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="s2">&quot;response&quot;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Error&quot;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Code&quot;</span><span class="p">)</span>
+</span><span data-line="500">            <span class="k">if</span> <span class="n">error_code</span> <span class="o">==</span> <span class="s2">&quot;NoSuchKey&quot;</span><span class="p">:</span>
+</span><span data-line="501">                <span class="k">raise</span> <span class="n">StorageFileNotFoundError</span><span class="p">(</span><span class="n">source</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
+</span><span data-line="502">
+</span><span data-line="503">            <span class="kn">from</span><span class="w"> </span><span class="nn">litestar_storages.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">StorageError</span>  <span class="c1"># pragma: no cover</span>
+</span><span data-line="504">
+</span><span data-line="505">            <span class="k">raise</span> <span class="n">StorageError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to copy </span><span class="si">{</span><span class="n">source</span><span class="si">}</span><span class="s2"> to </span><span class="si">{</span><span class="n">destination</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>  <span class="c1"># pragma: no cover</span></div>
+
+</span><span data-line="506">
+<div class="viewcode-block" id="S3Storage.move">
+<a class="viewcode-back" href="../../../api/backends/s3.html#litestar_storages.backends.s3.S3Storage.move">[docs]</a>
+</span><span data-line="507">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">move</span><span class="p">(</span>
+</span><span data-line="508">        <span class="bp">self</span><span class="p">,</span>
+</span><span data-line="509">        <span class="n">source</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+</span><span data-line="510">        <span class="n">destination</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+</span><span data-line="511">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">StoredFile</span><span class="p">:</span>
+</span><span data-line="512"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Move/rename a file within the storage backend.</span>
+</span><span data-line="513">
+</span><span data-line="514"><span class="sd">        Uses S3&#39;s copy + delete operations.</span>
+</span><span data-line="515">
+</span><span data-line="516"><span class="sd">        Args:</span>
+</span><span data-line="517"><span class="sd">            source: Source key to move from</span>
+</span><span data-line="518"><span class="sd">            destination: Destination key to move to</span>
+</span><span data-line="519">
+</span><span data-line="520"><span class="sd">        Returns:</span>
+</span><span data-line="521"><span class="sd">            StoredFile metadata for the moved file</span>
+</span><span data-line="522">
+</span><span data-line="523"><span class="sd">        Raises:</span>
+</span><span data-line="524"><span class="sd">            FileNotFoundError: If the source file does not exist</span>
+</span><span data-line="525"><span class="sd">            StorageError: If the move fails</span>
+</span><span data-line="526"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="527">        <span class="c1"># Copy then delete</span>
+</span><span data-line="528">        <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">destination</span><span class="p">)</span>
+</span><span data-line="529">        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
+</span><span data-line="530">        <span class="k">return</span> <span class="n">result</span></div>
+
+</span><span data-line="531">
+<div class="viewcode-block" id="S3Storage.info">
+<a class="viewcode-back" href="../../../api/backends/s3.html#litestar_storages.backends.s3.S3Storage.info">[docs]</a>
+</span><span data-line="532">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">StoredFile</span><span class="p">:</span>
+</span><span data-line="533"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Get metadata about a file without downloading it.</span>
+</span><span data-line="534">
+</span><span data-line="535"><span class="sd">        Args:</span>
+</span><span data-line="536"><span class="sd">            key: Storage path/key for the file</span>
+</span><span data-line="537">
+</span><span data-line="538"><span class="sd">        Returns:</span>
+</span><span data-line="539"><span class="sd">            StoredFile with metadata</span>
+</span><span data-line="540">
+</span><span data-line="541"><span class="sd">        Raises:</span>
+</span><span data-line="542"><span class="sd">            StorageFileNotFoundError: If the file does not exist</span>
+</span><span data-line="543"><span class="sd">            StorageError: If retrieving metadata fails</span>
+</span><span data-line="544"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="545">        <span class="n">client</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_client</span><span class="p">()</span>
+</span><span data-line="546">        <span class="n">s3_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_key</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+</span><span data-line="547">
+</span><span data-line="548">        <span class="k">try</span><span class="p">:</span>
+</span><span data-line="549">            <span class="k">async</span> <span class="k">with</span> <span class="n">client</span> <span class="k">as</span> <span class="n">s3</span><span class="p">:</span>
+</span><span data-line="550">                <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">s3</span><span class="o">.</span><span class="n">head_object</span><span class="p">(</span>
+</span><span data-line="551">                    <span class="n">Bucket</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">bucket</span><span class="p">,</span>
+</span><span data-line="552">                    <span class="n">Key</span><span class="o">=</span><span class="n">s3_key</span><span class="p">,</span>
+</span><span data-line="553">                <span class="p">)</span>
+</span><span data-line="554">
+</span><span data-line="555">                <span class="k">return</span> <span class="n">StoredFile</span><span class="p">(</span>
+</span><span data-line="556">                    <span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">,</span>
+</span><span data-line="557">                    <span class="n">size</span><span class="o">=</span><span class="n">response</span><span class="p">[</span><span class="s2">&quot;ContentLength&quot;</span><span class="p">],</span>
+</span><span data-line="558">                    <span class="n">content_type</span><span class="o">=</span><span class="n">response</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;ContentType&quot;</span><span class="p">),</span>
+</span><span data-line="559">                    <span class="n">etag</span><span class="o">=</span><span class="n">response</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;ETag&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s1">&#39;&quot;&#39;</span><span class="p">),</span>
+</span><span data-line="560">                    <span class="n">last_modified</span><span class="o">=</span><span class="n">response</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;LastModified&quot;</span><span class="p">),</span>
+</span><span data-line="561">                    <span class="n">metadata</span><span class="o">=</span><span class="n">response</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Metadata&quot;</span><span class="p">,</span> <span class="p">{}),</span>
+</span><span data-line="562">                <span class="p">)</span>
+</span><span data-line="563">
+</span><span data-line="564">        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+</span><span data-line="565">            <span class="n">error_code</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="s2">&quot;response&quot;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Error&quot;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Code&quot;</span><span class="p">)</span>
+</span><span data-line="566">            <span class="k">if</span> <span class="n">error_code</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;NoSuchKey&quot;</span><span class="p">,</span> <span class="s2">&quot;404&quot;</span><span class="p">):</span>
+</span><span data-line="567">                <span class="k">raise</span> <span class="n">StorageFileNotFoundError</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
+</span><span data-line="568">
+</span><span data-line="569">            <span class="kn">from</span><span class="w"> </span><span class="nn">litestar_storages.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">StorageError</span>  <span class="c1"># pragma: no cover</span>
+</span><span data-line="570">
+</span><span data-line="571">            <span class="k">raise</span> <span class="n">StorageError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to get info for </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>  <span class="c1"># pragma: no cover</span></div>
+
+</span><span data-line="572">
+<div class="viewcode-block" id="S3Storage.close">
+<a class="viewcode-back" href="../../../api/backends/s3.html#litestar_storages.backends.s3.S3Storage.close">[docs]</a>
+</span><span data-line="573">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="574"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Close the S3 storage and release resources.</span>
+</span><span data-line="575">
+</span><span data-line="576"><span class="sd">        This method clears the cached session. Note that aioboto3 sessions</span>
+</span><span data-line="577"><span class="sd">        don&#39;t require explicit cleanup, but clearing the reference allows</span>
+</span><span data-line="578"><span class="sd">        for garbage collection and prevents accidental reuse after close.</span>
+</span><span data-line="579"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="580">        <span class="bp">self</span><span class="o">.</span><span class="n">_session</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+</span><span data-line="581">
+</span><span data-line="582">    <span class="c1"># =========================================================================</span>
+</span><span data-line="583">    <span class="c1"># Multipart Upload Support</span>
+</span><span data-line="584">    <span class="c1"># =========================================================================</span>
+</span><span data-line="585">
+<div class="viewcode-block" id="S3Storage.start_multipart_upload">
+<a class="viewcode-back" href="../../../api/backends/s3.html#litestar_storages.backends.s3.S3Storage.start_multipart_upload">[docs]</a>
+</span><span data-line="586">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">start_multipart_upload</span><span class="p">(</span>
+</span><span data-line="587">        <span class="bp">self</span><span class="p">,</span>
+</span><span data-line="588">        <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+</span><span data-line="589">        <span class="o">*</span><span class="p">,</span>
+</span><span data-line="590">        <span class="n">content_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="591">        <span class="n">metadata</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="592">        <span class="n">part_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span> <span class="o">*</span> <span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span><span class="p">,</span>
+</span><span data-line="593">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MultipartUpload</span><span class="p">:</span>
+</span><span data-line="594"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Start a multipart upload.</span>
+</span><span data-line="595">
+</span><span data-line="596"><span class="sd">        Use this for large files (typically &gt; 100MB) to enable:</span>
+</span><span data-line="597"><span class="sd">        - Parallel part uploads</span>
+</span><span data-line="598"><span class="sd">        - Resumable uploads</span>
+</span><span data-line="599"><span class="sd">        - Better handling of network failures</span>
+</span><span data-line="600">
+</span><span data-line="601"><span class="sd">        Args:</span>
+</span><span data-line="602"><span class="sd">            key: Storage path/key for the file</span>
+</span><span data-line="603"><span class="sd">            content_type: MIME type of the content</span>
+</span><span data-line="604"><span class="sd">            metadata: Additional metadata to store with the file</span>
+</span><span data-line="605"><span class="sd">            part_size: Size of each part in bytes (minimum 5MB for S3)</span>
+</span><span data-line="606">
+</span><span data-line="607"><span class="sd">        Returns:</span>
+</span><span data-line="608"><span class="sd">            MultipartUpload object to track the upload state</span>
+</span><span data-line="609">
+</span><span data-line="610"><span class="sd">        Raises:</span>
+</span><span data-line="611"><span class="sd">            StorageError: If initiating the upload fails</span>
+</span><span data-line="612"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="613">        <span class="n">client</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_client</span><span class="p">()</span>
+</span><span data-line="614">        <span class="n">s3_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_key</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+</span><span data-line="615">
+</span><span data-line="616">        <span class="c1"># Ensure minimum part size</span>
+</span><span data-line="617">        <span class="n">part_size</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">part_size</span><span class="p">,</span> <span class="mi">5</span> <span class="o">*</span> <span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span><span class="p">)</span>
+</span><span data-line="618">
+</span><span data-line="619">        <span class="n">params</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+</span><span data-line="620">            <span class="s2">&quot;Bucket&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">bucket</span><span class="p">,</span>
+</span><span data-line="621">            <span class="s2">&quot;Key&quot;</span><span class="p">:</span> <span class="n">s3_key</span><span class="p">,</span>
+</span><span data-line="622">        <span class="p">}</span>
+</span><span data-line="623">
+</span><span data-line="624">        <span class="k">if</span> <span class="n">content_type</span><span class="p">:</span>
+</span><span data-line="625">            <span class="n">params</span><span class="p">[</span><span class="s2">&quot;ContentType&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">content_type</span>
+</span><span data-line="626">        <span class="k">if</span> <span class="n">metadata</span><span class="p">:</span>
+</span><span data-line="627">            <span class="n">params</span><span class="p">[</span><span class="s2">&quot;Metadata&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">metadata</span>
+</span><span data-line="628">
+</span><span data-line="629">        <span class="k">try</span><span class="p">:</span>
+</span><span data-line="630">            <span class="k">async</span> <span class="k">with</span> <span class="n">client</span> <span class="k">as</span> <span class="n">s3</span><span class="p">:</span>
+</span><span data-line="631">                <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">s3</span><span class="o">.</span><span class="n">create_multipart_upload</span><span class="p">(</span><span class="o">**</span><span class="n">params</span><span class="p">)</span>
+</span><span data-line="632">                <span class="k">return</span> <span class="n">MultipartUpload</span><span class="p">(</span>
+</span><span data-line="633">                    <span class="n">upload_id</span><span class="o">=</span><span class="n">response</span><span class="p">[</span><span class="s2">&quot;UploadId&quot;</span><span class="p">],</span>
+</span><span data-line="634">                    <span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">,</span>
+</span><span data-line="635">                    <span class="n">part_size</span><span class="o">=</span><span class="n">part_size</span><span class="p">,</span>
+</span><span data-line="636">                <span class="p">)</span>
+</span><span data-line="637">
+</span><span data-line="638">        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
+</span><span data-line="639">            <span class="kn">from</span><span class="w"> </span><span class="nn">litestar_storages.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">StorageError</span>
+</span><span data-line="640">
+</span><span data-line="641">            <span class="k">raise</span> <span class="n">StorageError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to start multipart upload for </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span></div>
+
+</span><span data-line="642">
+<div class="viewcode-block" id="S3Storage.upload_part">
+<a class="viewcode-back" href="../../../api/backends/s3.html#litestar_storages.backends.s3.S3Storage.upload_part">[docs]</a>
+</span><span data-line="643">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">upload_part</span><span class="p">(</span>
+</span><span data-line="644">        <span class="bp">self</span><span class="p">,</span>
+</span><span data-line="645">        <span class="n">upload</span><span class="p">:</span> <span class="n">MultipartUpload</span><span class="p">,</span>
+</span><span data-line="646">        <span class="n">part_number</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+</span><span data-line="647">        <span class="n">data</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">,</span>
+</span><span data-line="648">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span data-line="649"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Upload a single part of a multipart upload.</span>
+</span><span data-line="650">
+</span><span data-line="651"><span class="sd">        Args:</span>
+</span><span data-line="652"><span class="sd">            upload: The MultipartUpload object from start_multipart_upload</span>
+</span><span data-line="653"><span class="sd">            part_number: Part number (1-indexed, must be sequential)</span>
+</span><span data-line="654"><span class="sd">            data: The part data to upload</span>
+</span><span data-line="655">
+</span><span data-line="656"><span class="sd">        Returns:</span>
+</span><span data-line="657"><span class="sd">            ETag of the uploaded part</span>
+</span><span data-line="658">
+</span><span data-line="659"><span class="sd">        Raises:</span>
+</span><span data-line="660"><span class="sd">            StorageError: If the part upload fails</span>
+</span><span data-line="661"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="662">        <span class="n">client</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_client</span><span class="p">()</span>
+</span><span data-line="663">        <span class="n">s3_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_key</span><span class="p">(</span><span class="n">upload</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
+</span><span data-line="664">
+</span><span data-line="665">        <span class="k">try</span><span class="p">:</span>
+</span><span data-line="666">            <span class="k">async</span> <span class="k">with</span> <span class="n">client</span> <span class="k">as</span> <span class="n">s3</span><span class="p">:</span>
+</span><span data-line="667">                <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">s3</span><span class="o">.</span><span class="n">upload_part</span><span class="p">(</span>
+</span><span data-line="668">                    <span class="n">Bucket</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">bucket</span><span class="p">,</span>
+</span><span data-line="669">                    <span class="n">Key</span><span class="o">=</span><span class="n">s3_key</span><span class="p">,</span>
+</span><span data-line="670">                    <span class="n">UploadId</span><span class="o">=</span><span class="n">upload</span><span class="o">.</span><span class="n">upload_id</span><span class="p">,</span>
+</span><span data-line="671">                    <span class="n">PartNumber</span><span class="o">=</span><span class="n">part_number</span><span class="p">,</span>
+</span><span data-line="672">                    <span class="n">Body</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
+</span><span data-line="673">                <span class="p">)</span>
+</span><span data-line="674">
+</span><span data-line="675">                <span class="n">etag</span> <span class="o">=</span> <span class="n">response</span><span class="p">[</span><span class="s2">&quot;ETag&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s1">&#39;&quot;&#39;</span><span class="p">)</span>
+</span><span data-line="676">                <span class="n">upload</span><span class="o">.</span><span class="n">add_part</span><span class="p">(</span><span class="n">part_number</span><span class="p">,</span> <span class="n">etag</span><span class="p">)</span>
+</span><span data-line="677">                <span class="k">return</span> <span class="n">etag</span>
+</span><span data-line="678">
+</span><span data-line="679">        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
+</span><span data-line="680">            <span class="kn">from</span><span class="w"> </span><span class="nn">litestar_storages.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">StorageError</span>
+</span><span data-line="681">
+</span><span data-line="682">            <span class="k">raise</span> <span class="n">StorageError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to upload part </span><span class="si">{</span><span class="n">part_number</span><span class="si">}</span><span class="s2"> for </span><span class="si">{</span><span class="n">upload</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span></div>
+
+</span><span data-line="683">
+<div class="viewcode-block" id="S3Storage.complete_multipart_upload">
+<a class="viewcode-back" href="../../../api/backends/s3.html#litestar_storages.backends.s3.S3Storage.complete_multipart_upload">[docs]</a>
+</span><span data-line="684">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">complete_multipart_upload</span><span class="p">(</span>
+</span><span data-line="685">        <span class="bp">self</span><span class="p">,</span>
+</span><span data-line="686">        <span class="n">upload</span><span class="p">:</span> <span class="n">MultipartUpload</span><span class="p">,</span>
+</span><span data-line="687">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">StoredFile</span><span class="p">:</span>
+</span><span data-line="688"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Complete a multipart upload.</span>
+</span><span data-line="689">
+</span><span data-line="690"><span class="sd">        Args:</span>
+</span><span data-line="691"><span class="sd">            upload: The MultipartUpload object with all parts uploaded</span>
+</span><span data-line="692">
+</span><span data-line="693"><span class="sd">        Returns:</span>
+</span><span data-line="694"><span class="sd">            StoredFile metadata for the completed upload</span>
+</span><span data-line="695">
+</span><span data-line="696"><span class="sd">        Raises:</span>
+</span><span data-line="697"><span class="sd">            StorageError: If completing the upload fails</span>
+</span><span data-line="698"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="699">        <span class="n">client</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_client</span><span class="p">()</span>
+</span><span data-line="700">        <span class="n">s3_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_key</span><span class="p">(</span><span class="n">upload</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
+</span><span data-line="701">
+</span><span data-line="702">        <span class="c1"># Sort parts by part number and format for S3</span>
+</span><span data-line="703">        <span class="n">sorted_parts</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">upload</span><span class="o">.</span><span class="n">parts</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">p</span><span class="p">:</span> <span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+</span><span data-line="704">        <span class="n">parts</span> <span class="o">=</span> <span class="p">[{</span><span class="s2">&quot;PartNumber&quot;</span><span class="p">:</span> <span class="n">num</span><span class="p">,</span> <span class="s2">&quot;ETag&quot;</span><span class="p">:</span> <span class="n">etag</span><span class="p">}</span> <span class="k">for</span> <span class="n">num</span><span class="p">,</span> <span class="n">etag</span> <span class="ow">in</span> <span class="n">sorted_parts</span><span class="p">]</span>
+</span><span data-line="705">
+</span><span data-line="706">        <span class="k">try</span><span class="p">:</span>
+</span><span data-line="707">            <span class="k">async</span> <span class="k">with</span> <span class="n">client</span> <span class="k">as</span> <span class="n">s3</span><span class="p">:</span>
+</span><span data-line="708">                <span class="k">await</span> <span class="n">s3</span><span class="o">.</span><span class="n">complete_multipart_upload</span><span class="p">(</span>
+</span><span data-line="709">                    <span class="n">Bucket</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">bucket</span><span class="p">,</span>
+</span><span data-line="710">                    <span class="n">Key</span><span class="o">=</span><span class="n">s3_key</span><span class="p">,</span>
+</span><span data-line="711">                    <span class="n">UploadId</span><span class="o">=</span><span class="n">upload</span><span class="o">.</span><span class="n">upload_id</span><span class="p">,</span>
+</span><span data-line="712">                    <span class="n">MultipartUpload</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;Parts&quot;</span><span class="p">:</span> <span class="n">parts</span><span class="p">},</span>
+</span><span data-line="713">                <span class="p">)</span>
+</span><span data-line="714">
+</span><span data-line="715">                <span class="c1"># Get the final file info</span>
+</span><span data-line="716">                <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">upload</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
+</span><span data-line="717">
+</span><span data-line="718">        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
+</span><span data-line="719">            <span class="kn">from</span><span class="w"> </span><span class="nn">litestar_storages.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">StorageError</span>
+</span><span data-line="720">
+</span><span data-line="721">            <span class="k">raise</span> <span class="n">StorageError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to complete multipart upload for </span><span class="si">{</span><span class="n">upload</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span></div>
+
+</span><span data-line="722">
+<div class="viewcode-block" id="S3Storage.abort_multipart_upload">
+<a class="viewcode-back" href="../../../api/backends/s3.html#litestar_storages.backends.s3.S3Storage.abort_multipart_upload">[docs]</a>
+</span><span data-line="723">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">abort_multipart_upload</span><span class="p">(</span>
+</span><span data-line="724">        <span class="bp">self</span><span class="p">,</span>
+</span><span data-line="725">        <span class="n">upload</span><span class="p">:</span> <span class="n">MultipartUpload</span><span class="p">,</span>
+</span><span data-line="726">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="727"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Abort a multipart upload.</span>
+</span><span data-line="728">
+</span><span data-line="729"><span class="sd">        This cancels an in-progress multipart upload and deletes any</span>
+</span><span data-line="730"><span class="sd">        uploaded parts. Use this to clean up failed uploads.</span>
+</span><span data-line="731">
+</span><span data-line="732"><span class="sd">        Args:</span>
+</span><span data-line="733"><span class="sd">            upload: The MultipartUpload object to abort</span>
+</span><span data-line="734">
+</span><span data-line="735"><span class="sd">        Raises:</span>
+</span><span data-line="736"><span class="sd">            StorageError: If aborting the upload fails</span>
+</span><span data-line="737"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="738">        <span class="n">client</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_client</span><span class="p">()</span>
+</span><span data-line="739">        <span class="n">s3_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_key</span><span class="p">(</span><span class="n">upload</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
+</span><span data-line="740">
+</span><span data-line="741">        <span class="k">try</span><span class="p">:</span>
+</span><span data-line="742">            <span class="k">async</span> <span class="k">with</span> <span class="n">client</span> <span class="k">as</span> <span class="n">s3</span><span class="p">:</span>
+</span><span data-line="743">                <span class="k">await</span> <span class="n">s3</span><span class="o">.</span><span class="n">abort_multipart_upload</span><span class="p">(</span>
+</span><span data-line="744">                    <span class="n">Bucket</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">bucket</span><span class="p">,</span>
+</span><span data-line="745">                    <span class="n">Key</span><span class="o">=</span><span class="n">s3_key</span><span class="p">,</span>
+</span><span data-line="746">                    <span class="n">UploadId</span><span class="o">=</span><span class="n">upload</span><span class="o">.</span><span class="n">upload_id</span><span class="p">,</span>
+</span><span data-line="747">                <span class="p">)</span>
+</span><span data-line="748">
+</span><span data-line="749">        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
+</span><span data-line="750">            <span class="kn">from</span><span class="w"> </span><span class="nn">litestar_storages.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">StorageError</span>
+</span><span data-line="751">
+</span><span data-line="752">            <span class="k">raise</span> <span class="n">StorageError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to abort multipart upload for </span><span class="si">{</span><span class="n">upload</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span></div>
+
+</span><span data-line="753">
+<div class="viewcode-block" id="S3Storage.put_large">
+<a class="viewcode-back" href="../../../api/backends/s3.html#litestar_storages.backends.s3.S3Storage.put_large">[docs]</a>
+</span><span data-line="754">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">put_large</span><span class="p">(</span>
+</span><span data-line="755">        <span class="bp">self</span><span class="p">,</span>
+</span><span data-line="756">        <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+</span><span data-line="757">        <span class="n">data</span><span class="p">:</span> <span class="nb">bytes</span> <span class="o">|</span> <span class="n">AsyncIterator</span><span class="p">[</span><span class="nb">bytes</span><span class="p">],</span>
+</span><span data-line="758">        <span class="o">*</span><span class="p">,</span>
+</span><span data-line="759">        <span class="n">content_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="760">        <span class="n">metadata</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="761">        <span class="n">part_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span> <span class="o">*</span> <span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span><span class="p">,</span>
+</span><span data-line="762">        <span class="n">progress_callback</span><span class="p">:</span> <span class="n">ProgressCallback</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="763">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">StoredFile</span><span class="p">:</span>
+</span><span data-line="764"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Upload a large file using multipart upload.</span>
+</span><span data-line="765">
+</span><span data-line="766"><span class="sd">        This is a convenience method that handles the multipart upload process</span>
+</span><span data-line="767"><span class="sd">        automatically. It splits the data into parts, uploads them, and</span>
+</span><span data-line="768"><span class="sd">        completes the upload.</span>
+</span><span data-line="769">
+</span><span data-line="770"><span class="sd">        Args:</span>
+</span><span data-line="771"><span class="sd">            key: Storage path/key for the file</span>
+</span><span data-line="772"><span class="sd">            data: File contents as bytes or async byte stream</span>
+</span><span data-line="773"><span class="sd">            content_type: MIME type of the content</span>
+</span><span data-line="774"><span class="sd">            metadata: Additional metadata to store with the file</span>
+</span><span data-line="775"><span class="sd">            part_size: Size of each part in bytes (default 10MB)</span>
+</span><span data-line="776"><span class="sd">            progress_callback: Optional callback for progress updates</span>
+</span><span data-line="777">
+</span><span data-line="778"><span class="sd">        Returns:</span>
+</span><span data-line="779"><span class="sd">            StoredFile with metadata about the stored file</span>
+</span><span data-line="780">
+</span><span data-line="781"><span class="sd">        Raises:</span>
+</span><span data-line="782"><span class="sd">            StorageError: If the upload fails</span>
+</span><span data-line="783"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="784">        <span class="c1"># Collect data if it&#39;s an async iterator</span>
+</span><span data-line="785">        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">):</span>
+</span><span data-line="786">            <span class="n">file_data</span> <span class="o">=</span> <span class="n">data</span>
+</span><span data-line="787">        <span class="k">else</span><span class="p">:</span>
+</span><span data-line="788">            <span class="n">chunks</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span data-line="789">            <span class="k">async</span> <span class="k">for</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+</span><span data-line="790">                <span class="n">chunks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">chunk</span><span class="p">)</span>
+</span><span data-line="791">            <span class="n">file_data</span> <span class="o">=</span> <span class="sa">b</span><span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">chunks</span><span class="p">)</span>
+</span><span data-line="792">
+</span><span data-line="793">        <span class="n">total_size</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">file_data</span><span class="p">)</span>
+</span><span data-line="794">
+</span><span data-line="795">        <span class="c1"># For small files, use regular put</span>
+</span><span data-line="796">        <span class="k">if</span> <span class="n">total_size</span> <span class="o">&lt;</span> <span class="n">part_size</span><span class="p">:</span>
+</span><span data-line="797">            <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">file_data</span><span class="p">,</span> <span class="n">content_type</span><span class="o">=</span><span class="n">content_type</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">)</span>
+</span><span data-line="798">
+</span><span data-line="799">        <span class="c1"># Start multipart upload</span>
+</span><span data-line="800">        <span class="n">upload</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_multipart_upload</span><span class="p">(</span>
+</span><span data-line="801">            <span class="n">key</span><span class="p">,</span>
+</span><span data-line="802">            <span class="n">content_type</span><span class="o">=</span><span class="n">content_type</span><span class="p">,</span>
+</span><span data-line="803">            <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">,</span>
+</span><span data-line="804">            <span class="n">part_size</span><span class="o">=</span><span class="n">part_size</span><span class="p">,</span>
+</span><span data-line="805">        <span class="p">)</span>
+</span><span data-line="806">
+</span><span data-line="807">        <span class="k">try</span><span class="p">:</span>
+</span><span data-line="808">            <span class="n">bytes_uploaded</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span data-line="809">            <span class="n">part_number</span> <span class="o">=</span> <span class="mi">1</span>
+</span><span data-line="810">
+</span><span data-line="811">            <span class="c1"># Upload parts</span>
+</span><span data-line="812">            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">total_size</span><span class="p">,</span> <span class="n">part_size</span><span class="p">):</span>
+</span><span data-line="813">                <span class="n">part_data</span> <span class="o">=</span> <span class="n">file_data</span><span class="p">[</span><span class="n">i</span> <span class="p">:</span> <span class="n">i</span> <span class="o">+</span> <span class="n">part_size</span><span class="p">]</span>
+</span><span data-line="814">                <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">upload_part</span><span class="p">(</span><span class="n">upload</span><span class="p">,</span> <span class="n">part_number</span><span class="p">,</span> <span class="n">part_data</span><span class="p">)</span>
+</span><span data-line="815">
+</span><span data-line="816">                <span class="n">bytes_uploaded</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">part_data</span><span class="p">)</span>
+</span><span data-line="817">                <span class="n">part_number</span> <span class="o">+=</span> <span class="mi">1</span>
+</span><span data-line="818">
+</span><span data-line="819">                <span class="c1"># Report progress</span>
+</span><span data-line="820">                <span class="k">if</span> <span class="n">progress_callback</span><span class="p">:</span>
+</span><span data-line="821">                    <span class="n">progress_callback</span><span class="p">(</span>
+</span><span data-line="822">                        <span class="n">ProgressInfo</span><span class="p">(</span>
+</span><span data-line="823">                            <span class="n">bytes_transferred</span><span class="o">=</span><span class="n">bytes_uploaded</span><span class="p">,</span>
+</span><span data-line="824">                            <span class="n">total_bytes</span><span class="o">=</span><span class="n">total_size</span><span class="p">,</span>
+</span><span data-line="825">                            <span class="n">operation</span><span class="o">=</span><span class="s2">&quot;upload&quot;</span><span class="p">,</span>
+</span><span data-line="826">                            <span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">,</span>
+</span><span data-line="827">                        <span class="p">)</span>
+</span><span data-line="828">                    <span class="p">)</span>
+</span><span data-line="829">
+</span><span data-line="830">            <span class="c1"># Complete the upload</span>
+</span><span data-line="831">            <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">complete_multipart_upload</span><span class="p">(</span><span class="n">upload</span><span class="p">)</span>
+</span><span data-line="832">
+</span><span data-line="833">        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+</span><span data-line="834">            <span class="c1"># Clean up on failure</span>
+</span><span data-line="835">            <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">abort_multipart_upload</span><span class="p">(</span><span class="n">upload</span><span class="p">)</span>
+</span><span data-line="836">            <span class="k">raise</span></div>
+</div>
+
+</span></pre></div>
+        </article><button class="back-to-top" type="button">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+  </svg>
+  <span>Back to top</span>
+</button><div class="navigation flex print:hidden"></div></div>
+    </div>
+  </main>
+</div>
+<footer class="sy-foot">
+  <div class="sy-foot-inner sy-container mx-auto">
+    <div class="sy-foot-reserved md:flex justify-between items-center">
+      <div class="sy-foot-copyright"><p>2025, Jacob Coffee</p>
+  
+  <p>
+    Made with
+    
+    <a href="https://www.sphinx-doc.org/">Sphinx</a> and
+    
+    <a href="https://shibuya.lepture.com">Shibuya theme</a>.
+  </p>
+</div>
+      <div class="sy-foot-socials">
+<a href="https://github.com/JacobCoffee/litestar-storages" aria-label="GitHub">
+  <iconify-icon icon="simple-icons:github"></iconify-icon>
+</a></div>
+    </div>
+  </div>
+</footer>
+      <script src="../../../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../../_static/copybutton.js?v=30646c52"></script>
+      <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
+      <script src="../../../_static/shibuya.js?v=c1cf1a6b"></script></body>
+</html>

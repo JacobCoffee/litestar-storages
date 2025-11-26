@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="en" data-accent-color="violet" data-content_root="../">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Progress Callbacks - litestar-storages</title><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Custom Backends" href="custom-backends.html" /><link rel="prev" title="Multipart Uploads" href="multipart-uploads.html" /><script>
+    function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
+    setColorMode(localStorage._theme||"auto");
+  </script><link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=e1a1ceaf" />
+    <link rel="stylesheet" type="text/css" href="../_static/shibuya.css?v=14737038" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link media="print" rel="stylesheet" type="text/css" href="../_static/print.css?v=20ff2c19" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=5f8f7e8c" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --sy-f-text: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+  --sy-f-heading: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+}
+</style>
+    <meta property="og:type" content="website"/><meta property="og:title" content="Progress Callbacks"/>
+    <meta name="twitter:card" content="summary"/>
+  </head>
+<body><div class="sy-head">
+  <div class="sy-head-blur"></div>
+  <div class="sy-head-inner sy-container mx-auto">
+    <a class="sy-head-brand" href="../index.html">
+      
+      
+      <strong>litestar-storages</strong>
+    </a>
+    <div class="sy-head-nav" id="head-nav">
+      <nav class="sy-head-links"><ul><li class="link">
+          <a href="https://litestar.dev/">
+            <span>Litestar</span></a>
+        </li><li class="link">
+          <a href="https://pypi.org/project/litestar-storages/">
+            <span>PyPI</span></a>
+        </li></ul></nav>
+      <div class="sy-head-extra flex items-center print:hidden"><form class="searchbox flex items-center" action="../search.html" method="get">
+  <input type="text" name="q" placeholder="Search" />
+  <kbd>/</kbd>
+</form><div class="sy-head-socials">
+  <a href="https://github.com/JacobCoffee/litestar-storages" aria-label="GitHub">
+    <iconify-icon icon="simple-icons:github"></iconify-icon>
+  </a></div></div>
+    </div>
+    <div class="sy-head-actions flex items-center shrink-0 print:hidden"><button class="js-theme theme-switch flex items-center"
+data-aria-auto="Switch to light color mode"
+data-aria-light="Switch to dark color mode"
+data-aria-dark="Switch to auto color mode">
+<i class="i-lucide theme-icon"></i>
+</button><button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="head-nav" aria-expanded="false">
+        <div class="hamburger">
+          <span class="hamburger_1"></span>
+          <span class="hamburger_2"></span>
+          <span class="hamburger_3"></span>
+        </div>
+      </button>
+    </div>
+  </div>
+</div>
+<div class="sy-page sy-container flex mx-auto">
+  <aside id="lside" class="sy-lside md:w-72 md:shrink-0 print:hidden">
+    <div class="sy-lside-inner md:sticky">
+      <div class="sy-scrollbar p-6">
+        <div class="globaltoc" data-expand-depth="0"><p class="caption" role="heading" aria-level="3"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../getting-started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Example Applications</a></li>
+</ul>
+<p class="caption" role="heading" aria-level="3"><span class="caption-text">Storage Backends</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../backends/filesystem.html">FileSystem Storage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../backends/s3.html">S3 Storage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../backends/gcs.html">GCS Storage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../backends/azure.html">Azure Blob Storage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../backends/memory.html">Memory Storage</a></li>
+</ul>
+<p class="caption" role="heading" aria-level="3"><span class="caption-text">Advanced Topics</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="retry.html">Retry Utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="multipart-uploads.html">Multipart Uploads</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Progress Callbacks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="custom-backends.html">Custom Backends</a></li>
+</ul>
+<p class="caption" role="heading" aria-level="3"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/index.html">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../api/base.html">Base Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/types.html">Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/exceptions.html">Exceptions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/backends/index.html">Storage Backends</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../api/backends/memory.html">Memory Storage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/backends/filesystem.html">FileSystem Storage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/backends/s3.html">S3 Storage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/backends/gcs.html">GCS Storage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/backends/azure.html">Azure Storage</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../api/contrib/index.html">Litestar Integration</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../api/contrib/plugin.html">Storage Plugin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/contrib/dependencies.html">Dependencies</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/contrib/dto.html">DTOs</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../comparison.html">Comparison with Other Libraries</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
+</ul>
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="lside-overlay js-menu" role="button" aria-label="Close left sidebar" aria-controls="lside" aria-expanded="false"></div>
+  <aside id="rside" class="sy-rside pb-3 w-64 shrink-0 order-last">
+    <button class="rside-close js-menu xl:hidden" aria-label="Close Table of Contents" type="button" aria-controls="rside" aria-expanded="false">
+      <i class="i-lucide close"></i>
+    </button>
+    <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4"><div class="localtoc"><h3>On this page</h3><ul>
+<li><a class="reference internal" href="#progressinfo-structure">ProgressInfo Structure</a><ul>
+<li><a class="reference internal" href="#fields">Fields</a></li>
+<li><a class="reference internal" href="#properties">Properties</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#the-progresscallback-protocol">The ProgressCallback Protocol</a></li>
+<li><a class="reference internal" href="#basic-usage">Basic Usage</a><ul>
+<li><a class="reference internal" href="#simple-progress-logging">Simple Progress Logging</a></li>
+<li><a class="reference internal" href="#percentage-based-callback">Percentage-Based Callback</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#progress-bar-examples">Progress Bar Examples</a><ul>
+<li><a class="reference internal" href="#using-tqdm">Using tqdm</a></li>
+<li><a class="reference internal" href="#using-rich">Using rich</a></li>
+<li><a class="reference internal" href="#console-progress-bar-no-dependencies">Console Progress Bar (No Dependencies)</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#class-based-progress-tracking">Class-Based Progress Tracking</a></li>
+<li><a class="reference internal" href="#throttled-progress-updates">Throttled Progress Updates</a></li>
+<li><a class="reference internal" href="#web-application-integration">Web Application Integration</a><ul>
+<li><a class="reference internal" href="#websocket-progress-updates">WebSocket Progress Updates</a></li>
+<li><a class="reference internal" href="#progress-api-endpoint">Progress API Endpoint</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#logging-integration">Logging Integration</a></li>
+<li><a class="reference internal" href="#best-practices">Best Practices</a><ul>
+<li><a class="reference internal" href="#keep-callbacks-fast">1. Keep Callbacks Fast</a></li>
+<li><a class="reference internal" href="#handle-unknown-totals">2. Handle Unknown Totals</a></li>
+<li><a class="reference internal" href="#use-throttling-for-large-files">3. Use Throttling for Large Files</a></li>
+<li><a class="reference internal" href="#clean-up-resources">4. Clean Up Resources</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#next-steps">Next Steps</a></li>
+</ul>
+</div><div id="ethical-ad-placement" data-ea-publisher="readthedocs"></div></div>
+  </aside>
+  <div class="rside-overlay js-menu" role="button" aria-label="Close Table of Contents" aria-controls="rside" aria-expanded="false"></div>
+  <main class="sy-main w-full max-sm:max-w-full print:pt-6">
+<div class="sy-breadcrumbs" role="navigation">
+  <div class="sy-breadcrumbs-inner flex items-center">
+    <div class="md:hidden mr-3">
+      <button class="js-menu" aria-label="Menu" type="button" aria-controls="lside" aria-expanded="false">
+        <i class="i-lucide menu"></i>
+      </button>
+    </div>
+    <ol class="flex-1" itemscope itemtype="https://schema.org/BreadcrumbList"><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="../index.html"><span itemprop="name">litestar-storages</span></a>
+        <span>/</span>
+        <meta itemprop="position" content="1" />
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <strong itemprop="name">Progress Callbacks</strong>
+        <meta itemprop="position" content="2" />
+      </li></ol>
+    <div class="xl:hidden ml-1">
+      <button class="js-menu" aria-label="Show table of contents" type="button" aria-controls="rside"
+        aria-expanded="false">
+        <i class="i-lucide outdent"></i>
+      </button>
+    </div>
+  </div>
+</div><div class="flex flex-col break-words justify-between">
+      <div class="min-w-0 max-w-6xl px-6 pb-6 pt-8 xl:px-12">
+        <article class="yue" role="main">
+          <section id="progress-callbacks">
+<h1>Progress Callbacks<a class="headerlink" href="#progress-callbacks" title="Link to this heading">¶</a></h1>
+<p>Progress callbacks enable real-time tracking of upload and download operations. This is essential for providing user feedback during large file transfers, logging transfer statistics, and implementing progress bars.</p>
+<section id="progressinfo-structure">
+<h2>ProgressInfo Structure<a class="headerlink" href="#progressinfo-structure" title="Link to this heading">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">ProgressInfo</span></code> dataclass provides information about transfer progress:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_storages</span><span class="w"> </span><span class="kn">import</span> <span class="n">ProgressInfo</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="nd">@dataclass</span>
+</span><span data-line="4"><span class="k">class</span><span class="w"> </span><span class="nc">ProgressInfo</span><span class="p">:</span>
+</span><span data-line="5">    <span class="n">bytes_transferred</span><span class="p">:</span> <span class="nb">int</span>        <span class="c1"># Bytes transferred so far</span>
+</span><span data-line="6">    <span class="n">total_bytes</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span>       <span class="c1"># Total bytes (None if unknown)</span>
+</span><span data-line="7">    <span class="n">operation</span><span class="p">:</span> <span class="nb">str</span>                <span class="c1"># &quot;upload&quot; or &quot;download&quot;</span>
+</span><span data-line="8">    <span class="n">key</span><span class="p">:</span> <span class="nb">str</span>                      <span class="c1"># Storage key being transferred</span>
+</span><span data-line="9">
+</span><span data-line="10">    <span class="nd">@property</span>
+</span><span data-line="11">    <span class="k">def</span><span class="w"> </span><span class="nf">percentage</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="12"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Calculate completion percentage (0-100).&quot;&quot;&quot;</span>
+</span><span data-line="13">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">total_bytes</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">total_bytes</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+</span><span data-line="14">            <span class="k">return</span> <span class="kc">None</span>
+</span><span data-line="15">        <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bytes_transferred</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">total_bytes</span><span class="p">)</span> <span class="o">*</span> <span class="mi">100</span>
+</span></pre></div>
+</div>
+<section id="fields">
+<h3>Fields<a class="headerlink" href="#fields" title="Link to this heading">¶</a></h3>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Field</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">bytes_transferred</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">int</span></code></p></td>
+<td><p>Number of bytes transferred so far</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">total_bytes</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">int</span> <span class="pre">|</span> <span class="pre">None</span></code></p></td>
+<td><p>Total transfer size (None if unknown, e.g., streaming)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">operation</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">str</span></code></p></td>
+<td><p>Type of operation: <code class="docutils literal notranslate"><span class="pre">&quot;upload&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;download&quot;</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">key</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">str</span></code></p></td>
+<td><p>The storage key being transferred</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="properties">
+<h3>Properties<a class="headerlink" href="#properties" title="Link to this heading">¶</a></h3>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Property</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">percentage</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">float</span> <span class="pre">|</span> <span class="pre">None</span></code></p></td>
+<td><p>Completion percentage (0-100), or None if total is unknown</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</section>
+<section id="the-progresscallback-protocol">
+<h2>The ProgressCallback Protocol<a class="headerlink" href="#the-progresscallback-protocol" title="Link to this heading">¶</a></h2>
+<p>Progress callbacks follow this protocol:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_storages</span><span class="w"> </span><span class="kn">import</span> <span class="n">ProgressCallback</span><span class="p">,</span> <span class="n">ProgressInfo</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="k">class</span><span class="w"> </span><span class="nc">ProgressCallback</span><span class="p">(</span><span class="n">Protocol</span><span class="p">):</span>
+</span><span data-line="4"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Protocol for progress callback functions.&quot;&quot;&quot;</span>
+</span><span data-line="5">
+</span><span data-line="6">    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">info</span><span class="p">:</span> <span class="n">ProgressInfo</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="7"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Called with progress information.&quot;&quot;&quot;</span>
+</span><span data-line="8">        <span class="o">...</span>
+</span></pre></div>
+</div>
+<p>Any callable matching this signature works as a progress callback:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="c1"># Function callback</span>
+</span><span data-line="2"><span class="k">def</span><span class="w"> </span><span class="nf">my_progress</span><span class="p">(</span><span class="n">info</span><span class="p">:</span> <span class="n">ProgressInfo</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="3">    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">info</span><span class="o">.</span><span class="n">percentage</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">%&quot;</span><span class="p">)</span>
+</span><span data-line="4">
+</span><span data-line="5"><span class="c1"># Lambda callback</span>
+</span><span data-line="6"><span class="k">lambda</span> <span class="n">info</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">info</span><span class="o">.</span><span class="n">bytes_transferred</span><span class="si">}</span><span class="s2"> bytes&quot;</span><span class="p">)</span>
+</span><span data-line="7">
+</span><span data-line="8"><span class="c1"># Class-based callback</span>
+</span><span data-line="9"><span class="k">class</span><span class="w"> </span><span class="nc">ProgressTracker</span><span class="p">:</span>
+</span><span data-line="10">    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">info</span><span class="p">:</span> <span class="n">ProgressInfo</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="11">        <span class="bp">self</span><span class="o">.</span><span class="n">last_progress</span> <span class="o">=</span> <span class="n">info</span>
+</span></pre></div>
+</div>
+</section>
+<section id="basic-usage">
+<h2>Basic Usage<a class="headerlink" href="#basic-usage" title="Link to this heading">¶</a></h2>
+<section id="simple-progress-logging">
+<h3>Simple Progress Logging<a class="headerlink" href="#simple-progress-logging" title="Link to this heading">¶</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_storages</span><span class="w"> </span><span class="kn">import</span> <span class="n">S3Storage</span><span class="p">,</span> <span class="n">S3Config</span><span class="p">,</span> <span class="n">ProgressInfo</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="k">def</span><span class="w"> </span><span class="nf">log_progress</span><span class="p">(</span><span class="n">info</span><span class="p">:</span> <span class="n">ProgressInfo</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="4"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Log upload progress.&quot;&quot;&quot;</span>
+</span><span data-line="5">    <span class="k">if</span> <span class="n">info</span><span class="o">.</span><span class="n">percentage</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="6">        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[</span><span class="si">{</span><span class="n">info</span><span class="o">.</span><span class="n">operation</span><span class="si">}</span><span class="s2">] </span><span class="si">{</span><span class="n">info</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">info</span><span class="o">.</span><span class="n">percentage</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">%&quot;</span><span class="p">)</span>
+</span><span data-line="7">    <span class="k">else</span><span class="p">:</span>
+</span><span data-line="8">        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[</span><span class="si">{</span><span class="n">info</span><span class="o">.</span><span class="n">operation</span><span class="si">}</span><span class="s2">] </span><span class="si">{</span><span class="n">info</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">info</span><span class="o">.</span><span class="n">bytes_transferred</span><span class="si">}</span><span class="s2"> bytes&quot;</span><span class="p">)</span>
+</span><span data-line="9">
+</span><span data-line="10"><span class="n">storage</span> <span class="o">=</span> <span class="n">S3Storage</span><span class="p">(</span><span class="n">S3Config</span><span class="p">(</span><span class="n">bucket</span><span class="o">=</span><span class="s2">&quot;my-bucket&quot;</span><span class="p">))</span>
+</span><span data-line="11">
+</span><span data-line="12"><span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">put_large</span><span class="p">(</span>
+</span><span data-line="13">    <span class="s2">&quot;large-file.zip&quot;</span><span class="p">,</span>
+</span><span data-line="14">    <span class="n">file_data</span><span class="p">,</span>
+</span><span data-line="15">    <span class="n">progress_callback</span><span class="o">=</span><span class="n">log_progress</span><span class="p">,</span>
+</span><span data-line="16"><span class="p">)</span>
+</span></pre></div>
+</div>
+<p>Output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="p">[</span><span class="n">upload</span><span class="p">]</span> <span class="n">large</span><span class="o">-</span><span class="n">file</span><span class="o">.</span><span class="n">zip</span><span class="p">:</span> <span class="mf">10.0</span><span class="o">%</span>
+</span><span data-line="2"><span class="p">[</span><span class="n">upload</span><span class="p">]</span> <span class="n">large</span><span class="o">-</span><span class="n">file</span><span class="o">.</span><span class="n">zip</span><span class="p">:</span> <span class="mf">20.0</span><span class="o">%</span>
+</span><span data-line="3"><span class="p">[</span><span class="n">upload</span><span class="p">]</span> <span class="n">large</span><span class="o">-</span><span class="n">file</span><span class="o">.</span><span class="n">zip</span><span class="p">:</span> <span class="mf">30.0</span><span class="o">%</span>
+</span><span data-line="4"><span class="o">...</span>
+</span><span data-line="5"><span class="p">[</span><span class="n">upload</span><span class="p">]</span> <span class="n">large</span><span class="o">-</span><span class="n">file</span><span class="o">.</span><span class="n">zip</span><span class="p">:</span> <span class="mf">100.0</span><span class="o">%</span>
+</span></pre></div>
+</div>
+</section>
+<section id="percentage-based-callback">
+<h3>Percentage-Based Callback<a class="headerlink" href="#percentage-based-callback" title="Link to this heading">¶</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">def</span><span class="w"> </span><span class="nf">show_percentage</span><span class="p">(</span><span class="n">info</span><span class="p">:</span> <span class="n">ProgressInfo</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="2"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Display percentage progress.&quot;&quot;&quot;</span>
+</span><span data-line="3">    <span class="n">pct</span> <span class="o">=</span> <span class="n">info</span><span class="o">.</span><span class="n">percentage</span>
+</span><span data-line="4">    <span class="k">if</span> <span class="n">pct</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="5">        <span class="c1"># Only print at 10% intervals</span>
+</span><span data-line="6">        <span class="k">if</span> <span class="n">pct</span> <span class="o">%</span> <span class="mi">10</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+</span><span data-line="7">            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Progress: </span><span class="si">{</span><span class="n">pct</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2">%&quot;</span><span class="p">)</span>
+</span></pre></div>
+</div>
+</section>
+</section>
+<section id="progress-bar-examples">
+<h2>Progress Bar Examples<a class="headerlink" href="#progress-bar-examples" title="Link to this heading">¶</a></h2>
+<section id="using-tqdm">
+<h3>Using tqdm<a class="headerlink" href="#using-tqdm" title="Link to this heading">¶</a></h3>
+<p><a class="reference external" href="https://github.com/tqdm/tqdm">tqdm</a> is a popular progress bar library:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">tqdm</span><span class="w"> </span><span class="kn">import</span> <span class="n">tqdm</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_storages</span><span class="w"> </span><span class="kn">import</span> <span class="n">S3Storage</span><span class="p">,</span> <span class="n">S3Config</span><span class="p">,</span> <span class="n">ProgressInfo</span>
+</span><span data-line="3">
+</span><span data-line="4"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">upload_with_tqdm</span><span class="p">(</span><span class="n">storage</span><span class="p">:</span> <span class="n">S3Storage</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="5"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Upload with tqdm progress bar.&quot;&quot;&quot;</span>
+</span><span data-line="6">
+</span><span data-line="7">    <span class="n">pbar</span> <span class="o">=</span> <span class="n">tqdm</span><span class="p">(</span>
+</span><span data-line="8">        <span class="n">total</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">),</span>
+</span><span data-line="9">        <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;B&quot;</span><span class="p">,</span>
+</span><span data-line="10">        <span class="n">unit_scale</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+</span><span data-line="11">        <span class="n">desc</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Uploading </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+</span><span data-line="12">    <span class="p">)</span>
+</span><span data-line="13">    <span class="n">last_transferred</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span data-line="14">
+</span><span data-line="15">    <span class="k">def</span><span class="w"> </span><span class="nf">update_progress</span><span class="p">(</span><span class="n">info</span><span class="p">:</span> <span class="n">ProgressInfo</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="16">        <span class="k">nonlocal</span> <span class="n">last_transferred</span>
+</span><span data-line="17">        <span class="n">delta</span> <span class="o">=</span> <span class="n">info</span><span class="o">.</span><span class="n">bytes_transferred</span> <span class="o">-</span> <span class="n">last_transferred</span>
+</span><span data-line="18">        <span class="n">pbar</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">delta</span><span class="p">)</span>
+</span><span data-line="19">        <span class="n">last_transferred</span> <span class="o">=</span> <span class="n">info</span><span class="o">.</span><span class="n">bytes_transferred</span>
+</span><span data-line="20">
+</span><span data-line="21">    <span class="k">try</span><span class="p">:</span>
+</span><span data-line="22">        <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">put_large</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">progress_callback</span><span class="o">=</span><span class="n">update_progress</span><span class="p">)</span>
+</span><span data-line="23">    <span class="k">finally</span><span class="p">:</span>
+</span><span data-line="24">        <span class="n">pbar</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</span><span data-line="25">
+</span><span data-line="26">
+</span><span data-line="27"><span class="c1"># Usage</span>
+</span><span data-line="28"><span class="n">storage</span> <span class="o">=</span> <span class="n">S3Storage</span><span class="p">(</span><span class="n">S3Config</span><span class="p">(</span><span class="n">bucket</span><span class="o">=</span><span class="s2">&quot;my-bucket&quot;</span><span class="p">))</span>
+</span><span data-line="29"><span class="k">await</span> <span class="n">upload_with_tqdm</span><span class="p">(</span><span class="n">storage</span><span class="p">,</span> <span class="s2">&quot;video.mp4&quot;</span><span class="p">,</span> <span class="n">video_data</span><span class="p">)</span>
+</span></pre></div>
+</div>
+<p>Output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span data-line="1">Uploading video.mp4:  45%|████████▌          | 45.0M/100M [00:05&lt;00:06, 8.50MB/s]
+</span></pre></div>
+</div>
+</section>
+<section id="using-rich">
+<h3>Using rich<a class="headerlink" href="#using-rich" title="Link to this heading">¶</a></h3>
+<p><a class="reference external" href="https://github.com/Textualize/rich">rich</a> provides beautiful terminal output:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">rich.progress</span><span class="w"> </span><span class="kn">import</span> <span class="n">Progress</span><span class="p">,</span> <span class="n">TaskID</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_storages</span><span class="w"> </span><span class="kn">import</span> <span class="n">S3Storage</span><span class="p">,</span> <span class="n">ProgressInfo</span>
+</span><span data-line="3">
+</span><span data-line="4"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">upload_with_rich</span><span class="p">(</span><span class="n">storage</span><span class="p">:</span> <span class="n">S3Storage</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="5"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Upload with rich progress bar.&quot;&quot;&quot;</span>
+</span><span data-line="6">
+</span><span data-line="7">    <span class="k">with</span> <span class="n">Progress</span><span class="p">()</span> <span class="k">as</span> <span class="n">progress</span><span class="p">:</span>
+</span><span data-line="8">        <span class="n">task</span> <span class="o">=</span> <span class="n">progress</span><span class="o">.</span><span class="n">add_task</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[cyan]Uploading </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">total</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
+</span><span data-line="9">
+</span><span data-line="10">        <span class="k">def</span><span class="w"> </span><span class="nf">update_progress</span><span class="p">(</span><span class="n">info</span><span class="p">:</span> <span class="n">ProgressInfo</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="11">            <span class="n">progress</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="n">completed</span><span class="o">=</span><span class="n">info</span><span class="o">.</span><span class="n">bytes_transferred</span><span class="p">)</span>
+</span><span data-line="12">
+</span><span data-line="13">        <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">put_large</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">progress_callback</span><span class="o">=</span><span class="n">update_progress</span><span class="p">)</span>
+</span><span data-line="14">
+</span><span data-line="15">
+</span><span data-line="16"><span class="c1"># Usage</span>
+</span><span data-line="17"><span class="k">await</span> <span class="n">upload_with_rich</span><span class="p">(</span><span class="n">storage</span><span class="p">,</span> <span class="s2">&quot;document.pdf&quot;</span><span class="p">,</span> <span class="n">pdf_data</span><span class="p">)</span>
+</span></pre></div>
+</div>
+</section>
+<section id="console-progress-bar-no-dependencies">
+<h3>Console Progress Bar (No Dependencies)<a class="headerlink" href="#console-progress-bar-no-dependencies" title="Link to this heading">¶</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_storages</span><span class="w"> </span><span class="kn">import</span> <span class="n">ProgressInfo</span>
+</span><span data-line="3">
+</span><span data-line="4"><span class="k">def</span><span class="w"> </span><span class="nf">console_progress_bar</span><span class="p">(</span><span class="n">info</span><span class="p">:</span> <span class="n">ProgressInfo</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="5"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Display a simple ASCII progress bar.&quot;&quot;&quot;</span>
+</span><span data-line="6">    <span class="k">if</span> <span class="n">info</span><span class="o">.</span><span class="n">total_bytes</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="7">        <span class="c1"># Unknown total - show transferred bytes</span>
+</span><span data-line="8">        <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\r</span><span class="si">{</span><span class="n">info</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">info</span><span class="o">.</span><span class="n">bytes_transferred</span><span class="si">:</span><span class="s2">,</span><span class="si">}</span><span class="s2"> bytes&quot;</span><span class="p">)</span>
+</span><span data-line="9">        <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+</span><span data-line="10">        <span class="k">return</span>
+</span><span data-line="11">
+</span><span data-line="12">    <span class="c1"># Calculate progress</span>
+</span><span data-line="13">    <span class="n">pct</span> <span class="o">=</span> <span class="n">info</span><span class="o">.</span><span class="n">bytes_transferred</span> <span class="o">/</span> <span class="n">info</span><span class="o">.</span><span class="n">total_bytes</span>
+</span><span data-line="14">    <span class="n">bar_width</span> <span class="o">=</span> <span class="mi">40</span>
+</span><span data-line="15">    <span class="n">filled</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">bar_width</span> <span class="o">*</span> <span class="n">pct</span><span class="p">)</span>
+</span><span data-line="16">    <span class="n">bar</span> <span class="o">=</span> <span class="s2">&quot;=&quot;</span> <span class="o">*</span> <span class="n">filled</span> <span class="o">+</span> <span class="s2">&quot;-&quot;</span> <span class="o">*</span> <span class="p">(</span><span class="n">bar_width</span> <span class="o">-</span> <span class="n">filled</span><span class="p">)</span>
+</span><span data-line="17">
+</span><span data-line="18">    <span class="c1"># Format sizes</span>
+</span><span data-line="19">    <span class="n">transferred_mb</span> <span class="o">=</span> <span class="n">info</span><span class="o">.</span><span class="n">bytes_transferred</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span><span class="p">)</span>
+</span><span data-line="20">    <span class="n">total_mb</span> <span class="o">=</span> <span class="n">info</span><span class="o">.</span><span class="n">total_bytes</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span><span class="p">)</span>
+</span><span data-line="21">
+</span><span data-line="22">    <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\r</span><span class="si">{</span><span class="n">info</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">: [</span><span class="si">{</span><span class="n">bar</span><span class="si">}</span><span class="s2">] </span><span class="si">{</span><span class="n">transferred_mb</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">total_mb</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2"> MB (</span><span class="si">{</span><span class="n">pct</span><span class="o">*</span><span class="mi">100</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2">%)&quot;</span><span class="p">)</span>
+</span><span data-line="23">    <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+</span><span data-line="24">
+</span><span data-line="25">    <span class="c1"># Newline when complete</span>
+</span><span data-line="26">    <span class="k">if</span> <span class="n">info</span><span class="o">.</span><span class="n">bytes_transferred</span> <span class="o">&gt;=</span> <span class="n">info</span><span class="o">.</span><span class="n">total_bytes</span><span class="p">:</span>
+</span><span data-line="27">        <span class="nb">print</span><span class="p">()</span>
+</span><span data-line="28">
+</span><span data-line="29">
+</span><span data-line="30"><span class="c1"># Usage</span>
+</span><span data-line="31"><span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">put_large</span><span class="p">(</span><span class="s2">&quot;file.bin&quot;</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">progress_callback</span><span class="o">=</span><span class="n">console_progress_bar</span><span class="p">)</span>
+</span></pre></div>
+</div>
+<p>Output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="n">file</span><span class="o">.</span><span class="n">bin</span><span class="p">:</span> <span class="p">[</span><span class="o">====================--------------------</span><span class="p">]</span> <span class="mf">52.3</span><span class="o">/</span><span class="mf">100.0</span> <span class="n">MB</span> <span class="p">(</span><span class="mi">52</span><span class="o">%</span><span class="p">)</span>
+</span></pre></div>
+</div>
+</section>
+</section>
+<section id="class-based-progress-tracking">
+<h2>Class-Based Progress Tracking<a class="headerlink" href="#class-based-progress-tracking" title="Link to this heading">¶</a></h2>
+<p>For more complex scenarios, use a class-based callback:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span>
+</span><span data-line="3"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_storages</span><span class="w"> </span><span class="kn">import</span> <span class="n">ProgressInfo</span>
+</span><span data-line="4">
+</span><span data-line="5"><span class="nd">@dataclass</span>
+</span><span data-line="6"><span class="k">class</span><span class="w"> </span><span class="nc">TransferStats</span><span class="p">:</span>
+</span><span data-line="7"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Track transfer statistics.&quot;&quot;&quot;</span>
+</span><span data-line="8">
+</span><span data-line="9">    <span class="n">key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+</span><span data-line="10">    <span class="n">started_at</span><span class="p">:</span> <span class="n">datetime</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+</span><span data-line="11">    <span class="n">completed_at</span><span class="p">:</span> <span class="n">datetime</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+</span><span data-line="12">    <span class="n">total_bytes</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span data-line="13">    <span class="n">bytes_transferred</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span data-line="14">    <span class="n">updates</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span data-line="15">
+</span><span data-line="16">    <span class="nd">@property</span>
+</span><span data-line="17">    <span class="k">def</span><span class="w"> </span><span class="nf">duration_seconds</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="18"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Calculate transfer duration.&quot;&quot;&quot;</span>
+</span><span data-line="19">        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">started_at</span><span class="p">:</span>
+</span><span data-line="20">            <span class="k">return</span> <span class="kc">None</span>
+</span><span data-line="21">        <span class="n">end</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">completed_at</span> <span class="ow">or</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+</span><span data-line="22">        <span class="k">return</span> <span class="p">(</span><span class="n">end</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">started_at</span><span class="p">)</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">()</span>
+</span><span data-line="23">
+</span><span data-line="24">    <span class="nd">@property</span>
+</span><span data-line="25">    <span class="k">def</span><span class="w"> </span><span class="nf">speed_mbps</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="26"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Calculate transfer speed in MB/s.&quot;&quot;&quot;</span>
+</span><span data-line="27">        <span class="n">duration</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">duration_seconds</span>
+</span><span data-line="28">        <span class="k">if</span> <span class="ow">not</span> <span class="n">duration</span> <span class="ow">or</span> <span class="n">duration</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+</span><span data-line="29">            <span class="k">return</span> <span class="kc">None</span>
+</span><span data-line="30">        <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bytes_transferred</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span><span class="p">))</span> <span class="o">/</span> <span class="n">duration</span>
+</span><span data-line="31">
+</span><span data-line="32">
+</span><span data-line="33"><span class="k">class</span><span class="w"> </span><span class="nc">ProgressTracker</span><span class="p">:</span>
+</span><span data-line="34"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Track progress across multiple transfers.&quot;&quot;&quot;</span>
+</span><span data-line="35">
+</span><span data-line="36">    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span data-line="37">        <span class="bp">self</span><span class="o">.</span><span class="n">transfers</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">TransferStats</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+</span><span data-line="38">        <span class="bp">self</span><span class="o">.</span><span class="n">current</span><span class="p">:</span> <span class="n">TransferStats</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+</span><span data-line="39">
+</span><span data-line="40">    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">info</span><span class="p">:</span> <span class="n">ProgressInfo</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="41"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Handle progress update.&quot;&quot;&quot;</span>
+</span><span data-line="42">        <span class="c1"># Get or create stats for this transfer</span>
+</span><span data-line="43">        <span class="k">if</span> <span class="n">info</span><span class="o">.</span><span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">transfers</span><span class="p">:</span>
+</span><span data-line="44">            <span class="bp">self</span><span class="o">.</span><span class="n">transfers</span><span class="p">[</span><span class="n">info</span><span class="o">.</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">TransferStats</span><span class="p">(</span>
+</span><span data-line="45">                <span class="n">key</span><span class="o">=</span><span class="n">info</span><span class="o">.</span><span class="n">key</span><span class="p">,</span>
+</span><span data-line="46">                <span class="n">started_at</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(),</span>
+</span><span data-line="47">                <span class="n">total_bytes</span><span class="o">=</span><span class="n">info</span><span class="o">.</span><span class="n">total_bytes</span> <span class="ow">or</span> <span class="mi">0</span><span class="p">,</span>
+</span><span data-line="48">            <span class="p">)</span>
+</span><span data-line="49">
+</span><span data-line="50">        <span class="n">stats</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">transfers</span><span class="p">[</span><span class="n">info</span><span class="o">.</span><span class="n">key</span><span class="p">]</span>
+</span><span data-line="51">        <span class="n">stats</span><span class="o">.</span><span class="n">bytes_transferred</span> <span class="o">=</span> <span class="n">info</span><span class="o">.</span><span class="n">bytes_transferred</span>
+</span><span data-line="52">        <span class="n">stats</span><span class="o">.</span><span class="n">updates</span> <span class="o">+=</span> <span class="mi">1</span>
+</span><span data-line="53">        <span class="bp">self</span><span class="o">.</span><span class="n">current</span> <span class="o">=</span> <span class="n">stats</span>
+</span><span data-line="54">
+</span><span data-line="55">        <span class="c1"># Mark completion</span>
+</span><span data-line="56">        <span class="k">if</span> <span class="n">info</span><span class="o">.</span><span class="n">total_bytes</span> <span class="ow">and</span> <span class="n">info</span><span class="o">.</span><span class="n">bytes_transferred</span> <span class="o">&gt;=</span> <span class="n">info</span><span class="o">.</span><span class="n">total_bytes</span><span class="p">:</span>
+</span><span data-line="57">            <span class="n">stats</span><span class="o">.</span><span class="n">completed_at</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+</span><span data-line="58">
+</span><span data-line="59">        <span class="c1"># Log progress</span>
+</span><span data-line="60">        <span class="k">if</span> <span class="n">stats</span><span class="o">.</span><span class="n">speed_mbps</span><span class="p">:</span>
+</span><span data-line="61">            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">info</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">info</span><span class="o">.</span><span class="n">percentage</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">% @ </span><span class="si">{</span><span class="n">stats</span><span class="o">.</span><span class="n">speed_mbps</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2"> MB/s&quot;</span><span class="p">)</span>
+</span><span data-line="62">
+</span><span data-line="63">    <span class="k">def</span><span class="w"> </span><span class="nf">summary</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span data-line="64"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate summary of all transfers.&quot;&quot;&quot;</span>
+</span><span data-line="65">        <span class="n">lines</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Transfer Summary&quot;</span><span class="p">,</span> <span class="s2">&quot;=&quot;</span> <span class="o">*</span> <span class="mi">40</span><span class="p">]</span>
+</span><span data-line="66">        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">stats</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">transfers</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+</span><span data-line="67">            <span class="n">speed</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">stats</span><span class="o">.</span><span class="n">speed_mbps</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2"> MB/s&quot;</span> <span class="k">if</span> <span class="n">stats</span><span class="o">.</span><span class="n">speed_mbps</span> <span class="k">else</span> <span class="s2">&quot;N/A&quot;</span>
+</span><span data-line="68">            <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">stats</span><span class="o">.</span><span class="n">bytes_transferred</span><span class="si">:</span><span class="s2">,</span><span class="si">}</span><span class="s2"> bytes (</span><span class="si">{</span><span class="n">speed</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+</span><span data-line="69">        <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span>
+</span><span data-line="70">
+</span><span data-line="71">
+</span><span data-line="72"><span class="c1"># Usage</span>
+</span><span data-line="73"><span class="n">tracker</span> <span class="o">=</span> <span class="n">ProgressTracker</span><span class="p">()</span>
+</span><span data-line="74">
+</span><span data-line="75"><span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">put_large</span><span class="p">(</span><span class="s2">&quot;file1.zip&quot;</span><span class="p">,</span> <span class="n">data1</span><span class="p">,</span> <span class="n">progress_callback</span><span class="o">=</span><span class="n">tracker</span><span class="p">)</span>
+</span><span data-line="76"><span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">put_large</span><span class="p">(</span><span class="s2">&quot;file2.zip&quot;</span><span class="p">,</span> <span class="n">data2</span><span class="p">,</span> <span class="n">progress_callback</span><span class="o">=</span><span class="n">tracker</span><span class="p">)</span>
+</span><span data-line="77">
+</span><span data-line="78"><span class="nb">print</span><span class="p">(</span><span class="n">tracker</span><span class="o">.</span><span class="n">summary</span><span class="p">())</span>
+</span></pre></div>
+</div>
+</section>
+<section id="throttled-progress-updates">
+<h2>Throttled Progress Updates<a class="headerlink" href="#throttled-progress-updates" title="Link to this heading">¶</a></h2>
+<p>Reduce callback frequency for better performance:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_storages</span><span class="w"> </span><span class="kn">import</span> <span class="n">ProgressInfo</span>
+</span><span data-line="3">
+</span><span data-line="4"><span class="k">class</span><span class="w"> </span><span class="nc">ThrottledProgress</span><span class="p">:</span>
+</span><span data-line="5"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Throttle progress updates to reduce overhead.&quot;&quot;&quot;</span>
+</span><span data-line="6">
+</span><span data-line="7">    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">callback</span><span class="p">,</span> <span class="n">min_interval</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">):</span>
+</span><span data-line="8">        <span class="bp">self</span><span class="o">.</span><span class="n">callback</span> <span class="o">=</span> <span class="n">callback</span>
+</span><span data-line="9">        <span class="bp">self</span><span class="o">.</span><span class="n">min_interval</span> <span class="o">=</span> <span class="n">min_interval</span>
+</span><span data-line="10">        <span class="bp">self</span><span class="o">.</span><span class="n">last_update</span> <span class="o">=</span> <span class="mf">0.0</span>
+</span><span data-line="11">
+</span><span data-line="12">    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">info</span><span class="p">:</span> <span class="n">ProgressInfo</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="13">        <span class="n">now</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+</span><span data-line="14">
+</span><span data-line="15">        <span class="c1"># Always call on completion</span>
+</span><span data-line="16">        <span class="n">is_complete</span> <span class="o">=</span> <span class="p">(</span>
+</span><span data-line="17">            <span class="n">info</span><span class="o">.</span><span class="n">total_bytes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+</span><span data-line="18">            <span class="ow">and</span> <span class="n">info</span><span class="o">.</span><span class="n">bytes_transferred</span> <span class="o">&gt;=</span> <span class="n">info</span><span class="o">.</span><span class="n">total_bytes</span>
+</span><span data-line="19">        <span class="p">)</span>
+</span><span data-line="20">
+</span><span data-line="21">        <span class="k">if</span> <span class="n">is_complete</span> <span class="ow">or</span> <span class="p">(</span><span class="n">now</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_update</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_interval</span><span class="p">:</span>
+</span><span data-line="22">            <span class="bp">self</span><span class="o">.</span><span class="n">callback</span><span class="p">(</span><span class="n">info</span><span class="p">)</span>
+</span><span data-line="23">            <span class="bp">self</span><span class="o">.</span><span class="n">last_update</span> <span class="o">=</span> <span class="n">now</span>
+</span><span data-line="24">
+</span><span data-line="25">
+</span><span data-line="26"><span class="c1"># Usage</span>
+</span><span data-line="27"><span class="k">def</span><span class="w"> </span><span class="nf">my_progress</span><span class="p">(</span><span class="n">info</span><span class="p">:</span> <span class="n">ProgressInfo</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="28">    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">info</span><span class="o">.</span><span class="n">percentage</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">%&quot;</span><span class="p">)</span>
+</span><span data-line="29">
+</span><span data-line="30"><span class="n">throttled</span> <span class="o">=</span> <span class="n">ThrottledProgress</span><span class="p">(</span><span class="n">my_progress</span><span class="p">,</span> <span class="n">min_interval</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>  <span class="c1"># Max 1 update/second</span>
+</span><span data-line="31"><span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">put_large</span><span class="p">(</span><span class="s2">&quot;file.zip&quot;</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">progress_callback</span><span class="o">=</span><span class="n">throttled</span><span class="p">)</span>
+</span></pre></div>
+</div>
+</section>
+<section id="web-application-integration">
+<h2>Web Application Integration<a class="headerlink" href="#web-application-integration" title="Link to this heading">¶</a></h2>
+<section id="websocket-progress-updates">
+<h3>WebSocket Progress Updates<a class="headerlink" href="#websocket-progress-updates" title="Link to this heading">¶</a></h3>
+<p>Send progress updates to a browser via WebSocket:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">WebSocket</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_storages</span><span class="w"> </span><span class="kn">import</span> <span class="n">ProgressInfo</span><span class="p">,</span> <span class="n">S3Storage</span>
+</span><span data-line="3">
+</span><span data-line="4"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">upload_with_websocket</span><span class="p">(</span>
+</span><span data-line="5">    <span class="n">storage</span><span class="p">:</span> <span class="n">S3Storage</span><span class="p">,</span>
+</span><span data-line="6">    <span class="n">websocket</span><span class="p">:</span> <span class="n">WebSocket</span><span class="p">,</span>
+</span><span data-line="7">    <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+</span><span data-line="8">    <span class="n">data</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">,</span>
+</span><span data-line="9"><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="10"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Upload with WebSocket progress updates.&quot;&quot;&quot;</span>
+</span><span data-line="11">
+</span><span data-line="12">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">send_progress</span><span class="p">(</span><span class="n">info</span><span class="p">:</span> <span class="n">ProgressInfo</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="13">        <span class="k">await</span> <span class="n">websocket</span><span class="o">.</span><span class="n">send_json</span><span class="p">({</span>
+</span><span data-line="14">            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;progress&quot;</span><span class="p">,</span>
+</span><span data-line="15">            <span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="n">info</span><span class="o">.</span><span class="n">key</span><span class="p">,</span>
+</span><span data-line="16">            <span class="s2">&quot;bytes_transferred&quot;</span><span class="p">:</span> <span class="n">info</span><span class="o">.</span><span class="n">bytes_transferred</span><span class="p">,</span>
+</span><span data-line="17">            <span class="s2">&quot;total_bytes&quot;</span><span class="p">:</span> <span class="n">info</span><span class="o">.</span><span class="n">total_bytes</span><span class="p">,</span>
+</span><span data-line="18">            <span class="s2">&quot;percentage&quot;</span><span class="p">:</span> <span class="n">info</span><span class="o">.</span><span class="n">percentage</span><span class="p">,</span>
+</span><span data-line="19">        <span class="p">})</span>
+</span><span data-line="20">
+</span><span data-line="21">    <span class="c1"># Note: put_large expects a sync callback</span>
+</span><span data-line="22">    <span class="c1"># Wrap in a sync function that schedules the async send</span>
+</span><span data-line="23">    <span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
+</span><span data-line="24">    <span class="n">loop</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">get_event_loop</span><span class="p">()</span>
+</span><span data-line="25">
+</span><span data-line="26">    <span class="k">def</span><span class="w"> </span><span class="nf">sync_callback</span><span class="p">(</span><span class="n">info</span><span class="p">:</span> <span class="n">ProgressInfo</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="27">        <span class="n">loop</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span><span class="n">send_progress</span><span class="p">(</span><span class="n">info</span><span class="p">))</span>
+</span><span data-line="28">
+</span><span data-line="29">    <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">put_large</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">progress_callback</span><span class="o">=</span><span class="n">sync_callback</span><span class="p">)</span>
+</span><span data-line="30">
+</span><span data-line="31">    <span class="k">await</span> <span class="n">websocket</span><span class="o">.</span><span class="n">send_json</span><span class="p">({</span>
+</span><span data-line="32">        <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;complete&quot;</span><span class="p">,</span>
+</span><span data-line="33">        <span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="n">key</span><span class="p">,</span>
+</span><span data-line="34">    <span class="p">})</span>
+</span></pre></div>
+</div>
+</section>
+<section id="progress-api-endpoint">
+<h3>Progress API Endpoint<a class="headerlink" href="#progress-api-endpoint" title="Link to this heading">¶</a></h3>
+<p>Expose progress via HTTP polling:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">post</span><span class="p">,</span> <span class="n">get</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_storages</span><span class="w"> </span><span class="kn">import</span> <span class="n">S3Storage</span><span class="p">,</span> <span class="n">ProgressInfo</span>
+</span><span data-line="3"><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
+</span><span data-line="4">
+</span><span data-line="5"><span class="c1"># Global progress tracking (use Redis in production)</span>
+</span><span data-line="6"><span class="n">upload_progress</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">ProgressInfo</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+</span><span data-line="7">
+</span><span data-line="8"><span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/upload/{upload_id:str}&quot;</span><span class="p">)</span>
+</span><span data-line="9"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">start_upload</span><span class="p">(</span>
+</span><span data-line="10">    <span class="n">upload_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+</span><span data-line="11">    <span class="n">data</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">,</span>
+</span><span data-line="12">    <span class="n">storage</span><span class="p">:</span> <span class="n">S3Storage</span><span class="p">,</span>
+</span><span data-line="13"><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+</span><span data-line="14"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Start an upload with progress tracking.&quot;&quot;&quot;</span>
+</span><span data-line="15">
+</span><span data-line="16">    <span class="k">def</span><span class="w"> </span><span class="nf">track_progress</span><span class="p">(</span><span class="n">info</span><span class="p">:</span> <span class="n">ProgressInfo</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="17">        <span class="n">upload_progress</span><span class="p">[</span><span class="n">upload_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">info</span>
+</span><span data-line="18">
+</span><span data-line="19">    <span class="c1"># Start upload in background</span>
+</span><span data-line="20">    <span class="n">asyncio</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span>
+</span><span data-line="21">        <span class="n">storage</span><span class="o">.</span><span class="n">put_large</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;uploads/</span><span class="si">{</span><span class="n">upload_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">progress_callback</span><span class="o">=</span><span class="n">track_progress</span><span class="p">)</span>
+</span><span data-line="22">    <span class="p">)</span>
+</span><span data-line="23">
+</span><span data-line="24">    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;upload_id&quot;</span><span class="p">:</span> <span class="n">upload_id</span><span class="p">,</span> <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;started&quot;</span><span class="p">}</span>
+</span><span data-line="25">
+</span><span data-line="26">
+</span><span data-line="27"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/upload/{upload_id:str}/progress&quot;</span><span class="p">)</span>
+</span><span data-line="28"><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_progress</span><span class="p">(</span><span class="n">upload_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+</span><span data-line="29"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Get upload progress.&quot;&quot;&quot;</span>
+</span><span data-line="30">    <span class="n">info</span> <span class="o">=</span> <span class="n">upload_progress</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">upload_id</span><span class="p">)</span>
+</span><span data-line="31">
+</span><span data-line="32">    <span class="k">if</span> <span class="n">info</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="33">        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;not_found&quot;</span><span class="p">}</span>
+</span><span data-line="34">
+</span><span data-line="35">    <span class="k">return</span> <span class="p">{</span>
+</span><span data-line="36">        <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;in_progress&quot;</span> <span class="k">if</span> <span class="n">info</span><span class="o">.</span><span class="n">percentage</span> <span class="o">&lt;</span> <span class="mi">100</span> <span class="k">else</span> <span class="s2">&quot;complete&quot;</span><span class="p">,</span>
+</span><span data-line="37">        <span class="s2">&quot;bytes_transferred&quot;</span><span class="p">:</span> <span class="n">info</span><span class="o">.</span><span class="n">bytes_transferred</span><span class="p">,</span>
+</span><span data-line="38">        <span class="s2">&quot;total_bytes&quot;</span><span class="p">:</span> <span class="n">info</span><span class="o">.</span><span class="n">total_bytes</span><span class="p">,</span>
+</span><span data-line="39">        <span class="s2">&quot;percentage&quot;</span><span class="p">:</span> <span class="n">info</span><span class="o">.</span><span class="n">percentage</span><span class="p">,</span>
+</span><span data-line="40">    <span class="p">}</span>
+</span></pre></div>
+</div>
+</section>
+</section>
+<section id="logging-integration">
+<h2>Logging Integration<a class="headerlink" href="#logging-integration" title="Link to this heading">¶</a></h2>
+<p>Integrate progress with Python logging:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar_storages</span><span class="w"> </span><span class="kn">import</span> <span class="n">ProgressInfo</span>
+</span><span data-line="3">
+</span><span data-line="4"><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+</span><span data-line="5">
+</span><span data-line="6"><span class="k">class</span><span class="w"> </span><span class="nc">LoggingProgress</span><span class="p">:</span>
+</span><span data-line="7"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Log progress at configurable intervals.&quot;&quot;&quot;</span>
+</span><span data-line="8">
+</span><span data-line="9">    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">log_every_percent</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">25.0</span><span class="p">):</span>
+</span><span data-line="10">        <span class="bp">self</span><span class="o">.</span><span class="n">log_every_percent</span> <span class="o">=</span> <span class="n">log_every_percent</span>
+</span><span data-line="11">        <span class="bp">self</span><span class="o">.</span><span class="n">last_logged</span> <span class="o">=</span> <span class="mf">0.0</span>
+</span><span data-line="12">
+</span><span data-line="13">    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">info</span><span class="p">:</span> <span class="n">ProgressInfo</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="14">        <span class="n">pct</span> <span class="o">=</span> <span class="n">info</span><span class="o">.</span><span class="n">percentage</span> <span class="ow">or</span> <span class="mi">0</span>
+</span><span data-line="15">
+</span><span data-line="16">        <span class="c1"># Log at specified intervals</span>
+</span><span data-line="17">        <span class="k">if</span> <span class="n">pct</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_logged</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">log_every_percent</span><span class="p">:</span>
+</span><span data-line="18">            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+</span><span data-line="19">                <span class="s2">&quot;Transfer progress&quot;</span><span class="p">,</span>
+</span><span data-line="20">                <span class="n">extra</span><span class="o">=</span><span class="p">{</span>
+</span><span data-line="21">                    <span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="n">info</span><span class="o">.</span><span class="n">key</span><span class="p">,</span>
+</span><span data-line="22">                    <span class="s2">&quot;operation&quot;</span><span class="p">:</span> <span class="n">info</span><span class="o">.</span><span class="n">operation</span><span class="p">,</span>
+</span><span data-line="23">                    <span class="s2">&quot;bytes_transferred&quot;</span><span class="p">:</span> <span class="n">info</span><span class="o">.</span><span class="n">bytes_transferred</span><span class="p">,</span>
+</span><span data-line="24">                    <span class="s2">&quot;total_bytes&quot;</span><span class="p">:</span> <span class="n">info</span><span class="o">.</span><span class="n">total_bytes</span><span class="p">,</span>
+</span><span data-line="25">                    <span class="s2">&quot;percentage&quot;</span><span class="p">:</span> <span class="n">pct</span><span class="p">,</span>
+</span><span data-line="26">                <span class="p">}</span>
+</span><span data-line="27">            <span class="p">)</span>
+</span><span data-line="28">            <span class="bp">self</span><span class="o">.</span><span class="n">last_logged</span> <span class="o">=</span> <span class="n">pct</span>
+</span><span data-line="29">
+</span><span data-line="30">        <span class="c1"># Always log completion</span>
+</span><span data-line="31">        <span class="k">if</span> <span class="n">info</span><span class="o">.</span><span class="n">total_bytes</span> <span class="ow">and</span> <span class="n">info</span><span class="o">.</span><span class="n">bytes_transferred</span> <span class="o">&gt;=</span> <span class="n">info</span><span class="o">.</span><span class="n">total_bytes</span><span class="p">:</span>
+</span><span data-line="32">            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Transfer complete: </span><span class="si">{</span><span class="n">info</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</span><span data-line="33">
+</span><span data-line="34">
+</span><span data-line="35"><span class="c1"># Usage</span>
+</span><span data-line="36"><span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">put_large</span><span class="p">(</span>
+</span><span data-line="37">    <span class="s2">&quot;file.zip&quot;</span><span class="p">,</span>
+</span><span data-line="38">    <span class="n">data</span><span class="p">,</span>
+</span><span data-line="39">    <span class="n">progress_callback</span><span class="o">=</span><span class="n">LoggingProgress</span><span class="p">(</span><span class="n">log_every_percent</span><span class="o">=</span><span class="mi">10</span><span class="p">),</span>
+</span><span data-line="40"><span class="p">)</span>
+</span></pre></div>
+</div>
+</section>
+<section id="best-practices">
+<h2>Best Practices<a class="headerlink" href="#best-practices" title="Link to this heading">¶</a></h2>
+<section id="keep-callbacks-fast">
+<h3>1. Keep Callbacks Fast<a class="headerlink" href="#keep-callbacks-fast" title="Link to this heading">¶</a></h3>
+<p>Progress callbacks run synchronously in the upload loop. Slow callbacks impact transfer performance:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="c1"># Bad - slow callback blocks upload</span>
+</span><span data-line="2"><span class="k">def</span><span class="w"> </span><span class="nf">slow_callback</span><span class="p">(</span><span class="n">info</span><span class="p">:</span> <span class="n">ProgressInfo</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="3">    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span>  <span class="c1"># Don&#39;t do this!</span>
+</span><span data-line="4">    <span class="n">update_database</span><span class="p">(</span><span class="n">info</span><span class="p">)</span>  <span class="c1"># Or this!</span>
+</span><span data-line="5">
+</span><span data-line="6"><span class="c1"># Good - fast callback with async follow-up</span>
+</span><span data-line="7"><span class="k">def</span><span class="w"> </span><span class="nf">fast_callback</span><span class="p">(</span><span class="n">info</span><span class="p">:</span> <span class="n">ProgressInfo</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="8">    <span class="n">asyncio</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span><span class="n">update_database_async</span><span class="p">(</span><span class="n">info</span><span class="p">))</span>  <span class="c1"># Non-blocking</span>
+</span></pre></div>
+</div>
+</section>
+<section id="handle-unknown-totals">
+<h3>2. Handle Unknown Totals<a class="headerlink" href="#handle-unknown-totals" title="Link to this heading">¶</a></h3>
+<p>Streaming uploads may not know the total size:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">def</span><span class="w"> </span><span class="nf">safe_progress</span><span class="p">(</span><span class="n">info</span><span class="p">:</span> <span class="n">ProgressInfo</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="2">    <span class="k">if</span> <span class="n">info</span><span class="o">.</span><span class="n">percentage</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="3">        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Progress: </span><span class="si">{</span><span class="n">info</span><span class="o">.</span><span class="n">percentage</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">%&quot;</span><span class="p">)</span>
+</span><span data-line="4">    <span class="k">else</span><span class="p">:</span>
+</span><span data-line="5">        <span class="c1"># Fallback for unknown total</span>
+</span><span data-line="6">        <span class="n">mb</span> <span class="o">=</span> <span class="n">info</span><span class="o">.</span><span class="n">bytes_transferred</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span><span class="p">)</span>
+</span><span data-line="7">        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Transferred: </span><span class="si">{</span><span class="n">mb</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2"> MB&quot;</span><span class="p">)</span>
+</span></pre></div>
+</div>
+</section>
+<section id="use-throttling-for-large-files">
+<h3>3. Use Throttling for Large Files<a class="headerlink" href="#use-throttling-for-large-files" title="Link to this heading">¶</a></h3>
+<p>Reduce overhead with throttled updates:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="c1"># For 10GB file with 10MB parts = 1000 updates</span>
+</span><span data-line="2"><span class="c1"># Throttle to reduce to ~20 updates</span>
+</span><span data-line="3"><span class="n">throttled</span> <span class="o">=</span> <span class="n">ThrottledProgress</span><span class="p">(</span><span class="n">callback</span><span class="p">,</span> <span class="n">min_interval</span><span class="o">=</span><span class="mf">5.0</span><span class="p">)</span>
+</span></pre></div>
+</div>
+</section>
+<section id="clean-up-resources">
+<h3>4. Clean Up Resources<a class="headerlink" href="#clean-up-resources" title="Link to this heading">¶</a></h3>
+<p>Ensure progress bars are closed properly:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">tqdm</span><span class="w"> </span><span class="kn">import</span> <span class="n">tqdm</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="n">pbar</span> <span class="o">=</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">total</span><span class="o">=</span><span class="n">file_size</span><span class="p">)</span>
+</span><span data-line="4"><span class="k">try</span><span class="p">:</span>
+</span><span data-line="5">    <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">put_large</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">progress_callback</span><span class="o">=</span><span class="k">lambda</span> <span class="n">i</span><span class="p">:</span> <span class="n">pbar</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="o">...</span><span class="p">))</span>
+</span><span data-line="6"><span class="k">finally</span><span class="p">:</span>
+</span><span data-line="7">    <span class="n">pbar</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>  <span class="c1"># Always close!</span>
+</span></pre></div>
+</div>
+</section>
+</section>
+<section id="next-steps">
+<h2>Next Steps<a class="headerlink" href="#next-steps" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>Learn about <a class="reference internal" href="multipart-uploads.html"><span class="std std-doc">multipart uploads</span></a> for large file handling</p></li>
+<li><p>Explore <a class="reference internal" href="retry.html"><span class="std std-doc">retry utilities</span></a> for reliable transfers</p></li>
+<li><p>See <a class="reference internal" href="../backends/s3.html"><span class="std std-doc">S3 storage</span></a> for full S3Storage documentation</p></li>
+</ul>
+</section>
+</section>
+
+        </article><button class="back-to-top" type="button">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+  </svg>
+  <span>Back to top</span>
+</button><div class="navigation flex print:hidden"><div class="navigation-prev">
+    <a href="multipart-uploads.html">
+      <i class="i-lucide chevron-left"></i>
+      <div class="page-info">
+        <span>Previous</span><div class="title">Multipart Uploads</div></div>
+    </a>
+  </div><div class="navigation-next">
+    <a href="custom-backends.html">
+      <div class="page-info">
+        <span>Next</span>
+        <div class="title">Custom Backends</div>
+      </div>
+      <i class="i-lucide chevron-right"></i>
+    </a>
+  </div></div></div>
+    </div>
+  </main>
+</div>
+<footer class="sy-foot">
+  <div class="sy-foot-inner sy-container mx-auto">
+    <div class="sy-foot-reserved md:flex justify-between items-center">
+      <div class="sy-foot-copyright"><p>2025, Jacob Coffee</p>
+  
+  <p>
+    Made with
+    
+    <a href="https://www.sphinx-doc.org/">Sphinx</a> and
+    
+    <a href="https://shibuya.lepture.com">Shibuya theme</a>.
+  </p>
+</div>
+      <div class="sy-foot-socials">
+<a href="https://github.com/JacobCoffee/litestar-storages" aria-label="GitHub">
+  <iconify-icon icon="simple-icons:github"></iconify-icon>
+</a></div>
+    </div>
+  </div>
+</footer>
+      <script src="../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../_static/copybutton.js?v=30646c52"></script>
+      <script src="../_static/design-tabs.js?v=f930bc37"></script>
+      <script src="../_static/shibuya.js?v=c1cf1a6b"></script></body>
+</html>
