@@ -30,69 +30,63 @@ class StoragePlugin(InitPluginProtocol):
         - Multiple named storage support
 
     Example:
-        Single storage configuration:
+        Single storage configuration::
 
-        ```python
-        from litestar import Litestar
-        from litestar_storages import S3Storage, S3Config, StoragePlugin
+            from litestar import Litestar
+            from litestar_storages import S3Storage, S3Config, StoragePlugin
 
-        storage = S3Storage(config=S3Config(bucket="uploads"))
+            storage = S3Storage(config=S3Config(bucket="uploads"))
 
-        app = Litestar(
-            route_handlers=[...],
-            plugins=[StoragePlugin(storage)],
-        )
-        ```
+            app = Litestar(
+                route_handlers=[...],
+                plugins=[StoragePlugin(storage)],
+            )
 
-        Multiple named storages:
+        Multiple named storages::
 
-        ```python
-        from litestar import Litestar
-        from litestar_storages import S3Storage, AzureStorage, StoragePlugin
+            from litestar import Litestar
+            from litestar_storages import S3Storage, AzureStorage, StoragePlugin
 
-        app = Litestar(
-            route_handlers=[...],
-            plugins=[
-                StoragePlugin(
-                    default=S3Storage(config=S3Config(bucket="main-uploads")),
-                    images=S3Storage(config=S3Config(bucket="images")),
-                    documents=AzureStorage(config=AzureConfig(container="docs")),
+            app = Litestar(
+                route_handlers=[...],
+                plugins=[
+                    StoragePlugin(
+                        default=S3Storage(config=S3Config(bucket="main-uploads")),
+                        images=S3Storage(config=S3Config(bucket="images")),
+                        documents=AzureStorage(config=AzureConfig(container="docs")),
+                    )
+                ],
+            )
+
+        Using in route handlers::
+
+            from litestar import post
+            from litestar.datastructures import UploadFile
+            from litestar_storages import Storage, StoredFile
+
+
+            @post("/upload")
+            async def upload(
+                data: UploadFile,
+                storage: Storage,  # Injected default storage
+            ) -> StoredFile:
+                return await storage.put(
+                    key=f"uploads/{data.filename}",
+                    data=data.file,
+                    content_type=data.content_type,
                 )
-            ],
-        )
-        ```
-
-        Using in route handlers:
-
-        ```python
-        from litestar import post
-        from litestar.datastructures import UploadFile
-        from litestar_storages import Storage, StoredFile
 
 
-        @post("/upload")
-        async def upload(
-            data: UploadFile,
-            storage: Storage,  # Injected default storage
-        ) -> StoredFile:
-            return await storage.put(
-                key=f"uploads/{data.filename}",
-                data=data.file,
-                content_type=data.content_type,
-            )
-
-
-        @post("/upload-image")
-        async def upload_image(
-            data: UploadFile,
-            images_storage: Storage,  # Injected named storage
-        ) -> StoredFile:
-            return await images_storage.put(
-                key=f"images/{data.filename}",
-                data=data.file,
-                content_type=data.content_type,
-            )
-        ```
+            @post("/upload-image")
+            async def upload_image(
+                data: UploadFile,
+                images_storage: Storage,  # Injected named storage
+            ) -> StoredFile:
+                return await images_storage.put(
+                    key=f"images/{data.filename}",
+                    data=data.file,
+                    content_type=data.content_type,
+                )
     """
 
     __slots__ = ("storages",)
@@ -110,16 +104,15 @@ class StoragePlugin(InitPluginProtocol):
             **named_storages: Named storage instances. Each will be registered
                 as "{name}_storage" dependency.
 
-        Example:
-            ```python
+        Example::
+
             plugin = StoragePlugin(
                 default=S3Storage(...),
                 images=S3Storage(...),
                 documents=AzureStorage(...),
             )
-            ```
 
-            This registers three dependencies:
+        This registers three dependencies:
             - `storage` (from default)
             - `images_storage`
             - `documents_storage`

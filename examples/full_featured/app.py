@@ -107,14 +107,16 @@ class ImageController(Controller):
     @get("/{key:path}", return_dto=StoredFileReadDTO)
     async def get_image_info(self, key: str, images_storage: Storage) -> StoredFile:
         """Get metadata for an image."""
+        key = key.lstrip("/")
         return await images_storage.info(key)
 
-    @get("/{key:path}/download")
+    @get("/download/{key:path}")
     async def download_image(self, key: str, images_storage: Storage) -> Stream:
         """Download an image file."""
+        key = key.lstrip("/")
         info = await images_storage.info(key)
         return Stream(
-            iterator=images_storage.get(key),
+            content=images_storage.get(key),
             media_type=info.content_type,
             headers={
                 "Content-Length": str(info.size),
@@ -125,6 +127,7 @@ class ImageController(Controller):
     @delete("/{key:path}", status_code=HTTP_204_NO_CONTENT)
     async def delete_image(self, key: str, images_storage: Storage) -> None:
         """Delete an image."""
+        key = key.lstrip("/")
         await images_storage.delete(key)
 
 
@@ -159,14 +162,16 @@ class DocumentController(Controller):
     @get("/{key:path}", return_dto=StoredFileReadDTO)
     async def get_document_info(self, key: str, documents_storage: Storage) -> StoredFile:
         """Get metadata for a document."""
+        key = key.lstrip("/")
         return await documents_storage.info(key)
 
-    @get("/{key:path}/download")
+    @get("/download/{key:path}")
     async def download_document(self, key: str, documents_storage: Storage) -> Stream:
         """Download a document file."""
+        key = key.lstrip("/")
         info = await documents_storage.info(key)
         return Stream(
-            iterator=documents_storage.get(key),
+            content=documents_storage.get(key),
             media_type=info.content_type,
             headers={
                 "Content-Length": str(info.size),
@@ -174,18 +179,20 @@ class DocumentController(Controller):
             },
         )
 
-    @get("/{key:path}/url")
+    @get("/url/{key:path}")
     async def get_document_url(self, key: str, documents_storage: Storage) -> dict[str, str]:
         """Get a presigned URL for document download.
 
         Returns a URL valid for 15 minutes.
         """
+        key = key.lstrip("/")
         url = await documents_storage.url(key, expires_in=timedelta(minutes=15))
         return {"url": url, "expires_in": "15 minutes"}
 
     @delete("/{key:path}", status_code=HTTP_204_NO_CONTENT)
     async def delete_document(self, key: str, documents_storage: Storage) -> None:
         """Delete a document."""
+        key = key.lstrip("/")
         await documents_storage.delete(key)
 
 

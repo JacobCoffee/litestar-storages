@@ -140,7 +140,7 @@ class TestImageController:
             )
 
             # Download
-            response = await client.get("/api/images/uploads/download.gif/download")
+            response = await client.get("/api/images/download/uploads/download.gif")
             assert response.status_code == 200
             assert response.content == content
 
@@ -255,7 +255,7 @@ class TestDocumentController:
             )
 
             # Download
-            response = await client.get("/api/documents/docs/report.csv/download")
+            response = await client.get("/api/documents/download/docs/report.csv")
             assert response.status_code == 200
             assert response.content == content
             assert "attachment" in response.headers.get("content-disposition", "")
@@ -277,7 +277,7 @@ class TestDocumentController:
             )
 
             # Get URL
-            response = await client.get("/api/documents/docs/shared.txt/url")
+            response = await client.get("/api/documents/url/docs/shared.txt")
             assert response.status_code == 200
             data = response.json()
             assert "url" in data

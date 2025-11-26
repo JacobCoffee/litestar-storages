@@ -17,37 +17,34 @@ class StoredFileDTO(DataclassDTO[StoredFile]):
     keep responses clean.
 
     Example:
-        Basic usage:
+        Basic usage::
 
-        ```python
-        from litestar import post
-        from litestar.datastructures import UploadFile
-        from litestar_storages import Storage, StoredFile
-        from litestar_storages.contrib.dto import StoredFileDTO
+            from litestar import post
+            from litestar.datastructures import UploadFile
+            from litestar_storages import Storage, StoredFile
+            from litestar_storages.contrib.dto import StoredFileDTO
 
 
-        @post("/upload", return_dto=StoredFileDTO)
-        async def upload(
-            data: UploadFile,
-            storage: Storage,
-        ) -> StoredFile:
-            return await storage.put(
-                key=f"uploads/{data.filename}",
-                data=data.file,
-                content_type=data.content_type,
-            )
-        ```
+            @post("/upload", return_dto=StoredFileDTO)
+            async def upload(
+                data: UploadFile,
+                storage: Storage,
+            ) -> StoredFile:
+                return await storage.put(
+                    key=f"uploads/{data.filename}",
+                    data=data.file,
+                    content_type=data.content_type,
+                )
 
-        Response will be:
-        ```json
-        {
-            "key": "uploads/example.jpg",
-            "size": 12345,
-            "content_type": "image/jpeg",
-            "etag": "abc123",
-            "last_modified": "2024-01-15T10:30:00Z"
-        }
-        ```
+        Response will be::
+
+            {
+                "key": "uploads/example.jpg",
+                "size": 12345,
+                "content_type": "image/jpeg",
+                "etag": "abc123",
+                "last_modified": "2024-01-15T10:30:00Z",
+            }
     """
 
     config = DTOConfig(
@@ -62,36 +59,30 @@ class StoredFileReadDTO(DataclassDTO[StoredFile]):
     including metadata, in read operations.
 
     Example:
-        Include metadata in response:
+        Include metadata in response::
 
-        ```python
-        from litestar import get
-        from litestar_storages import Storage, StoredFile
-        from litestar_storages.contrib.dto import StoredFileReadDTO
+            from litestar import get
+            from litestar_storages import Storage, StoredFile
+            from litestar_storages.contrib.dto import StoredFileReadDTO
 
 
-        @get("/files/{key:path}/info", return_dto=StoredFileReadDTO)
-        async def get_file_info(
-            key: str,
-            storage: Storage,
-        ) -> StoredFile:
-            return await storage.info(key)
-        ```
+            @get("/files/{key:path}/info", return_dto=StoredFileReadDTO)
+            async def get_file_info(
+                key: str,
+                storage: Storage,
+            ) -> StoredFile:
+                return await storage.info(key)
 
-        Response will be:
-        ```json
-        {
-            "key": "uploads/example.jpg",
-            "size": 12345,
-            "content_type": "image/jpeg",
-            "etag": "abc123",
-            "last_modified": "2024-01-15T10:30:00Z",
-            "metadata": {
-                "uploaded_by": "user123",
-                "original_filename": "my_photo.jpg"
+        Response will be::
+
+            {
+                "key": "uploads/example.jpg",
+                "size": 12345,
+                "content_type": "image/jpeg",
+                "etag": "abc123",
+                "last_modified": "2024-01-15T10:30:00Z",
+                "metadata": {"uploaded_by": "user123", "original_filename": "my_photo.jpg"},
             }
-        }
-        ```
     """
 
     config = DTOConfig()  # Include all fields
