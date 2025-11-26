@@ -16,5 +16,6 @@ updates:
       interval: "weekly"
     groups:
       python-dependencies:
-        patterns:
-          - "*"
+        update-types:
+          - "minor"
+          - "patch"
