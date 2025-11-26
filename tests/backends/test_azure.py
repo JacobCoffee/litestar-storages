@@ -1334,7 +1334,7 @@ class TestAzurePrefixHandling:
         self,
         azure_blob_service,
         azure_blob_default_container_name: str,
-        azure_blob_container_client,  # Ensures container is created
+        azure_blob_container_client,
         sample_text_data: bytes,
     ) -> None:
         """
@@ -1345,6 +1345,12 @@ class TestAzurePrefixHandling:
         - Prefix is stripped from returned keys
         """
         from litestar_storages.backends.azure import AzureConfig, AzureStorage
+
+        # Ensure container exists
+        try:
+            azure_blob_container_client.create_container()
+        except Exception:
+            pass  # Container may already exist
 
         storage = AzureStorage(
             config=AzureConfig(
@@ -1376,7 +1382,7 @@ class TestAzurePrefixHandling:
         self,
         azure_blob_service,
         azure_blob_default_container_name: str,
-        azure_blob_container_client,  # Ensures container is created
+        azure_blob_container_client,
         sample_text_data: bytes,
     ) -> None:
         """
@@ -1386,6 +1392,12 @@ class TestAzurePrefixHandling:
         - Both config prefix and filter prefix work together
         """
         from litestar_storages.backends.azure import AzureConfig, AzureStorage
+
+        # Ensure container exists
+        try:
+            azure_blob_container_client.create_container()
+        except Exception:
+            pass  # Container may already exist
 
         storage = AzureStorage(
             config=AzureConfig(
