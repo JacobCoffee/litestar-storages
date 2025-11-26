@@ -241,6 +241,7 @@ timeout = 60
 timeout_method = "thread"
 
 [tool.ruff]
+exclude = ["examples/", "packages/"]
 fix = true
 line-length = 120
 src = ["src/litestar_storages", "tests"]
