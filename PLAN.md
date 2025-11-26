@@ -34,8 +34,8 @@
   - [x] StoragePlugin implementation
   - [x] Dependency injection support (`provide_storage`)
   - [x] Response DTOs (`StoredFileDTO`)
-  - [x] Integration tests with real Litestar app (15 tests)
-  - [ ] Lifespan management for connection cleanup
+  - [x] Integration tests with real Litestar app (19 tests)
+  - [x] Lifespan management for connection cleanup
 
 - [x] **Project Infrastructure**
   - [x] CI workflow (lint, format, type-check, test matrix)
@@ -209,13 +209,14 @@ make test-failed      # Re-run only failed tests
 
 ### Immediate (v0.1.0 Release)
 
-1. **Fix remaining integration tests**
-   - S3 tests with moto have Python 3.14 compatibility issues
-   - Plugin tests need Litestar test client setup
+1. ~~**Fix remaining integration tests**~~ ✅
+   - S3 tests with moto server mode (30 tests)
+   - Plugin tests with Litestar test client (19 tests)
 
-2. **Add lifespan management to StoragePlugin**
-   - Cleanup S3 clients on app shutdown
-   - Context manager support for storages
+2. ~~**Add lifespan management to StoragePlugin**~~ ✅
+   - close() method in Storage protocol and backends
+   - on_shutdown handler for cleanup
+   - Error handling with logging
 
 3. **First PyPI release**
    - Tag v0.1.0
@@ -273,6 +274,6 @@ make test-failed      # Re-run only failed tests
 
 ---
 
-*Plan Version: 2.0.0*
-*Last Updated: 2024-11*
-*Status: Phase 1-3 Complete, Phase 4 In Progress*
+*Plan Version: 2.1.0*
+*Last Updated: 2025-11*
+*Status: Phase 1-3 Complete (including lifespan management), Phase 4 In Progress*

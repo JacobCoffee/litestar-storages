@@ -11,6 +11,7 @@ from litestar.plugins import InitPluginProtocol
 from litestar_storages.base import Storage  # noqa: TC001 - needed at runtime for DI
 
 if TYPE_CHECKING:
+    from litestar import Litestar
     from litestar.config.app import AppConfig
 
 __all__ = ["StoragePlugin"]
@@ -157,11 +158,41 @@ class StoragePlugin(InitPluginProtocol):
 
         app_config.dependencies = dependencies
 
-        # TODO: Register lifespan handlers if storages need cleanup
-        # This will be implemented when we add backends that require
-        # connection cleanup (e.g., closing HTTP sessions)
+        # Register shutdown handler for storage cleanup
+        on_shutdown = list(app_config.on_shutdown or [])
+        on_shutdown.append(self._shutdown_storages)
+        app_config.on_shutdown = on_shutdown
 
         return app_config
+
+    async def _shutdown_storages(self, _app: Litestar) -> None:
+        """Shutdown handler that closes all storage backends.
+
+        This method is called by Litestar during application shutdown.
+        It iterates over all registered storages and calls their close()
+        method to release resources.
+
+        Args:
+            _app: The Litestar application instance (unused but required by signature)
+
+        Note:
+            Errors during close() are caught and logged to ensure all storages
+            get a chance to clean up, even if one fails.
+        """
+        import logging
+
+        logger = logging.getLogger(__name__)
+
+        for name, storage in self.storages.items():
+            if hasattr(storage, "close"):
+                try:
+                    await storage.close()
+                except Exception as e:
+                    logger.warning(
+                        "Error closing storage '%s': %s",
+                        name,
+                        e,
+                    )
 
     @staticmethod
     def _make_storage_provider(storage: Storage) -> Callable[[], Storage]:

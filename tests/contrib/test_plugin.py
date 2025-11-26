@@ -663,3 +663,173 @@ class TestPluginLifecycle:
             response = await client.get("/list")
             data = response.json()
             assert "shared.txt" in data["files"]
+
+    async def test_storage_close_on_shutdown(self) -> None:
+        """
+        Test that storage close() is called on app shutdown.
+
+        Verifies:
+        - Storage close() method is called during shutdown
+        - Plugin properly handles lifespan
+        """
+        from litestar_storages.backends.memory import MemoryStorage
+        from litestar_storages.contrib.plugin import StoragePlugin
+
+        # Create a storage that tracks if close() was called
+        class TrackingStorage(MemoryStorage):
+            closed = False
+
+            async def close(self) -> None:
+                TrackingStorage.closed = True
+
+        storage = TrackingStorage()
+        plugin = StoragePlugin(default=storage)
+
+        @get("/test")
+        async def test_handler(storage: Storage) -> dict:
+            return {"ok": True}
+
+        app = Litestar(route_handlers=[test_handler], plugins=[plugin])
+
+        # Use the test client which handles startup/shutdown
+        async with AsyncTestClient(app=app) as client:
+            response = await client.get("/test")
+            assert response.status_code == HTTP_200_OK
+            # Storage should not be closed yet
+            assert TrackingStorage.closed is False
+
+        # After exiting context manager, shutdown should have been called
+        assert TrackingStorage.closed is True
+
+    async def test_multiple_storages_closed_on_shutdown(self) -> None:
+        """
+        Test that all storages are closed on shutdown.
+
+        Verifies:
+        - Multiple storages all have close() called
+        - Named storages are properly cleaned up
+        """
+        from litestar_storages.backends.memory import MemoryStorage
+        from litestar_storages.contrib.plugin import StoragePlugin
+
+        closed_storages: list[str] = []
+
+        class TrackingStorage(MemoryStorage):
+            def __init__(self, name: str) -> None:
+                super().__init__()
+                self.name = name
+
+            async def close(self) -> None:
+                closed_storages.append(self.name)
+
+        storage1 = TrackingStorage("default")
+        storage2 = TrackingStorage("images")
+        storage3 = TrackingStorage("documents")
+
+        plugin = StoragePlugin(
+            default=storage1,
+            images=storage2,
+            documents=storage3,
+        )
+
+        app = Litestar(route_handlers=[], plugins=[plugin])
+
+        async with AsyncTestClient(app=app):
+            # All storages should not be closed yet
+            assert len(closed_storages) == 0
+
+        # All storages should be closed after shutdown
+        assert len(closed_storages) == 3
+        assert set(closed_storages) == {"default", "images", "documents"}
+
+    async def test_storage_without_close_method(self) -> None:
+        """
+        Test that storages without close() method are handled gracefully.
+
+        Verifies:
+        - No error if storage lacks close() method
+        - Shutdown proceeds normally
+        """
+        from litestar_storages.contrib.plugin import StoragePlugin
+
+        # Create a mock storage-like object without close() method
+        class MinimalStorage:
+            """A minimal storage-like object for testing."""
+
+            async def put(self, key: str, data: bytes, **kwargs) -> dict:  # type: ignore[type-arg]
+                return {"key": key, "size": len(data)}
+
+            async def get(self, key: str) -> bytes:
+                return b""
+
+            async def delete(self, key: str) -> None:
+                pass
+
+            async def exists(self, key: str) -> bool:
+                return False
+
+            async def list(self, prefix: str = "", **kwargs) -> list:  # type: ignore[type-arg]
+                return []
+
+            async def url(self, key: str, **kwargs) -> str:  # type: ignore[type-arg]
+                return f"memory://{key}"
+
+            async def info(self, key: str) -> dict:  # type: ignore[type-arg]
+                return {"key": key}
+
+            # Note: No close() method
+
+        storage = MinimalStorage()
+        plugin = StoragePlugin(default=storage)  # type: ignore[arg-type]
+
+        app = Litestar(route_handlers=[], plugins=[plugin])
+
+        # Should not raise any errors - hasattr check should handle missing close()
+        async with AsyncTestClient(app=app):
+            pass  # Just test that startup/shutdown works
+
+    async def test_close_error_does_not_prevent_other_closures(self) -> None:
+        """
+        Test that an error in one close() doesn't prevent others.
+
+        Verifies:
+        - Error in one storage's close() is handled
+        - Other storages still get closed
+        """
+        from litestar_storages.backends.memory import MemoryStorage
+        from litestar_storages.contrib.plugin import StoragePlugin
+
+        closed_storages: list[str] = []
+
+        class ErrorStorage(MemoryStorage):
+            async def close(self) -> None:
+                raise RuntimeError("Close failed!")
+
+        class TrackingStorage(MemoryStorage):
+            def __init__(self, name: str) -> None:
+                super().__init__()
+                self.name = name
+
+            async def close(self) -> None:
+                closed_storages.append(self.name)
+
+        # Put error storage in the middle
+        storage1 = TrackingStorage("first")
+        storage2 = ErrorStorage()
+        storage3 = TrackingStorage("last")
+
+        plugin = StoragePlugin(
+            first=storage1,
+            error=storage2,
+            last=storage3,
+        )
+
+        app = Litestar(route_handlers=[], plugins=[plugin])
+
+        # Should not raise - errors in close() are caught and logged
+        async with AsyncTestClient(app=app):
+            pass
+
+        # Both non-error storages should be closed
+        assert "first" in closed_storages
+        assert "last" in closed_storages
