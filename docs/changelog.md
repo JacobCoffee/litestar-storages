@@ -2,11 +2,40 @@
 
 All notable changes to this project will be documented in this file.
 ---
-## [unreleased]
+## [0.2.3](https://github.com/JacobCoffee/litestar-storages/compare/v0.2.2..v0.2.3) - 2026-10-11
 
 ### Bug Fixes
 
 - correct git-cliff-action SHA (#32) - ([d1658fa](https://github.com/JacobCoffee/litestar-storages/commit/d1658fa2fdecd21f822fb97c96ed2bcb55b42c24)) - Jacob Coffee
+
+### Documentation
+
+- regenerate changelog for v0.2.2 - ([5b8d8c9](https://github.com/JacobCoffee/litestar-storages/commit/5b8d8c9d3fca80e8c962d76d51108ae943d96231)) - github-actions[bot]
+
+### Features
+
+- support Python 3.14 and 3.15 (#67) - ([1962ec4](https://github.com/JacobCoffee/litestar-storages/commit/1962ec48ccc7e1e84d90543e4fc8419dd145aa39)) - Jacob Coffee
+
+### Miscellaneous Chores
+
+- **(deps)** bump the actions group with 3 updates (#34) - ([37f2fc1](https://github.com/JacobCoffee/litestar-storages/commit/37f2fc160a339f198832dfd3be74e03c8bf6a724)) - dependabot[bot]
+- **(deps)** bump the actions group with 5 updates (#35) - ([f07f89c](https://github.com/JacobCoffee/litestar-storages/commit/f07f89c3780f164bcd6e828abfac75542d6ebd36)) - dependabot[bot]
+- **(deps)** bump rossjrw/pr-preview-action from 1.6.3 to 1.7.2 in the actions group (#36) - ([15f35f3](https://github.com/JacobCoffee/litestar-storages/commit/15f35f3c8d6e325a18749cee5ad9c8822f585dbf)) - dependabot[bot]
+- **(deps)** bump rossjrw/pr-preview-action from 1.7.2 to 1.8.0 in the actions group (#37) - ([7d3c836](https://github.com/JacobCoffee/litestar-storages/commit/7d3c8363d9e91af772245c32df1936bb8d0e2f31)) - dependabot[bot]
+- **(deps)** bump astral-sh/setup-uv from 7.1.6 to 7.2.0 in the actions group (#38) - ([f822c4e](https://github.com/JacobCoffee/litestar-storages/commit/f822c4e41b806426079081ed3259410fe8c7614f)) - dependabot[bot]
+- **(deps)** bump zizmorcore/zizmor-action from 0.3.0 to 0.4.1 in the actions group (#39) - ([88f42c1](https://github.com/JacobCoffee/litestar-storages/commit/88f42c1716befe9e6e7e1afc0e31e9335420a152)) - dependabot[bot]
+- **(deps)** bump the actions group with 3 updates (#40) - ([0b4af22](https://github.com/JacobCoffee/litestar-storages/commit/0b4af227fd61d084545c4a8e705b2a120850338d)) - dependabot[bot]
+- **(deps)** bump the actions group with 2 updates (#41) - ([b50ba70](https://github.com/JacobCoffee/litestar-storages/commit/b50ba7046c8e2db02ed6a35e98bcec86e9419c4e)) - dependabot[bot]
+- **(deps)** bump the actions group with 2 updates (#42) - ([bc6ed74](https://github.com/JacobCoffee/litestar-storages/commit/bc6ed746d40214bfe38c205b87e2e1e4e6e8e124)) - dependabot[bot]
+- **(deps)** bump the actions group across 1 directory with 10 updates (#49) - ([21e50ff](https://github.com/JacobCoffee/litestar-storages/commit/21e50ff6e0adc6544dfb26127b9387480839af2d)) - dependabot[bot]
+- **(deps)** bump the actions group across 1 directory with 9 updates (#55) - ([590d89c](https://github.com/JacobCoffee/litestar-storages/commit/590d89c252d96e3b32be63f320779bdb2f932f42)) - dependabot[bot]
+- **(deps)** bump the actions group across 1 directory with 4 updates (#58) - ([b0559f5](https://github.com/JacobCoffee/litestar-storages/commit/b0559f5afb6987c409cc3382161b0596b9c6ee1f)) - dependabot[bot]
+- **(deps)** bump the actions group across 1 directory with 11 updates (#65) - ([74a55ee](https://github.com/JacobCoffee/litestar-storages/commit/74a55ee48ce3f7474e0df8afb9dafec193149cdb)) - dependabot[bot]
+- **(deps)** bump the actions group with 2 updates (#66) - ([0883cf7](https://github.com/JacobCoffee/litestar-storages/commit/0883cf7c1ee8c720ad5444e38f6428dd8f4f407a)) - dependabot[bot]
+- **(deps-dev)** update uv-build requirement from <0.10.0,>=0.9.11 to >=0.9.11,<0.11.0 in the python-dependencies group (#43) - ([fceb92f](https://github.com/JacobCoffee/litestar-storages/commit/fceb92f00d00d26265c5553ab2e9d00599c9d535)) - dependabot[bot]
+- **(deps-dev)** update uv-build requirement from <0.11.0,>=0.9.11 to >=0.9.11,<0.12.0 in the python-dependencies group (#50) - ([e0a2b52](https://github.com/JacobCoffee/litestar-storages/commit/e0a2b52bbfd29d1920df04cbfb54a6fc285744cf)) - dependabot[bot]
+- **(deps-dev)** update uv-build requirement from <0.12.0,>=0.9.11 to >=0.9.11,<0.13.0 in the python-dependencies group (#62) - ([37bce57](https://github.com/JacobCoffee/litestar-storages/commit/37bce57b2451768893322dcbc93263ed2778e089)) - dependabot[bot]
+- bump version to 0.2.3 (#68) - ([00f8731](https://github.com/JacobCoffee/litestar-storages/commit/00f87316c61711836ef3a8b48e72097e1bc6eff9)) - Jacob Coffee
 
 ### Ci
 
